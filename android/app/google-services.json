@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "587650482104",
+    "firebase_url": "https://project-bind-28042-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "project-bind-28042",
+    "storage_bucket": "project-bind-28042.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587650482104:android:8a5a7d06cd45b6d02e994d",
+        "android_client_info": {
+          "package_name": "com.anony.bind"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587650482104-g348gehek4hgjhmrknjtoomepgo8a3r6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0TFEUHydPYKOE9gemDgxH5eBIirrvYPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587650482104-g348gehek4hgjhmrknjtoomepgo8a3r6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "587650482104-hpv084qp4knqt4cnl2ldf667eei2lbtq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.anony.bind"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

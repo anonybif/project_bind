@@ -1,4 +1,4 @@
-package com.example.project_bind
+package com.anony.bind
 
 import io.flutter.embedding.android.FlutterActivity
 
