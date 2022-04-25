@@ -8,30 +8,22 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Column(
-      children: [
-        SizedBox(
-          height: 20,
-        ),
-        ElevatedButton(
-          child: Text('Sign out'),
-          onPressed: signOut,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        ElevatedButton(child: Text('back'), onPressed: signInPage),
-      ],
-    ));
+        child: Column(children: [
+      const SizedBox(
+        height: 20,
+      ),
+      ElevatedButton(
+        child: const Text('Logout'),
+        onPressed: signOut,
+      ),
+    ]));
   }
 
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
-  Future<void> signInPage() async {
-    runApp(new MaterialApp(
-      home: const SignIn(),
-    ));
+    FirebaseAuth.instance.signOut().then((value) {
+      runApp(const MaterialApp(
+        home: SignIn(),
+      ));
+    });
   }
 }
