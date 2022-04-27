@@ -36,12 +36,11 @@ class _SignUpState extends State<SignUp> {
           padding: const EdgeInsets.all(8.0),
           child: iconWidget("assets/images/logo1.png"),
         ),
-        title: const Center(
-          child: Text(
-            "Sign Up",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
+        title: const Text(
+          "Sign Up",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: Container(
