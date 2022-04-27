@@ -30,19 +30,20 @@ class _SignInState extends State<SignIn> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          hexStringToColor("CB2B93"),
-          hexStringToColor("9546C4"),
-          hexStringToColor("5E61F4")
-        ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+        // decoration: BoxDecoration(
+        //     gradient: LinearGradient(colors: [
+        //   hexStringToColor("CB2B93"),
+        //   hexStringToColor("9546C4"),
+        //   hexStringToColor("5E61F4")
+        // ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+        decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
                 20, MediaQuery.of(context).size.height * 0.1, 20, 0),
             child: Column(
               children: <Widget>[
-                logoWidget("assets/images/logo1.png"),
+                logoWidget("assets/images/bind_logo1.png"),
                 const SizedBox(
                   height: 30,
                 ),
@@ -54,7 +55,7 @@ class _SignInState extends State<SignIn> {
                 reusableTextField("Enter Password", Icons.lock_outline, true,
                     passwordController),
                 const SizedBox(
-                  height: 5,
+                  height: 15,
                 ),
                 // forgetPassword(context),
                 firebaseUIButton(context, "Login", () {
@@ -70,7 +71,7 @@ class _SignInState extends State<SignIn> {
                   });
                 }),
                 const SizedBox(
-                  height: 10,
+                  height: 150,
                 ),
                 signUpOption()
               ],
@@ -88,7 +89,7 @@ class _SignInState extends State<SignIn> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text("Don't have an account?",
-                style: TextStyle(color: Colors.white70)),
+                style: TextStyle(color: Colors.black)),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -96,8 +97,8 @@ class _SignInState extends State<SignIn> {
               },
               child: const Text(
                 " Sign Up",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.deepOrange, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -105,7 +106,7 @@ class _SignInState extends State<SignIn> {
         const SizedBox(
           height: 10,
         ),
-        const Text("or", style: TextStyle(color: Colors.white70)),
+        const Text("or", style: TextStyle(color: Colors.black)),
         const SizedBox(
           height: 10,
         ),
@@ -116,17 +117,11 @@ class _SignInState extends State<SignIn> {
           },
           child: const Text(
             " Continue as guest",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.deepOrange, fontWeight: FontWeight.bold),
           ),
         )
       ],
-    );
-  }
-
-  Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
     );
   }
 }
