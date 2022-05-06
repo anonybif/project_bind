@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project_bind/screens/add_business.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
 
@@ -34,35 +35,35 @@ class NaviagtionDrawerWidget extends StatelessWidget {
             buildMenuItem(
                 text: 'Add Review',
                 icon: Icons.message,
-                onClicked: () => selectedItem(context, 0)),
+                onClicked: () => selectedItem(context, 1)),
             buildMenuItem(
                 text: 'Favorites',
                 icon: Icons.favorite,
-                onClicked: () => selectedItem(context, 1)),
+                onClicked: () => selectedItem(context, 2)),
             buildMenuItem(
                 text: 'Settings',
                 icon: Icons.settings,
-                onClicked: () => selectedItem(context, 1)),
+                onClicked: () => selectedItem(context, 3)),
             buildMenuItem(
                 text: 'Ask Community',
                 icon: Icons.question_answer,
-                onClicked: () => selectedItem(context, 2)),
+                onClicked: () => selectedItem(context, 4)),
             buildMenuItem(
                 text: 'FAQ',
                 icon: Icons.question_answer_outlined,
-                onClicked: () => selectedItem(context, 3)),
+                onClicked: () => selectedItem(context, 5)),
             buildMenuItem(
                 text: 'Analytics',
                 icon: Icons.analytics,
-                onClicked: () => selectedItem(context, 4)),
+                onClicked: () => selectedItem(context, 6)),
             buildMenuItem(
                 text: 'Contact Support',
                 icon: Icons.contact_page,
-                onClicked: () => selectedItem(context, 5)),
+                onClicked: () => selectedItem(context, 7)),
             buildMenuItem(
                 text: 'Logout',
                 icon: Icons.logout,
-                onClicked: () => selectedItem(context, 6))
+                onClicked: () => selectedItem(context, 8))
           ],
         ),
       ),
@@ -90,12 +91,22 @@ class NaviagtionDrawerWidget extends StatelessWidget {
 
   void selectedItem(BuildContext context, int index) {
     Navigator.of(context).pop();
-
     switch (index) {
       case 6:
         FirebaseAuth.instance.signOut();
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const SignIn()));
+        break;
+
+      case 0:
+        if (FirebaseAuth.instance.currentUser?.uid != null) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddBusiness()));
+        } else {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => const SignIn()));
+        }
+
         break;
     }
   }

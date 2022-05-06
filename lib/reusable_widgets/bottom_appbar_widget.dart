@@ -4,11 +4,11 @@ Widget bottomAppbarWidget() {
   return Container(
     decoration: const BoxDecoration(
       borderRadius: BorderRadius.only(
-          topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+          topRight: Radius.circular(20), topLeft: Radius.circular(20)),
       color: Colors.deepOrange,
     ),
     child: BottomNavigationBar(
-      selectedItemColor: Colors.lightBlueAccent,
+      selectedItemColor: Colors.black,
       unselectedItemColor: Colors.white,
       elevation: 0.0,
 
@@ -16,7 +16,7 @@ Widget bottomAppbarWidget() {
         BottomNavigationBarItem(
           backgroundColor: Colors.transparent,
           icon: Icon(Icons.home),
-          label: '',
+          label: 'Home',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
