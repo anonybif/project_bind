@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/reusable_widgets/user.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/utils/color_utils.dart';
@@ -16,6 +18,11 @@ class _SignUpState extends State<SignUp> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final userNameController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final locationController = TextEditingController();
+  final bioController = TextEditingController();
+  final phoneNumberController = TextEditingController();
 
   @override
   void dispose() {
@@ -46,13 +53,6 @@ class _SignUpState extends State<SignUp> {
       body: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          // decoration: BoxDecoration(
-          //     gradient: LinearGradient(colors: [
-          //   hexStringToColor("CB2B93"),
-          //   hexStringToColor("9546C4"),
-          //   hexStringToColor("5E61F4")
-          // ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-
           decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
           child: SingleChildScrollView(
               child: Padding(
@@ -60,12 +60,12 @@ class _SignUpState extends State<SignUp> {
             child: Column(
               children: <Widget>[
                 reusableTextField(
-                    "First Name", Icons.person, false, userNameController),
+                    "First Name", Icons.person, false, firstNameController),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableTextField(
-                    "Last Name", Icons.person, false, userNameController),
+                    "Last Name", Icons.person, false, lastNameController),
                 const SizedBox(
                   height: 20,
                 ),
@@ -75,12 +75,12 @@ class _SignUpState extends State<SignUp> {
                   height: 20,
                 ),
                 reusableTextField(
-                    "Phone Number", Icons.phone, false, userNameController),
+                    "Phone Number", Icons.phone, false, phoneNumberController),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableTextField(
-                    "Location", Icons.pin_drop, false, userNameController),
+                    "Location", Icons.pin_drop, false, locationController),
                 const SizedBox(
                   height: 20,
                 ),
@@ -94,8 +94,8 @@ class _SignUpState extends State<SignUp> {
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Bio (Optional)", Icons.assignment, true,
-                    passwordController),
+                reusableTextField(
+                    "Bio (Optional)", Icons.assignment, true, bioController),
                 const SizedBox(
                   height: 20,
                 ),
@@ -104,8 +104,9 @@ class _SignUpState extends State<SignUp> {
                       .createUserWithEmailAndPassword(
                           email: emailController.text,
                           password: passwordController.text)
-                      .then((value) {
+                      .then((signedInUser) {
                     print("Created New Account");
+                    createUser(signedInUser);
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const Home()));
                   }).onError((error, stackTrace) {
@@ -120,6 +121,22 @@ class _SignUpState extends State<SignUp> {
             ),
           ))),
     );
+  }
+
+  Future createUser(UserCredential signedInUser) async {
+    final json = {
+      'FirstName': firstNameController.text,
+      'LastName': lastNameController.text,
+      'Username': userNameController.text,
+      'Email': emailController.text,
+      'PhoneNumber': phoneNumberController.text,
+      'Location': locationController.text,
+      'Bio': bioController.text,
+      'Badge': 'bronze',
+      'Uid': FirebaseAuth.instance.currentUser!.uid
+    };
+
+    UserManagement().storeNewUser(signedInUser.user, json, context);
   }
 
   Column signInOption() {

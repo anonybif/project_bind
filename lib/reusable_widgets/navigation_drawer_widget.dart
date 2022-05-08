@@ -92,7 +92,7 @@ class NaviagtionDrawerWidget extends StatelessWidget {
   void selectedItem(BuildContext context, int index) {
     Navigator.of(context).pop();
     switch (index) {
-      case 6:
+      case 8:
         FirebaseAuth.instance.signOut();
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const SignIn()));

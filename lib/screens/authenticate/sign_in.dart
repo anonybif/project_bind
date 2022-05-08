@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
@@ -12,13 +13,16 @@ class SignIn extends StatefulWidget {
   State<SignIn> createState() => _SignInState();
 }
 
+String userName = '';
+
 class _SignInState extends State<SignIn> {
-  final emailController = TextEditingController();
+  final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+  String userEmail = '';
 
   @override
   void dispose() {
-    emailController.dispose();
+    userNameController.dispose();
     passwordController.dispose();
 
     super.dispose();
@@ -30,12 +34,6 @@ class _SignInState extends State<SignIn> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        // decoration: BoxDecoration(
-        //     gradient: LinearGradient(colors: [
-        //   hexStringToColor("CB2B93"),
-        //   hexStringToColor("9546C4"),
-        //   hexStringToColor("5E61F4")
-        // ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
         child: SingleChildScrollView(
           child: Padding(
@@ -48,7 +46,7 @@ class _SignInState extends State<SignIn> {
                   height: 30,
                 ),
                 reusableTextField("Enter UserName", Icons.person_outline, false,
-                    emailController),
+                    userNameController),
                 const SizedBox(
                   height: 20,
                 ),
@@ -58,14 +56,14 @@ class _SignInState extends State<SignIn> {
                   height: 15,
                 ),
                 // forgetPassword(context),
-                firebaseUIButton(context, "Login", () {
+                firebaseUIButton(context, "Login", () async {
+                  await fetchEmail();
                   FirebaseAuth.instance
                       .signInWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text)
+                          email: userEmail, password: passwordController.text)
                       .then((value) {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Home()));
+                        MaterialPageRoute(builder: (context) => const Home()));
                   }).onError((error, stackTrace) {
                     print("Error ${error.toString()}");
                   });
@@ -80,6 +78,14 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     );
+  }
+
+  fetchEmail() async {
+    QuerySnapshot user = await FirebaseFirestore.instance
+        .collection('user')
+        .where("Username", isEqualTo: userNameController.text)
+        .get();
+    userEmail = user.docs[0]["Email"];
   }
 
   Column signUpOption() {
