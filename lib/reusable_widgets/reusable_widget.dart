@@ -35,7 +35,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
       labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
       filled: true,
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      fillColor: Colors.white.withOpacity(0.6),
+      fillColor: Colors.white.withOpacity(1),
       border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
           borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
@@ -62,7 +62,7 @@ TextField reusableTextArea(
         labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
         filled: true,
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: Colors.white.withOpacity(0.6),
+        fillColor: Colors.white.withOpacity(1),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
@@ -70,9 +70,10 @@ TextField reusableTextArea(
       keyboardType: TextInputType.multiline);
 }
 
-Container firebaseUIButton(BuildContext context, String title, Function onTap) {
+Container firebaseUIButton(
+    BuildContext context, String title, double width, Function onTap) {
   return Container(
-    width: MediaQuery.of(context).size.width,
+    width: width,
     height: 50,
     margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),

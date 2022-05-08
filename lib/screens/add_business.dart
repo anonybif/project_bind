@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project_bind/reusable_widgets/business.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:time_interval_picker/time_interval_picker.dart';
@@ -18,10 +20,12 @@ class _AddBusinessState extends State<AddBusiness> {
   TimeOfDay timeOpens = const TimeOfDay(hour: 12, minute: 0);
   TimeOfDay timeClosed = const TimeOfDay(hour: 24, minute: 0);
 
-  void timepicker(TimeOfDay time) async {}
+  // void timepicker(TimeOfDay time) async {}
 
   @override
   Widget build(BuildContext context) {
+    double swidth = MediaQuery.of(context).size.width;
+    double sheight = MediaQuery.of(context).size.height;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -39,8 +43,8 @@ class _AddBusinessState extends State<AddBusiness> {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          width: swidth,
+          height: sheight,
           decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
           child: SingleChildScrollView(
               child: Padding(
@@ -104,12 +108,12 @@ class _AddBusinessState extends State<AddBusiness> {
                       },
                       child: const Text('Opens'),
                     ),
-                    // const SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     Text(
                       timeOpens.format(context),
                       style: const TextStyle(fontSize: 16),
                     ),
-                    // const SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor:
@@ -134,7 +138,7 @@ class _AddBusinessState extends State<AddBusiness> {
                       },
                       child: const Text('Closes'),
                     ),
-                    // const SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     Text(
                       timeClosed.format(context),
                       style: const TextStyle(fontSize: 16),
@@ -151,15 +155,32 @@ class _AddBusinessState extends State<AddBusiness> {
                 const SizedBox(
                   height: 10,
                 ),
-                TimeIntervalPicker(
-                  endLimit: null,
-                  startLimit: null,
-                  onChanged: (DateTime? startTime, DateTime? endTime,
-                      bool isAllDay) {},
-                ),
+                firebaseUIButton(context, "Add", (swidth / 3), () {
+                  createbusiness();
+                }),
               ],
             ),
           ))),
     );
+  }
+
+  Future createbusiness() async {
+    final json = {
+      'BusinessName': businessNameController.text,
+      'Description': businessDiscController.text,
+      'Location': locationController.text,
+      'Claimed': 'false',
+      'Bid': '',
+      'Email': '',
+      'PhoneNumber': '',
+      'OpeningTime': '',
+      'ClosingTime': '',
+      'Uid': '',
+      'ReviewNumber': '0',
+      'Stars': '0',
+      'FollowNumber': '0'
+    };
+
+    BusinessManagement().storeNewBusiness(json, context);
   }
 }

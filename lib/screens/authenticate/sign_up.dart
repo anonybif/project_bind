@@ -34,6 +34,8 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    double swidth = MediaQuery.of(context).size.width;
+    double sheight = MediaQuery.of(context).size.height;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -51,8 +53,8 @@ class _SignUpState extends State<SignUp> {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          width: swidth,
+          height: sheight,
           decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
           child: SingleChildScrollView(
               child: Padding(
@@ -99,7 +101,7 @@ class _SignUpState extends State<SignUp> {
                 const SizedBox(
                   height: 20,
                 ),
-                firebaseUIButton(context, "Sign Up", () {
+                firebaseUIButton(context, "Sign Up", swidth, () {
                   FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
                           email: emailController.text,

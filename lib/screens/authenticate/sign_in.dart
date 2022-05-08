@@ -30,15 +30,16 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+    double swidth = MediaQuery.of(context).size.width;
+    double sheight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
+        width: swidth,
+        height: sheight,
         decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.1, 20, 0),
+            padding: EdgeInsets.fromLTRB(20, sheight * 0.1, 20, 0),
             child: Column(
               children: <Widget>[
                 logoWidget("assets/images/bind_logo1.png"),
@@ -56,7 +57,7 @@ class _SignInState extends State<SignIn> {
                   height: 15,
                 ),
                 // forgetPassword(context),
-                firebaseUIButton(context, "Login", () async {
+                firebaseUIButton(context, "Login", swidth, () async {
                   await fetchEmail();
                   FirebaseAuth.instance
                       .signInWithEmailAndPassword(

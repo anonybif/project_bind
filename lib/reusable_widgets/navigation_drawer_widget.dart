@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:project_bind/screens/add_business.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
+import 'package:project_bind/screens/business_page.dart';
 
 class NaviagtionDrawerWidget extends StatelessWidget {
   const NaviagtionDrawerWidget({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class NaviagtionDrawerWidget extends StatelessWidget {
                   stream: FirebaseAuth.instance.authStateChanges(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return userInfo();
+                      return userInfo(context);
                     } else {
                       return placholderInfo(context);
                     }
@@ -112,7 +113,7 @@ class NaviagtionDrawerWidget extends StatelessWidget {
   }
 }
 
-Column userInfo() {
+Column userInfo(BuildContext context) {
   return Column(
     children: [
       Row(
@@ -170,7 +171,12 @@ Column userInfo() {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BusinessPage()));
+            },
             child: const Text(
               "My Businesses",
               style: TextStyle(color: Colors.black),
@@ -224,7 +230,7 @@ Column placholderInfo(BuildContext context) {
           ),
         ],
       ),
-      SizedBox(
+      const SizedBox(
         height: 15,
       ),
       Row(
