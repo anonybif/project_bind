@@ -10,10 +10,13 @@ class BusinessManagement {
         .collection('business')
         .doc()
         .set(json)
-        .then((value) => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const BusinessPage())))
         .catchError((e) {
       print(e);
     });
+  }
+
+  updateBusiness(json, context) async {
+    final businessDoc =
+        FirebaseFirestore.instance.collection('business').doc('');
   }
 }

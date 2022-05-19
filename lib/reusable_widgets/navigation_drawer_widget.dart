@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_bind/screens/add_business.dart';
@@ -6,8 +7,8 @@ import 'package:project_bind/screens/authenticate/sign_up.dart';
 import 'package:project_bind/screens/business_page.dart';
 
 class NaviagtionDrawerWidget extends StatelessWidget {
-  const NaviagtionDrawerWidget({Key? key}) : super(key: key);
-
+  NaviagtionDrawerWidget({Key? key}) : super(key: key);
+  String userName = '';
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -111,6 +112,22 @@ class NaviagtionDrawerWidget extends StatelessWidget {
         break;
     }
   }
+
+  Future<String> fetch() async {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null) {
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(firebaseUser.uid)
+          .get()
+          .then((ds) {
+        userName = ds.data()!["Username"];
+      }).catchError((e) {
+        print(e);
+      });
+    }
+    return userName;
+  }
 }
 
 Column userInfo(BuildContext context) {
@@ -133,18 +150,18 @@ Column userInfo(BuildContext context) {
           Column(
             children: [
               Row(
-                children: const [
+                children: [
                   Text(
-                    'Anony',
-                    style: TextStyle(
+                    userName,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
-                  Icon(
+                  const Icon(
                     Icons.badge,
                     color: Colors.white,
                   ),
@@ -213,7 +230,7 @@ Column placholderInfo(BuildContext context) {
           ClipRRect(
             borderRadius: BorderRadius.circular(36),
             child: Image.asset(
-              "assets/images/profile.jpg",
+              "assets/images/d.png",
               height: 72,
               width: 72,
             ),

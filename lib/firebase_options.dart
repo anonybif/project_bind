@@ -17,16 +17,32 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.windows:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.linux:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       default:
@@ -36,33 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBJqeM4imCcCxwkvQ9aC34E68yEP6TbH4k',
-    appId: '1:587650482104:web:b17941f8e6e5a3712e994d',
-    messagingSenderId: '587650482104',
-    projectId: 'project-bind-28042',
-    authDomain: 'project-bind-28042.firebaseapp.com',
-    databaseURL: 'https://project-bind-28042-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'project-bind-28042.appspot.com',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD0TFEUHydPYKOE9gemDgxH5eBIirrvYPE',
-    appId: '1:587650482104:android:8a5a7d06cd45b6d02e994d',
-    messagingSenderId: '587650482104',
-    projectId: 'project-bind-28042',
-    databaseURL: 'https://project-bind-28042-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'project-bind-28042.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDs4A1MRjqaGeK18p5nBo10Q5hacPXKkhE',
-    appId: '1:587650482104:ios:1a2ebab5d963fdb02e994d',
-    messagingSenderId: '587650482104',
-    projectId: 'project-bind-28042',
-    databaseURL: 'https://project-bind-28042-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'project-bind-28042.appspot.com',
-    iosClientId: '587650482104-hpv084qp4knqt4cnl2ldf667eei2lbtq.apps.googleusercontent.com',
-    iosBundleId: 'com.anony.bind',
+    apiKey: 'AIzaSyBDquITWxmtPSRb9LNljWZumdcqVQcnsBs',
+    appId: '1:646498022604:android:9c2fab5de4cc8b6c563e69',
+    messagingSenderId: '646498022604',
+    projectId: 'project-bind-b6189',
+    storageBucket: 'project-bind-b6189.appspot.com',
   );
 }

@@ -30,7 +30,7 @@ class _BusinessPageState extends State<BusinessPage> {
         ),
         centerTitle: true,
       ),
-      drawer: const NaviagtionDrawerWidget(),
+      drawer: NaviagtionDrawerWidget(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(5),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -46,7 +46,7 @@ class _BusinessPageState extends State<BusinessPage> {
                     return const Text('smtn went wrong');
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   final data = snapshot.requireData;
