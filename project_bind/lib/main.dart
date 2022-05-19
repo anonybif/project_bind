@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:project_bind/firebase_options.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
+import 'package:project_bind/screens/authenticate/verify_email_page.dart';
 import 'package:project_bind/screens/home/home.dart';
+import 'package:project_bind/utils/utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

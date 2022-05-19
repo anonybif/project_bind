@@ -6,6 +6,7 @@ import 'package:project_bind/reusable_widgets/user.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/utils/color_utils.dart';
+import 'package:project_bind/utils/utils.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -23,6 +24,8 @@ class _SignUpState extends State<SignUp> {
   final locationController = TextEditingController();
   final bioController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final navigatorKey = GlobalKey<NavigatorState>();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -36,104 +39,145 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
     double sheight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.deepOrange[600],
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: iconWidget("assets/images/logo1.png"),
+
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+      home: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.deepOrange[600],
+          elevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: iconWidget("assets/images/logo1.png"),
+          ),
+          title: const Text(
+            "Sign Up",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
         ),
-        title: const Text(
-          "Sign Up",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
+        body: Container(
+            width: swidth,
+            height: sheight,
+            decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
+            child: SingleChildScrollView(
+                child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  children: <Widget>[
+                    reusableTextField("First Name", Icons.person, '', false,
+                        firstNameController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableTextField("Last Name", Icons.person, '', false,
+                        lastNameController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableTextField("UserName", Icons.person, 'username',
+                        false, userNameController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableTextField("Phone Number", Icons.phone, 'phone',
+                        false, phoneNumberController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableTextField("Location", Icons.pin_drop, '', false,
+                        locationController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableTextField("Email Address", Icons.mail, 'email',
+                        false, emailController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableTextField("Password", Icons.lock_outlined,
+                        'password', false, passwordController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableTextField("Bio (Optional)", Icons.assignment, '',
+                        true, bioController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    reusableUIButton(context, "Sign Up", swidth, () {
+                      signUp();
+                    }),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(21),
+                        color: Colors.white,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(36),
+                            child: Image.asset(
+                              "assets/images/google_logo.png",
+                              height: 42,
+                              width: 42,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          const Text('Sign up with Google'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    signInOption(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ))),
       ),
-      body: Container(
-          width: swidth,
-          height: sheight,
-          decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
-          child: SingleChildScrollView(
-              child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-            child: Column(
-              children: <Widget>[
-                reusableTextField(
-                    "First Name", Icons.person, false, firstNameController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField(
-                    "Last Name", Icons.person, false, lastNameController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField(
-                    "UserName", Icons.person, false, userNameController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField(
-                    "Phone Number", Icons.phone, false, phoneNumberController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField(
-                    "Location", Icons.pin_drop, false, locationController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField(
-                    "Email Address", Icons.mail, false, emailController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField(
-                    "Password", Icons.lock_outlined, true, passwordController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField(
-                    "Bio (Optional)", Icons.assignment, true, bioController),
-                const SizedBox(
-                  height: 20,
-                ),
-                firebaseUIButton(context, "Sign Up", swidth, () {
-                  FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text)
-                      .then((signedInUser) {
-                    print("Created New Account");
-                    createUser(signedInUser);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Home()));
-                  }).onError((error, stackTrace) {
-                    print("Error ${error.toString()}");
-                  });
-                }),
-                signInOption(),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
-          ))),
     );
+  }
+
+  Future signUp() async {
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) return;
+    loading(context);
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: emailController.text.trim(),
+              password: passwordController.text)
+          .then((signedInUser) {
+        createUser(signedInUser);
+      });
+    } on FirebaseAuthException catch (e) {
+      Utils.showSnackBar(e.message);
+    }
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
 
   Future createUser(UserCredential signedInUser) async {
     final json = {
-      'FirstName': firstNameController.text,
-      'LastName': lastNameController.text,
-      'Username': userNameController.text,
-      'Email': emailController.text,
-      'PhoneNumber': phoneNumberController.text,
-      'Location': locationController.text,
-      'Bio': bioController.text,
+      'FirstName': firstNameController.text.trim(),
+      'LastName': lastNameController.text.trim(),
+      'Username': userNameController.text.trim(),
+      'Email': emailController.text.trim(),
+      'PhoneNumber': phoneNumberController.text.trim(),
+      'Location': locationController.text.trim(),
+      'Bio': bioController.text.trim(),
       'Badge': 'bronze',
       'Uid': FirebaseAuth.instance.currentUser!.uid
     };
@@ -157,7 +201,9 @@ class _SignUpState extends State<SignUp> {
               child: const Text(
                 " Login",
                 style: TextStyle(
-                    color: Colors.deepOrange, fontWeight: FontWeight.bold),
+                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
             )
           ],
@@ -177,7 +223,9 @@ class _SignUpState extends State<SignUp> {
           child: const Text(
             " Continue as guest",
             style: TextStyle(
-                color: Colors.deepOrange, fontWeight: FontWeight.bold),
+                color: Colors.deepOrange,
+                fontWeight: FontWeight.bold,
+                fontSize: 16),
           ),
         )
       ],
