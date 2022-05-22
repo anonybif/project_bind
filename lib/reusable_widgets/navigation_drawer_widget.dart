@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/screens/add_business.dart';
+import 'package:project_bind/screens/authenticate/google_sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
 import 'package:project_bind/screens/business_page.dart';
+import 'package:project_bind/screens/landing_page.dart';
+import 'package:provider/provider.dart';
 
 class NaviagtionDrawerWidget extends StatelessWidget {
   NaviagtionDrawerWidget({Key? key}) : super(key: key);
@@ -91,13 +96,16 @@ class NaviagtionDrawerWidget extends StatelessWidget {
     );
   }
 
-  void selectedItem(BuildContext context, int index) {
-    Navigator.of(context).pop();
+  void selectedItem(BuildContext context, int index) async {
+    // Navigator.of(context).pop();
     switch (index) {
       case 8:
+        final provider =
+            Provider.of<GoogleSignInProvider>(context, listen: false);
+        provider.googlelogout();
         FirebaseAuth.instance.signOut();
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const SignIn()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const LandingPage()));
         break;
 
       case 0:
@@ -105,8 +113,7 @@ class NaviagtionDrawerWidget extends StatelessWidget {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const AddBusiness()));
         } else {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const SignIn()));
+          signUpDialogue(context, 'content');
         }
 
         break;

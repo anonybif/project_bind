@@ -66,7 +66,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       style: TextStyle(fontSize: 16, color: Colors.deepOrange),
                     ),
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const SignIn()));

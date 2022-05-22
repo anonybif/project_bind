@@ -5,7 +5,7 @@ import 'package:project_bind/screens/authenticate/verify_email_page.dart';
 import 'package:project_bind/screens/home/home.dart';
 
 class UserManagement {
-  storeNewUser(user, json, context) async {
+  storeNewUser(json, context) async {
     var firebaseUser = FirebaseAuth.instance.currentUser;
 
     FirebaseFirestore.instance

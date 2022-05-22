@@ -5,7 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:project_bind/reusable_widgets/bottom_appbar_widget.dart';
 import 'package:project_bind/reusable_widgets/navigation_drawer_widget.dart';
+import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/reusable_widgets/user.dart';
+import 'package:project_bind/screens/authenticate/sign_in.dart';
+import 'package:project_bind/screens/authenticate/sign_up.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -22,6 +25,9 @@ class _HomeState extends State<Home> {
   String userName = '';
   @override
   Widget build(BuildContext context) {
+    double swidth = MediaQuery.of(context).size.width;
+    double sheight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepOrange[600],
@@ -65,7 +71,6 @@ class _HomeState extends State<Home> {
                           Text('Email:${data.docs[index]['Email']}'),
                           Text(
                               'Phone Number:${data.docs[index]['PhoneNumber']}'),
-                          Text('Location:${data.docs[index]['Location']}'),
                           Text('Bio:${data.docs[index]['Bio']}'),
                           Text('Badge:${data.docs[index]['Badge']}'),
                           const Divider(
@@ -96,6 +101,14 @@ class _HomeState extends State<Home> {
               },
             ),
           ),
+          Center(
+            child: ElevatedButton(
+                onPressed: () {
+                  signUpDialogue(
+                      context, 'Sign up or Log in to add a business');
+                },
+                child: Text('click')),
+          )
         ]),
       ),
       bottomNavigationBar: bottomAppbarWidget(),

@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:project_bind/screens/authenticate/forgot_password_page.dart';
+import 'package:project_bind/screens/authenticate/google_sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:project_bind/utils/utils.dart';
+import 'package:provider/provider.dart';
 // import 'package:get/get.dart';
 
 class SignIn extends StatefulWidget {
@@ -42,11 +46,11 @@ class _SignInState extends State<SignIn> {
       navigatorKey: navigatorKey,
       // scaffoldMessengerKey: Utils.messengerKey,
       home: Scaffold(
-        body: Container(
-          width: swidth,
-          height: sheight,
-          decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          child: Container(
+            width: swidth,
+            height: sheight,
+            decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, sheight * 0.1, 20, 0),
               child: Form(
@@ -55,7 +59,15 @@ class _SignInState extends State<SignIn> {
                   children: <Widget>[
                     logoWidget("assets/images/bind_logo1.png"),
                     const SizedBox(
-                      height: 30,
+                      height: 10,
+                    ),
+                    const Text('Welcome Back',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        )),
+                    const SizedBox(
+                      height: 20,
                     ),
                     reusableTextField("Enter Username", Icons.person_outline,
                         'username', false, userNameController),
@@ -67,12 +79,10 @@ class _SignInState extends State<SignIn> {
                     const SizedBox(
                       height: 15,
                     ),
-                    reusableUIButton(context, "Login", swidth, () {
+                    reusableIconButton(
+                        context, "Login", Icons.lock_outline, swidth, () {
                       logIn();
                     }),
-                    const SizedBox(
-                      height: 12,
-                    ),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -97,22 +107,33 @@ class _SignInState extends State<SignIn> {
                         borderRadius: BorderRadius.circular(21),
                         color: Colors.white,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(36),
-                            child: Image.asset(
-                              "assets/images/google_logo.png",
-                              height: 42,
-                              width: 42,
+                      child: GestureDetector(
+                        onTap: () {
+                          loading(context);
+                          final provider = Provider.of<GoogleSignInProvider>(
+                              context,
+                              listen: false);
+                          provider.googleLogIn(context);
+                          navigatorKey.currentState!
+                              .popUntil((route) => route.isFirst);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(36),
+                              child: Image.asset(
+                                "assets/images/google_logo.png",
+                                height: 42,
+                                width: 42,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          const Text('Sign in with Google'),
-                        ],
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            const Text('Sign in with Google'),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -161,7 +182,7 @@ class _SignInState extends State<SignIn> {
 
     navigatorKey.currentState!.popUntil((route) => route.isFirst);
 
-    Navigator.push(
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const Home()));
   }
 
@@ -175,7 +196,7 @@ class _SignInState extends State<SignIn> {
                 style: TextStyle(color: Colors.black)),
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
+                Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => const SignUp()));
               },
               child: const Text(
@@ -197,7 +218,7 @@ class _SignInState extends State<SignIn> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.push(
+            Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => const Home()));
           },
           child: const Text(

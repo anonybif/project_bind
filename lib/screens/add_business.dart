@@ -1,13 +1,10 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_bind/reusable_widgets/business.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
-import 'package:project_bind/screens/add_ownership_info.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/home/home.dart';
+import 'package:project_bind/screens/location_picker.dart';
 import 'package:project_bind/utils/color_utils.dart';
 
 class AddBusiness extends StatefulWidget {
@@ -20,7 +17,6 @@ class AddBusiness extends StatefulWidget {
 class _AddBusinessState extends State<AddBusiness> {
   final businessNameController = TextEditingController();
   final businessDiscController = TextEditingController();
-  final locationController = TextEditingController();
   List<TextEditingController> searchKeyController =
       List.generate(4, (i) => TextEditingController());
   final formKey = GlobalKey<FormState>();
@@ -55,13 +51,15 @@ class _AddBusinessState extends State<AddBusiness> {
     'Motel',
     'Gym'
   ];
+  String location = '';
+  String address = '';
+  String locationError = '';
 
   @override
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
     double sheight = MediaQuery.of(context).size.height;
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.deepOrange[600],
         elevation: 0,
@@ -82,7 +80,7 @@ class _AddBusinessState extends State<AddBusiness> {
           decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
           child: SingleChildScrollView(
               child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: Form(
               key: formKey,
               child: Column(
@@ -96,12 +94,17 @@ class _AddBusinessState extends State<AddBusiness> {
                   reusableTextArea(
                       "Description", Icons.message, businessDiscController),
                   const SizedBox(
-                    height: 20,
-                  ),
-                  reusableTextField("Location", Icons.pin_drop, '', false,
-                      locationController),
-                  const SizedBox(
                     height: 10,
+                  ),
+                  reusableIconButton(
+                      context, "Add location", Icons.location_on, (swidth / 2),
+                      () {
+                    getLocation();
+                  }),
+                  Text(location),
+                  Text(
+                    locationError,
+                    style: const TextStyle(color: Colors.red),
                   ),
                   const Divider(
                     thickness: 1,
@@ -140,7 +143,7 @@ class _AddBusinessState extends State<AddBusiness> {
                   ),
                   Column(
                     children: [
-                      Container(
+                      SizedBox(
                         height: 32,
                         child: Row(
                           children: <Widget>[
@@ -148,7 +151,7 @@ class _AddBusinessState extends State<AddBusiness> {
                               child: reusableTextField('Keyword', Icons.add, '',
                                   true, searchKeyController[0]),
                             ),
-                            SizedBox(width: 18),
+                            const SizedBox(width: 18),
                             Expanded(
                               child: reusableTextField('Keyword', Icons.add, '',
                                   true, searchKeyController[1]),
@@ -156,8 +159,8 @@ class _AddBusinessState extends State<AddBusiness> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 12),
-                      Container(
+                      const SizedBox(height: 12),
+                      SizedBox(
                         height: 32,
                         child: Row(
                           children: <Widget>[
@@ -165,7 +168,7 @@ class _AddBusinessState extends State<AddBusiness> {
                               child: reusableTextField('Keyword', Icons.add, '',
                                   true, searchKeyController[2]),
                             ),
-                            SizedBox(width: 18),
+                            const SizedBox(width: 18),
                             Expanded(
                               child: reusableTextField('Keyword', Icons.add, '',
                                   true, searchKeyController[3]),
@@ -268,20 +271,16 @@ class _AddBusinessState extends State<AddBusiness> {
                     final isValid = formKey.currentState!.validate();
                     if (!isValid) {
                       return;
+                    } else if (location == '') {
+                      setState(() {
+                        locationError = 'Location must be added';
+                      });
+                      return;
                     }
                     await createbusiness();
-                    if (isOwner) {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const BusinessPage()));
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Home()));
-                    }
+
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => const Home()));
                   }),
                 ],
               ),
@@ -290,11 +289,25 @@ class _AddBusinessState extends State<AddBusiness> {
     );
   }
 
+  Future getLocation() async {
+    final loc = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => Locationpicker(
+                prevlocation: location,
+              )),
+    );
+    setState(() {
+      location = loc;
+      locationError = '';
+    });
+  }
+
   Future createbusiness() async {
     final json = {
       'BusinessName': businessNameController.text,
       'Description': businessDiscController.text,
-      'Location': locationController.text,
+      'Location': location,
       'Category': dropdownvalue,
       'Keyword': FieldValue.arrayUnion([
         searchKeyController[0].text.trim(),
@@ -306,8 +319,8 @@ class _AddBusinessState extends State<AddBusiness> {
       'Bid': '',
       'Email': '',
       'PhoneNumber': '',
-      'OpeningTime': '',
-      'ClosingTime': '',
+      'OpeningTime': timeOpens.format(context),
+      'ClosingTime': timeClosed.format(context),
       'Uid': '',
       'ReviewNumber': '0',
       'Stars': '0',

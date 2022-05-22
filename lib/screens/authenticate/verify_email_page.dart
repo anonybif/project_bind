@@ -113,7 +113,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   onPressed: () {
                     timer?.cancel();
                     FirebaseAuth.instance.signOut();
-                    Navigator.push(
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const SignIn()));

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project_bind/screens/authenticate/sign_in.dart';
+import 'package:project_bind/screens/authenticate/sign_up.dart';
 
 Image logoWidget(String imageName) {
   return Image.asset(
@@ -116,17 +118,16 @@ Container reusableUIButton(
     width: width,
     height: 50,
     margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
     child: ElevatedButton(
-      onPressed: () {
-        onTap();
-      },
-      child: Text(
-        title,
-        style: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-      style: ButtonStyle(
+        onPressed: () {
+          onTap();
+        },
+        child: Text(
+          title,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.pressed)) {
               return Colors.deepOrange[300];
@@ -134,8 +135,8 @@ Container reusableUIButton(
             return Colors.deepOrange;
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)))),
-    ),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+        )),
   );
 }
 
@@ -145,7 +146,6 @@ Container reusableIconButton(BuildContext context, String title, IconData icon,
     width: width,
     height: 50,
     margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
     child: ElevatedButton.icon(
       onPressed: () {
         onTap();
@@ -157,7 +157,7 @@ Container reusableIconButton(BuildContext context, String title, IconData icon,
       label: Text(
         title,
         style: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
       ),
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
@@ -167,7 +167,7 @@ Container reusableIconButton(BuildContext context, String title, IconData icon,
             return Colors.deepOrange;
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)))),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)))),
     ),
   );
 }
@@ -180,4 +180,66 @@ void loading(BuildContext context) {
               color: Colors.deepOrange,
             ),
           ));
+}
+
+void signUpDialogue(BuildContext context, String content) {
+  double sheight = MediaQuery.of(context).size.height;
+  double swidth = MediaQuery.of(context).size.width;
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          children: [
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.deepOrange)),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUp()));
+                      },
+                      child: const Text('Sign up')),
+                  SizedBox(
+                    width: swidth / 6,
+                  ),
+                  TextButton(
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.deepOrange)),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignIn()));
+                      },
+                      child: const Text('Log in'))
+                ],
+              ),
+            )
+          ],
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Sign up or Log in',
+                style: TextStyle(fontSize: 24),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                content,
+                style:
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+              ),
+            ],
+          ),
+        );
+      });
 }
