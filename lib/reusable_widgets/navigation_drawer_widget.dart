@@ -9,6 +9,7 @@ import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/landing_page.dart';
+import 'package:project_bind/utils/color_utils.dart';
 import 'package:provider/provider.dart';
 
 class NaviagtionDrawerWidget extends StatelessWidget {
@@ -23,7 +24,7 @@ class NaviagtionDrawerWidget extends StatelessWidget {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.deepOrange[600],
+                color: primaryThemeColor()[600],
               ),
               child: StreamBuilder<User?>(
                   stream: FirebaseAuth.instance.authStateChanges(),
@@ -82,16 +83,12 @@ class NaviagtionDrawerWidget extends StatelessWidget {
     required IconData icon,
     VoidCallback? onClicked,
   }) {
-    const color = Colors.deepOrange;
-    const hoverColor = Colors.black;
-
     return ListTile(
       leading: Icon(
         icon,
-        color: color,
+        color: primaryThemeColor(),
       ),
-      title: Text(text, style: const TextStyle(color: Colors.black)),
-      hoverColor: hoverColor,
+      title: Text(text, style: TextStyle(color: primaryTextColor())),
       onTap: onClicked,
     );
   }
@@ -100,18 +97,29 @@ class NaviagtionDrawerWidget extends StatelessWidget {
     // Navigator.of(context).pop();
     switch (index) {
       case 8:
-        final provider =
-            Provider.of<GoogleSignInProvider>(context, listen: false);
-        provider.googlelogout();
-        FirebaseAuth.instance.signOut();
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const LandingPage()));
+        if (FirebaseAuth.instance.currentUser != null) {
+          var email = await FirebaseAuth.instance.currentUser!.email;
+          var methods =
+              await FirebaseAuth.instance.fetchSignInMethodsForEmail(email!);
+          if (methods.contains('google.com')) {
+            final provider =
+                Provider.of<GoogleSignInProvider>(context, listen: false);
+            provider.googlelogout();
+          }
+
+          FirebaseAuth.instance.signOut();
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const LandingPage()));
+        } else {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const LandingPage()));
+        }
         break;
 
       case 0:
         if (FirebaseAuth.instance.currentUser?.uid != null) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const AddBusiness()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddBusiness()));
         } else {
           signUpDialogue(context, 'content');
         }
@@ -159,18 +167,18 @@ Column userInfo(BuildContext context) {
               Row(
                 children: [
                   Text(
-                    userName,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    'userName',
+                    style: TextStyle(
+                      color: secondaryTextColor(),
                       fontSize: 24,
                     ),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
-                  const Icon(
+                  Icon(
                     Icons.badge,
-                    color: Colors.white,
+                    color: secondaryTextColor(),
                   ),
                 ],
               ),
@@ -179,8 +187,8 @@ Column userInfo(BuildContext context) {
               ),
               Text(
                 FirebaseAuth.instance.currentUser!.email.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: secondaryTextColor(),
                   fontSize: 12,
                 ),
               ),
@@ -201,12 +209,13 @@ Column userInfo(BuildContext context) {
                   MaterialPageRoute(
                       builder: (context) => const BusinessPage()));
             },
-            child: const Text(
+            child: Text(
               "My Businesses",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: primaryTextColor()),
             ),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(secondaryTextColor()),
             ),
           ),
           const SizedBox(
@@ -214,12 +223,13 @@ Column userInfo(BuildContext context) {
           ),
           TextButton(
             onPressed: () {},
-            child: const Text(
+            child: Text(
               "following",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: primaryTextColor()),
             ),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(secondaryTextColor()),
             ),
           ),
         ],
@@ -245,10 +255,10 @@ Column placholderInfo(BuildContext context) {
           const SizedBox(
             width: 10,
           ),
-          const Text(
+          Text(
             'Guest',
             style: TextStyle(
-              color: Colors.white,
+              color: secondaryTextColor(),
               fontSize: 24,
             ),
           ),
@@ -265,12 +275,13 @@ Column placholderInfo(BuildContext context) {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const SignIn()));
             },
-            child: const Text(
+            child: Text(
               "Login",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: primaryTextColor()),
             ),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(secondaryTextColor()),
             ),
           ),
           const SizedBox(
@@ -281,12 +292,13 @@ Column placholderInfo(BuildContext context) {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const SignUp()));
             },
-            child: const Text(
+            child: Text(
               "Sign UP",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: primaryTextColor()),
             ),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(secondaryTextColor()),
             ),
           ),
         ],

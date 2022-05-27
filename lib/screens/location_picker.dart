@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/utils/color_utils.dart';
 //import 'package:geocoder/geocoder.dart';
 
 class Locationpicker extends StatefulWidget {
@@ -17,6 +18,7 @@ class Locationpicker extends StatefulWidget {
 class _LocationpickerState extends State<Locationpicker> {
   List<Marker> myMarker = [];
   String location = '';
+  String loc = '';
   String lat = '';
   String long = '';
 
@@ -24,6 +26,7 @@ class _LocationpickerState extends State<Locationpicker> {
   void initState() {
     setState(() {
       List<String> prevloc = widget.prevlocation.split(',');
+
       if (widget.prevlocation != '') {
         var prevLat = num.tryParse(prevloc[0])!.toDouble();
         var prevLong = num.tryParse(prevloc[1])!.toDouble();
@@ -34,7 +37,7 @@ class _LocationpickerState extends State<Locationpicker> {
             height: 65.0,
             point: LatLng(prevLat, prevLong),
             builder: (ctx) =>
-                const Icon(Icons.location_on, color: Colors.deepOrange)));
+                Icon(Icons.location_on, color: primaryThemeColor())));
       }
       super.initState();
     });
@@ -47,13 +50,13 @@ class _LocationpickerState extends State<Locationpicker> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: primaryThemeColor(),
         onPressed: () {
           addLocation();
         },
       ),
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange[600],
+        backgroundColor: primaryThemeColor()[600],
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -109,14 +112,21 @@ class _LocationpickerState extends State<Locationpicker> {
           height: 65.0,
           point: tapPosition,
           builder: (ctx) =>
-              const Icon(Icons.location_on, color: Colors.deepOrange)));
+              Icon(Icons.location_on, color: primaryThemeColor())));
     });
     location = tapPosition.toString();
   }
 
   addLocation() async {
-    await parselocation();
-    String loc = '$lat,$long';
+    if (location != '') {
+      await parselocation();
+      loc = '$lat,$long';
+    } else if (widget.prevlocation != '') {
+      loc = widget.prevlocation;
+    } else {
+      return;
+    }
+
     Navigator.pop(context, loc);
   }
 }

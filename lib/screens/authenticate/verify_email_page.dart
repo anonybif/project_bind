@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/utils/color_utils.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({Key? key}) : super(key: key);
@@ -69,7 +70,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       ? const Home()
       : Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.deepOrange[600],
+            backgroundColor: primaryThemeColor()[600],
             title: const Text('Verify Email'),
             centerTitle: true,
             leading: Padding(
@@ -90,7 +91,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.deepOrange,
+                    primary: primaryThemeColor(),
                     minimumSize: const Size.fromHeight(50),
                   ),
                   icon: const Icon(Icons.email, size: 32),
@@ -106,9 +107,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Cancel',
-                    style: TextStyle(fontSize: 24, color: Colors.deepOrange),
+                    style: TextStyle(fontSize: 24, color: primaryThemeColor()),
                   ),
                   onPressed: () {
                     timer?.cancel();

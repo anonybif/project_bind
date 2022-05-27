@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:project_bind/reusable_widgets/business.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/screens/add_business_info.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/screens/location_picker.dart';
@@ -17,316 +19,321 @@ class AddBusiness extends StatefulWidget {
 class _AddBusinessState extends State<AddBusiness> {
   final businessNameController = TextEditingController();
   final businessDiscController = TextEditingController();
-  List<TextEditingController> searchKeyController =
-      List.generate(4, (i) => TextEditingController());
+
   final formKey = GlobalKey<FormState>();
 
-  TimeOfDay timeOpens = const TimeOfDay(hour: 12, minute: 0);
-  TimeOfDay timeClosed = const TimeOfDay(hour: 24, minute: 0);
+  List<String> businessInfo = List.filled(7, '');
 
-  bool isOwner = false;
+  List<String> items = <String>[];
 
-  String dropdownvalue = 'Restaurant';
-
-  var items = [
-    'Restaurant',
-    'Bar',
-    'Hotel',
-    'Gas Station',
-    'Shopping',
-    'Pharmacy',
-    'Club',
-    'Delivery',
-    'Beauty & Spas',
-    'Bakery',
-    'Internet Cafe',
-    'Garage',
-    'Takeout',
-    'Security',
-    'Real Estate',
-    'Car Rental',
-    'Education',
-    'Hospital',
-    'Clinic',
-    'Motel',
-    'Gym'
-  ];
   String location = '';
   String address = '';
   String locationError = '';
+
+  List<String> tags = [];
+  bool disabletag = false;
+  TextEditingController tagController = TextEditingController();
+  List<bool> selected = [];
+
+  @override
+  void initState() {
+    fetchCategory();
+    super.initState();
+  }
+
+  List<bool> catSelected() {
+    List<bool> selected = List.filled(items.length, false);
+    return selected;
+  }
+
+  fetchCategory() async {
+    await FirebaseFirestore.instance
+        .collection('categories')
+        .get()
+        .then((value) {
+      setState(() {
+        items = List.from(value.docs[0]["cat"]);
+        for (int i = 0; i < items.length; i++) {
+          selected.add(false);
+        }
+      });
+    }).catchError((e) => null);
+    print(items);
+  }
 
   @override
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
     double sheight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.deepOrange[600],
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: iconWidget("assets/images/logo1.png"),
-        ),
-        title: const Text(
-          "Add Business",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
-      body: Container(
-          width: swidth,
-          height: sheight,
-          decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
-          child: SingleChildScrollView(
-              child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  reusableTextField("Business Name", Icons.business_center, '',
-                      false, businessNameController),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  reusableTextArea(
-                      "Description", Icons.message, businessDiscController),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  reusableIconButton(
-                      context, "Add location", Icons.location_on, (swidth / 2),
-                      () {
-                    getLocation();
-                  }),
-                  Text(location),
-                  Text(
-                    locationError,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  const Divider(
-                    thickness: 1,
-                    color: Colors.black38,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Categories',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      DropdownButton(
-                        value: dropdownvalue,
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        menuMaxHeight: sheight,
-                        items: items.map((String items) {
-                          return DropdownMenuItem(
-                            value: items,
-                            child: Text(items),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            dropdownvalue = newValue!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Column(
-                    children: [
-                      SizedBox(
-                        height: 32,
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: reusableTextField('Keyword', Icons.add, '',
-                                  true, searchKeyController[0]),
-                            ),
-                            const SizedBox(width: 18),
-                            Expanded(
-                              child: reusableTextField('Keyword', Icons.add, '',
-                                  true, searchKeyController[1]),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 32,
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: reusableTextField('Keyword', Icons.add, '',
-                                  true, searchKeyController[2]),
-                            ),
-                            const SizedBox(width: 18),
-                            Expanded(
-                              child: reusableTextField('Keyword', Icons.add, '',
-                                  true, searchKeyController[3]),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(
-                    thickness: 1,
-                    color: Colors.black38,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Text(
-                    "Working hours",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith((states) {
-                              if (states.contains(MaterialState.pressed)) {
-                                return Colors.deepOrange[300];
-                              }
-                              return Colors.deepOrange;
-                            }),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16)))),
-                        onPressed: () async {
-                          TimeOfDay? newTime = await showTimePicker(
-                              context: context, initialTime: timeOpens);
-                          if (newTime == null) return;
-                          setState(() {
-                            timeOpens = newTime;
-                          });
-                        },
-                        child: const Text('Opens'),
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        timeOpens.format(context),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 15),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith((states) {
-                              if (states.contains(MaterialState.pressed)) {
-                                return Colors.deepOrange[300];
-                              }
-                              return Colors.deepOrange;
-                            }),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16)))),
-                        onPressed: () async {
-                          TimeOfDay? newTime = await showTimePicker(
-                              context: context, initialTime: timeClosed);
-                          if (newTime == null) return;
-                          setState(() {
-                            timeClosed = newTime;
-                          });
-                        },
-                        child: const Text('Closes'),
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        timeClosed.format(context),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(
-                    thickness: 1,
-                    color: Colors.black38,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  reusableUIButton(context, "List", (swidth / 3), () async {
-                    final isValid = formKey.currentState!.validate();
-                    if (!isValid) {
-                      return;
-                    } else if (location == '') {
-                      setState(() {
-                        locationError = 'Location must be added';
-                      });
-                      return;
-                    }
-                    await createbusiness();
-
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => const Home()));
-                  }),
-                ],
-              ),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          // backgroundColor: primaryThemeColor()[600],
+          elevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: iconWidget("assets/images/logo1.png"),
+          ),
+          title: Text(
+            "Add Business",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: primaryTextColor(),
             ),
-          ))),
+          ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+        ),
+        backgroundColor: secondaryThemeColor(),
+        body: SingleChildScrollView(
+            child: Padding(
+          padding: EdgeInsets.fromLTRB(20, sheight / 48, 20, 0),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                reusableTextField("Business Name", Icons.business_center, '',
+                    false, businessNameController),
+                SizedBox(
+                  height: sheight / 48,
+                ),
+                reusableTextArea(
+                    "Description", Icons.message, businessDiscController),
+                const SizedBox(
+                  height: 10,
+                ),
+                Divider(
+                  thickness: 1,
+                  color: primaryTextColor(),
+                ),
+                Container(
+                    height: sheight / 5,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: sheight / 24,
+                            child: Text(
+                              'Categories',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: primaryTextColor(),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: sheight / 7,
+                            decoration: BoxDecoration(
+                                color: secondaryTextColor(),
+                                borderRadius: BorderRadius.circular(16)),
+                            child: GridView.builder(
+                              itemCount: items.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                final item = items[index];
+
+                                return Container(
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        for (int i = 0; i < items.length; i++) {
+                                          selected[i] = false;
+                                        }
+                                        selected[index] = !selected[index];
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                          color: selected[index]
+                                              ? primaryThemeColor()
+                                              : secondaryTextColor(),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: primaryThemeColor())),
+                                      child: Center(
+                                        child: Text(
+                                          item,
+                                          style: TextStyle(
+                                              color: selected[index]
+                                                  ? secondaryTextColor()
+                                                  : primaryThemeColor()),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: (1 / 2),
+                              ),
+                            ),
+                          ),
+                        ])),
+                Divider(
+                  thickness: 1,
+                  color: primaryTextColor(),
+                ),
+                Container(
+                  height: sheight / 3.6,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: sheight / 24,
+                        child: Text(
+                          'Tags',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: primaryTextColor(),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: sheight / 7,
+                        decoration: BoxDecoration(
+                            color: secondaryTextColor(),
+                            borderRadius: BorderRadius.circular(16)),
+                        child: GridView.builder(
+                          itemCount: tags.length,
+                          itemBuilder: (context, index) {
+                            final item = tags[index];
+                            return Container(
+                              margin: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: primaryThemeColor(),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border:
+                                      Border.all(color: primaryThemeColor())),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 12),
+                                      child: Text(
+                                        item,
+                                        style: TextStyle(
+                                            color: secondaryTextColor()),
+                                      ),
+                                    ),
+                                    IconButton(
+                                        color: secondaryTextColor(),
+                                        onPressed: () {
+                                          tags.removeAt(index);
+                                          setState(() {
+                                            disabletag = false;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.cancel,
+                                          size: 15,
+                                        ))
+                                  ]),
+                            );
+                          },
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: (3 / 1),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: swidth / 2,
+                            height: swidth / 9,
+                            child: TextField(
+                              enabled: !disabletag,
+                              controller: tagController,
+                              decoration: InputDecoration(
+                                labelText: 'Add a Tag',
+                                labelStyle: TextStyle(color: Colors.grey),
+                                filled: true,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
+                                fillColor: secondaryTextColor(),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    borderSide: const BorderSide(
+                                        width: 0, style: BorderStyle.none)),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                              color: primaryThemeColor(),
+                              onPressed: () {
+                                setState(() {
+                                  if (tags.length < 4 &&
+                                      tagController.text.trim() != '') {
+                                    tags.add(tagController.text.trim());
+                                  } else if (tags.length >= 4 &&
+                                      tagController.text.trim() != '') {
+                                    disabletag = true;
+                                  }
+                                });
+                              },
+                              icon: Icon(Icons.add))
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                disabletag
+                    ? Text(
+                        'Maximum of 4 tags allowed',
+                        style: TextStyle(color: Colors.red),
+                      )
+                    : Text(''),
+                const SizedBox(
+                  height: 10,
+                ),
+                Divider(
+                  thickness: 1,
+                  color: primaryTextColor(),
+                ),
+                reusableUIButton(context, "Next", (swidth / 3), () async {
+                  final isValid = formKey.currentState!.validate();
+                  if (!isValid) {
+                    return;
+                  }
+                  setState(() {});
+                  businessInfo[0] = businessNameController.text;
+                  businessInfo[1] = businessDiscController.text;
+                  for (int i = 0; i < items.length; i++) {
+                    if (catSelected()[i]) {
+                      businessInfo[2] = items[i];
+                    }
+                  }
+
+                  for (int i = 0; i < tags.length; i++) {
+                    if (tags[i] != '') {
+                      businessInfo[i + 3] = tags[i];
+                    }
+                  }
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AddBusinessInfo(businessInfo: businessInfo)));
+                }),
+              ],
+            ),
+          ),
+        )),
+      ),
     );
-  }
-
-  Future getLocation() async {
-    final loc = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => Locationpicker(
-                prevlocation: location,
-              )),
-    );
-    setState(() {
-      location = loc;
-      locationError = '';
-    });
-  }
-
-  Future createbusiness() async {
-    final json = {
-      'BusinessName': businessNameController.text,
-      'Description': businessDiscController.text,
-      'Location': location,
-      'Category': dropdownvalue,
-      'Keyword': FieldValue.arrayUnion([
-        searchKeyController[0].text.trim(),
-        searchKeyController[1].text.trim(),
-        searchKeyController[2].text.trim(),
-        searchKeyController[3].text.trim()
-      ]),
-      'Claimed': 'false',
-      'Bid': '',
-      'Email': '',
-      'PhoneNumber': '',
-      'OpeningTime': timeOpens.format(context),
-      'ClosingTime': timeClosed.format(context),
-      'Uid': '',
-      'ReviewNumber': '0',
-      'Stars': '0',
-      'FollowNumber': '0'
-    };
-
-    BusinessManagement().storeNewBusiness(json, context);
   }
 }

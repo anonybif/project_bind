@@ -20,14 +20,13 @@ class SignIn extends StatefulWidget {
   State<SignIn> createState() => _SignInState();
 }
 
-String userName = '';
-
 class _SignInState extends State<SignIn> {
-  final navigatorKey = GlobalKey<NavigatorState>();
   final formKey = GlobalKey<FormState>();
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+  final messengerKey = GlobalKey<ScaffoldMessengerState>();
   String userEmail = '';
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -43,41 +42,43 @@ class _SignInState extends State<SignIn> {
     double sheight = MediaQuery.of(context).size.height;
 
     return MaterialApp(
-      navigatorKey: navigatorKey,
-      // scaffoldMessengerKey: Utils.messengerKey,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: Container(
-            width: swidth,
-            height: sheight,
-            decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
+      scaffoldMessengerKey: messengerKey,
+      home: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          backgroundColor: secondaryThemeColor(),
+          body: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, sheight * 0.1, 20, 0),
+              padding: EdgeInsets.fromLTRB(20, sheight / 32, 20, 0),
               child: Form(
                 key: formKey,
                 child: Column(
                   children: <Widget>[
-                    logoWidget("assets/images/bind_logo1.png"),
-                    const SizedBox(
-                      height: 10,
+                    SizedBox(
+                      height: sheight / 12,
                     ),
-                    const Text('Welcome Back',
+                    logoWidget("assets/images/bind_logo1.png"),
+                    SizedBox(
+                      height: sheight / 12,
+                    ),
+                    Text('Welcome Back',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
+                          color: primaryTextColor(),
                         )),
-                    const SizedBox(
-                      height: 20,
+                    SizedBox(
+                      height: sheight / 32,
                     ),
                     reusableTextField("Enter Username", Icons.person_outline,
                         'username', false, userNameController),
-                    const SizedBox(
-                      height: 20,
+                    SizedBox(
+                      height: sheight / 48,
                     ),
                     reusableTextField("Enter Password", Icons.lock_outline,
                         'password', false, passwordController),
-                    const SizedBox(
-                      height: 15,
+                    SizedBox(
+                      height: sheight / 48,
                     ),
                     reusableIconButton(
                         context, "Login", Icons.lock_outline, swidth, () {
@@ -91,21 +92,21 @@ class _SignInState extends State<SignIn> {
                                 builder: (context) =>
                                     const ForgotPasswordPage()));
                       },
-                      child: const Text(
+                      child: Text(
                         " Forgot Password?",
                         style: TextStyle(
-                            color: Colors.deepOrange,
+                            color: primaryThemeColor(),
                             fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const SizedBox(
-                      height: 30,
+                    SizedBox(
+                      height: sheight / 32,
                     ),
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(21),
-                        color: Colors.white,
+                        color: secondaryTextColor(),
                       ),
                       child: GestureDetector(
                         onTap: () {
@@ -114,8 +115,7 @@ class _SignInState extends State<SignIn> {
                               context,
                               listen: false);
                           provider.googleLogIn(context);
-                          navigatorKey.currentState!
-                              .popUntil((route) => route.isFirst);
+                          Navigator.of(context).pop();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -124,8 +124,8 @@ class _SignInState extends State<SignIn> {
                               borderRadius: BorderRadius.circular(36),
                               child: Image.asset(
                                 "assets/images/google_logo.png",
-                                height: 42,
-                                width: 42,
+                                height: sheight / 16,
+                                width: sheight / 16,
                               ),
                             ),
                             const SizedBox(
@@ -136,10 +136,13 @@ class _SignInState extends State<SignIn> {
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 30,
+                    SizedBox(
+                      height: sheight / 32,
                     ),
-                    signUpOption()
+                    signUpOption(),
+                    SizedBox(
+                      height: sheight / 32,
+                    ),
                   ],
                 ),
               ),
@@ -151,11 +154,12 @@ class _SignInState extends State<SignIn> {
   }
 
   fetchEmail() async {
-    QuerySnapshot user = await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('user')
         .where("Username", isEqualTo: userNameController.text)
-        .get();
-    userEmail = user.docs[0]["Email"];
+        .get()
+        .then((value) => userEmail = value.docs[0]["Email"])
+        .catchError((e) => userEmail = '');
   }
 
   Future logIn() async {
@@ -163,25 +167,24 @@ class _SignInState extends State<SignIn> {
     if (!isValid) {
       return;
     }
-
     loading(context);
+
     await fetchEmail();
-    // if (userName == '') {
-    //   Utils.showSnackBar('Invaid Username');
-    //   return;
-    // }
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: userEmail, password: passwordController.text.trim());
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
-
-      // Utils.showSnackBar(e.message);
-      // return;
+    if (userEmail == '') {
+      Utils.showSnackBar('Invaid Username', messengerKey);
+      Navigator.of(context).pop();
+      return;
+    } else {
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: userEmail, password: passwordController.text.trim());
+      } on FirebaseAuthException catch (e) {
+        Utils.showSnackBar('Invalid Password', messengerKey);
+        Navigator.of(context).pop();
+        return;
+      }
     }
-
-    navigatorKey.currentState!.popUntil((route) => route.isFirst);
-
+    Navigator.of(context).pop();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const Home()));
   }
@@ -192,17 +195,17 @@ class _SignInState extends State<SignIn> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Don't have an account?",
-                style: TextStyle(color: Colors.black)),
+            Text("Don't have an account?",
+                style: TextStyle(color: primaryTextColor())),
             GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const SignUp()));
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => SignUp()));
               },
-              child: const Text(
+              child: Text(
                 " Sign Up",
                 style: TextStyle(
-                    color: Colors.deepOrange,
+                    color: primaryThemeColor(),
                     fontWeight: FontWeight.bold,
                     fontSize: 16),
               ),
@@ -212,7 +215,7 @@ class _SignInState extends State<SignIn> {
         const SizedBox(
           height: 10,
         ),
-        const Text("or", style: TextStyle(color: Colors.black)),
+        Text("or", style: TextStyle(color: primaryTextColor())),
         const SizedBox(
           height: 10,
         ),
@@ -221,10 +224,10 @@ class _SignInState extends State<SignIn> {
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => const Home()));
           },
-          child: const Text(
+          child: Text(
             " Continue as guest",
             style: TextStyle(
-                color: Colors.deepOrange,
+                color: primaryThemeColor(),
                 fontWeight: FontWeight.bold,
                 fontSize: 16),
           ),

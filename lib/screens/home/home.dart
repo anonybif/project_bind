@@ -9,6 +9,7 @@ import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/reusable_widgets/user.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
+import 'package:project_bind/utils/color_utils.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange[600],
+        backgroundColor: primaryThemeColor()[600],
         elevation: 0,
         title: const Text(
           "Home",

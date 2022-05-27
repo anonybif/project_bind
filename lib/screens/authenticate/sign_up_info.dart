@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/reusable_widgets/user.dart';
 import 'package:project_bind/utils/color_utils.dart';
+import 'package:project_bind/utils/utils.dart';
 
 class SignUpInfo extends StatefulWidget {
   const SignUpInfo({Key? key}) : super(key: key);
@@ -17,8 +18,9 @@ class _SignUpInfoState extends State<SignUpInfo> {
   final lastNameController = TextEditingController();
   final bioController = TextEditingController();
   final phoneNumberController = TextEditingController();
-  final navigatorKey = GlobalKey<NavigatorState>();
+
   final formKey = GlobalKey<FormState>();
+  final messengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,29 +28,28 @@ class _SignUpInfoState extends State<SignUpInfo> {
     double sheight = MediaQuery.of(context).size.height;
 
     return MaterialApp(
-      navigatorKey: navigatorKey,
-      home: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.deepOrange[600],
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: iconWidget("assets/images/logo1.png"),
+      scaffoldMessengerKey: messengerKey,
+      home: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: primaryThemeColor()[600],
+            elevation: 0,
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: iconWidget("assets/images/logo1.png"),
+            ),
+            title: const Text(
+              "Complete Sign Up",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
           ),
-          title: const Text(
-            "Complete Sign Up",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-              width: swidth,
-              height: sheight,
-              decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
-              child: Padding(
+          backgroundColor: secondaryThemeColor(),
+          body: SingleChildScrollView(
+            child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
                 child: Form(
                   key: formKey,
@@ -84,8 +85,8 @@ class _SignUpInfoState extends State<SignUpInfo> {
                       }),
                     ],
                   ),
-                ),
-              )),
+                )),
+          ),
         ),
       ),
     );
@@ -96,7 +97,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
     if (!isValid) return;
     loading(context);
     createUser();
-    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+    Navigator.of(context).pop();
   }
 
   Future createUser() async {

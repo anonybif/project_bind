@@ -22,7 +22,7 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final navigatorKey = GlobalKey<NavigatorState>();
+  final messengerKey = GlobalKey<ScaffoldMessengerState>();
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -39,52 +39,55 @@ class _SignUpState extends State<SignUp> {
     double sheight = MediaQuery.of(context).size.height;
 
     return MaterialApp(
-      navigatorKey: navigatorKey,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: Container(
-              width: swidth,
-              height: sheight,
-              decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
+      scaffoldMessengerKey: messengerKey,
+      home: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          backgroundColor: secondaryThemeColor(),
+          body: SingleChildScrollView(
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(20, sheight / 32, 20, 0),
                 child: Form(
                   key: formKey,
                   child: Column(
                     children: <Widget>[
-                      logoWidget("assets/images/bind_logo1.png"),
-                      const SizedBox(
-                        height: 10,
+                      SizedBox(
+                        height: sheight / 12,
                       ),
-                      const Text('Create Account',
+                      logoWidget("assets/images/bind_logo1.png"),
+                      SizedBox(
+                        height: sheight / 12,
+                      ),
+                      Text('Create Account',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 24,
+                            color: primaryTextColor(),
                           )),
                       const SizedBox(
                         height: 20,
                       ),
                       reusableTextField("Email Address", Icons.mail, 'email',
                           false, emailController),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height: sheight / 32,
                       ),
                       reusableTextField("Password", Icons.lock_outlined,
                           'password', false, passwordController),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height: sheight / 64,
                       ),
                       reusableUIButton(context, "Continue", swidth, () {
                         signUp();
                       }),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height: sheight / 64,
                       ),
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(21),
-                          color: Colors.white,
+                          color: secondaryTextColor(),
                         ),
                         child: GestureDetector(
                           onTap: () {
@@ -93,8 +96,7 @@ class _SignUpState extends State<SignUp> {
                                 context,
                                 listen: false);
                             provider.googleLogIn(context);
-                            navigatorKey.currentState!
-                                .popUntil((route) => route.isFirst);
+                            Navigator.of(context).pop();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -103,8 +105,8 @@ class _SignUpState extends State<SignUp> {
                                 borderRadius: BorderRadius.circular(36),
                                 child: Image.asset(
                                   "assets/images/google_logo.png",
-                                  height: 42,
-                                  width: 42,
+                                  height: sheight / 16,
+                                  width: sheight / 16,
                                 ),
                               ),
                               const SizedBox(
@@ -115,17 +117,17 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height: sheight / 32,
                       ),
                       signInOption(),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height: sheight / 32,
                       ),
                     ],
                   ),
-                ),
-              )),
+                )),
+          ),
         ),
       ),
     );
@@ -140,9 +142,11 @@ class _SignUpState extends State<SignUp> {
           email: emailController.text.trim(),
           password: passwordController.text.trim());
     } on FirebaseAuthException catch (e) {
-      Utils.showSnackBar(e.message);
+      Utils.showSnackBar(e.message, messengerKey);
+      Navigator.of(context).pop();
+      return;
     }
-    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+    Navigator.of(context).pop();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const SignUpInfo()));
   }
@@ -153,17 +157,17 @@ class _SignUpState extends State<SignUp> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Already have an account?",
-                style: TextStyle(color: Colors.black)),
+            Text("Already have an account?",
+                style: TextStyle(color: primaryTextColor())),
             GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => const SignIn()));
               },
-              child: const Text(
+              child: Text(
                 " Login",
                 style: TextStyle(
-                    color: Colors.deepOrange,
+                    color: primaryThemeColor(),
                     fontWeight: FontWeight.bold,
                     fontSize: 16),
               ),
@@ -173,7 +177,7 @@ class _SignUpState extends State<SignUp> {
         const SizedBox(
           height: 10,
         ),
-        const Text("or", style: TextStyle(color: Colors.black)),
+        Text("or", style: TextStyle(color: primaryTextColor())),
         const SizedBox(
           height: 10,
         ),
@@ -182,10 +186,10 @@ class _SignUpState extends State<SignUp> {
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => const Home()));
           },
-          child: const Text(
+          child: Text(
             " Continue as guest",
             style: TextStyle(
-                color: Colors.deepOrange,
+                color: primaryThemeColor(),
                 fontWeight: FontWeight.bold,
                 fontSize: 16),
           ),

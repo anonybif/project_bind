@@ -18,15 +18,16 @@ class _LandingPageState extends State<LandingPage> {
     double swidth = MediaQuery.of(context).size.width;
     double sheight = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: Container(
-        width: swidth,
-        height: sheight,
-        decoration: BoxDecoration(color: hexStringToColor("e8e8e8")),
+      backgroundColor: secondaryThemeColor(),
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SizedBox(
+                  height: sheight / 32,
+                ),
                 Align(
                   alignment: Alignment.topRight,
                   child: Directionality(
@@ -38,37 +39,38 @@ class _LandingPageState extends State<LandingPage> {
                             MaterialPageRoute(
                                 builder: (context) => const Home()));
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.black,
+                        color: primaryTextColor(),
                       ),
-                      label: const Text(
+                      label: Text(
                         'Skip',
                         style: TextStyle(
-                            color: Colors.black,
+                            color: primaryTextColor(),
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),
                       style: ButtonStyle(
                           elevation: MaterialStateProperty.all(0),
-                          backgroundColor: MaterialStateProperty.all(
-                              hexStringToColor("e8e8e8"))),
+                          backgroundColor:
+                              MaterialStateProperty.all(secondaryThemeColor())),
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: sheight / 6,
+                  height: sheight / 8,
                 ),
                 logoWidget("assets/images/bind_logo1.png"),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: sheight / 32,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Text('Share Your',
                         style: TextStyle(
                           fontSize: 24,
+                          color: primaryTextColor(),
                         )),
                     SizedBox(
                       width: 10,
@@ -77,16 +79,18 @@ class _LandingPageState extends State<LandingPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
+                          color: primaryTextColor(),
                         )),
                   ],
                 ),
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: sheight / 64,
                 ),
-                const Text('Discover the perfect business',
+                Text('Discover the perfect business',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 24,
+                      color: primaryTextColor(),
                     )),
                 SizedBox(
                   height: sheight / 4,
@@ -94,7 +98,7 @@ class _LandingPageState extends State<LandingPage> {
                 reusableUIButton(context, "Create Account", swidth, () {
                   toSignUp();
                 }),
-                const SizedBox(height: 20),
+                SizedBox(height: sheight / 32),
                 signUpOption()
               ]),
         ),
@@ -111,8 +115,8 @@ class _LandingPageState extends State<LandingPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Already have an account?",
-            style: TextStyle(color: Colors.black)),
+        Text("Already have an account?",
+            style: TextStyle(color: primaryTextColor())),
         const SizedBox(
           width: 10,
         ),
@@ -121,10 +125,10 @@ class _LandingPageState extends State<LandingPage> {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const SignIn()));
           },
-          child: const Text(
+          child: Text(
             " Sign In",
             style: TextStyle(
-                color: Colors.deepOrange,
+                color: primaryThemeColor(),
                 fontWeight: FontWeight.bold,
                 fontSize: 16),
           ),

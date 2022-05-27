@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:project_bind/utils/color_utils.dart';
 
 Widget bottomAppbarWidget() {
   return Container(
-    decoration: const BoxDecoration(
+    decoration: BoxDecoration(
       borderRadius: BorderRadius.only(
           topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-      color: Colors.deepOrange,
+      color: primaryThemeColor(),
     ),
     child: BottomNavigationBar(
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.white,
+      selectedItemColor: primaryTextColor(),
+      unselectedItemColor: secondaryTextColor(),
       elevation: 0.0,
 
       items: const <BottomNavigationBarItem>[

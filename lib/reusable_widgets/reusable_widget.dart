@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:project_bind/utils/color_utils.dart';
 
 Image logoWidget(String imageName) {
   return Image.asset(
@@ -15,7 +17,7 @@ Image iconWidget(String imageName) {
   return Image.asset(
     imageName,
     fit: BoxFit.contain,
-    color: Colors.white,
+    color: secondaryTextColor(),
   );
 }
 
@@ -25,6 +27,7 @@ TextFormField reusableTextField(String text, IconData icon, String type,
   bool isEmail = false;
   bool isUsername = false;
   bool isPhone = false;
+  bool isNum = false;
   if (type == 'password') {
     isPasswordType = true;
   } else if (type == 'email') {
@@ -33,24 +36,25 @@ TextFormField reusableTextField(String text, IconData icon, String type,
     isUsername = true;
   } else if (type == 'phone') {
     isPhone = true;
+  } else if (type == 'number') {
+    isNum = true;
   }
   return TextFormField(
       controller: controller,
       obscureText: isPasswordType,
       enableSuggestions: !isPasswordType,
       autocorrect: !isPasswordType,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Colors.black.withOpacity(0.9)),
+      style: TextStyle(color: primaryTextColor()),
       decoration: InputDecoration(
         prefixIcon: Icon(
           icon,
-          color: Colors.deepOrange,
+          color: primaryThemeColor(),
         ),
         labelText: text,
         labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
         filled: true,
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: Colors.white.withOpacity(1),
+        fillColor: secondaryTextColor(),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18.0),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
@@ -82,26 +86,27 @@ TextFormField reusableTextField(String text, IconData icon, String type,
               ? TextInputType.emailAddress
               : isPhone
                   ? TextInputType.number
-                  : null);
+                  : isNum
+                      ? TextInputType.number
+                      : null);
 }
 
 TextFormField reusableTextArea(
     String text, IconData icon, TextEditingController controller) {
   return TextFormField(
       controller: controller,
-      cursorColor: Colors.black,
       maxLines: null,
-      style: TextStyle(color: Colors.black.withOpacity(0.9)),
+      style: TextStyle(color: primaryTextColor()),
       decoration: InputDecoration(
         prefixIcon: Icon(
           icon,
-          color: Colors.deepOrange,
+          color: primaryThemeColor(),
         ),
         labelText: text,
         labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
         filled: true,
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: Colors.white.withOpacity(1),
+        fillColor: secondaryTextColor(),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(24.0),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
@@ -124,15 +129,17 @@ Container reusableUIButton(
         },
         child: Text(
           title,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+              color: secondaryTextColor(),
+              fontWeight: FontWeight.bold,
+              fontSize: 18),
         ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.pressed)) {
-              return Colors.deepOrange[300];
+              return primaryThemeColor()[300];
             }
-            return Colors.deepOrange;
+            return primaryThemeColor();
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
@@ -152,19 +159,21 @@ Container reusableIconButton(BuildContext context, String title, IconData icon,
       },
       icon: Icon(
         icon,
-        color: Colors.white,
+        color: secondaryTextColor(),
       ),
       label: Text(
         title,
-        style: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        style: TextStyle(
+            color: secondaryTextColor(),
+            fontWeight: FontWeight.bold,
+            fontSize: 18),
       ),
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.pressed)) {
-              return Colors.deepOrange[300];
+              return primaryThemeColor()[300];
             }
-            return Colors.deepOrange;
+            return primaryThemeColor();
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)))),
@@ -172,14 +181,15 @@ Container reusableIconButton(BuildContext context, String title, IconData icon,
   );
 }
 
-void loading(BuildContext context) {
+loading(BuildContext context) {
   showDialog(
       context: context,
-      builder: (context) => const Center(
-            child: CircularProgressIndicator(
-              color: Colors.deepOrange,
-            ),
-          ));
+      barrierDismissible: false,
+      builder: (context) => Center(
+              child: SpinKitCircle(
+            color: primaryThemeColor(),
+            size: 60,
+          )));
 }
 
 void signUpDialogue(BuildContext context, String content) {
@@ -197,7 +207,7 @@ void signUpDialogue(BuildContext context, String content) {
                   TextButton(
                       style: ButtonStyle(
                           foregroundColor:
-                              MaterialStateProperty.all(Colors.deepOrange)),
+                              MaterialStateProperty.all(primaryThemeColor())),
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -211,7 +221,7 @@ void signUpDialogue(BuildContext context, String content) {
                   TextButton(
                       style: ButtonStyle(
                           foregroundColor:
-                              MaterialStateProperty.all(Colors.deepOrange)),
+                              MaterialStateProperty.all(primaryThemeColor())),
                       onPressed: () {
                         Navigator.push(
                             context,

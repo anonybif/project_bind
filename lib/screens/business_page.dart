@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:project_bind/reusable_widgets/bottom_appbar_widget.dart';
 import 'package:project_bind/reusable_widgets/navigation_drawer_widget.dart';
 import 'package:project_bind/reusable_widgets/user.dart';
+import 'package:project_bind/utils/color_utils.dart';
 
 class BusinessPage extends StatefulWidget {
   const BusinessPage({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class _BusinessPageState extends State<BusinessPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange[600],
+        backgroundColor: primaryThemeColor()[600],
         elevation: 0,
         title: const Text(
           "Business Page",
