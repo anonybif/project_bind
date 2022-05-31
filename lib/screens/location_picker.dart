@@ -56,7 +56,7 @@ class _LocationpickerState extends State<Locationpicker> {
         },
       ),
       appBar: AppBar(
-        backgroundColor: primaryThemeColor()[600],
+        backgroundColor: primaryThemeColor(),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -86,9 +86,6 @@ class _LocationpickerState extends State<Locationpicker> {
                   'pk.eyJ1IjoiYW5vbnliaWYiLCJhIjoiY2wzY3cwdzN0MDJsejNtcHI2NnF1ZjFwdiJ9.KmZURW1zQepysv_g6xyiiw',
               'id': 'mapbox.mapbox-streets-v8'
             },
-            // attributionBuilder: (_) {
-            //   return const Text("© OpenStreetMap contributors");
-            // },
           ),
           MarkerLayerOptions(markers: myMarker),
         ],

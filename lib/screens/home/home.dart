@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: primaryThemeColor()[600],
+        backgroundColor: tertiaryThemeColor(),
         elevation: 0,
         title: const Text(
           "Home",
@@ -39,6 +39,7 @@ class _HomeState extends State<Home> {
         ),
         centerTitle: true,
       ),
+      backgroundColor: secondaryThemeColor(),
       drawer: NaviagtionDrawerWidget(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(5),

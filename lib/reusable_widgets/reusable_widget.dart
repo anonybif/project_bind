@@ -17,7 +17,7 @@ Image iconWidget(String imageName) {
   return Image.asset(
     imageName,
     fit: BoxFit.contain,
-    color: secondaryTextColor(),
+    color: primaryTextColor(),
   );
 }
 
@@ -54,7 +54,7 @@ TextFormField reusableTextField(String text, IconData icon, String type,
         labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
         filled: true,
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: secondaryTextColor(),
+        fillColor: tertiaryThemeColor(),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18.0),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
@@ -106,7 +106,7 @@ TextFormField reusableTextArea(
         labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
         filled: true,
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: secondaryTextColor(),
+        fillColor: tertiaryThemeColor(),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(24.0),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
@@ -137,7 +137,7 @@ Container reusableUIButton(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.pressed)) {
-              return primaryThemeColor()[300];
+              return primaryThemeColor();
             }
             return primaryThemeColor();
           }),
@@ -171,7 +171,7 @@ Container reusableIconButton(BuildContext context, String title, IconData icon,
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.pressed)) {
-              return primaryThemeColor()[300];
+              return primaryThemeColor();
             }
             return primaryThemeColor();
           }),
@@ -186,9 +186,9 @@ loading(BuildContext context) {
       context: context,
       barrierDismissible: false,
       builder: (context) => Center(
-              child: SpinKitCircle(
+              child: SpinKitThreeBounce(
             color: primaryThemeColor(),
-            size: 60,
+            size: 32,
           )));
 }
 

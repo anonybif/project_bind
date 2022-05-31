@@ -34,7 +34,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             appBar: AppBar(
-              backgroundColor: primaryThemeColor()[600],
+              backgroundColor: primaryThemeColor(),
               title: const Text('Reset Password'),
               centerTitle: true,
               leading: Padding(

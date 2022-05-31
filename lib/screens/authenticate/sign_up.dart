@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/reusable_widgets/user.dart';
 import 'package:project_bind/screens/authenticate/google_sign_in.dart';
@@ -87,7 +88,7 @@ class _SignUpState extends State<SignUp> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(21),
-                          color: secondaryTextColor(),
+                          color: tertiaryThemeColor(),
                         ),
                         child: GestureDetector(
                           onTap: () {
@@ -101,18 +102,18 @@ class _SignUpState extends State<SignUp> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(36),
-                                child: Image.asset(
-                                  "assets/images/google_logo.png",
-                                  height: sheight / 16,
-                                  width: sheight / 16,
-                                ),
+                              Icon(
+                                FontAwesomeIcons.google,
+                                size: sheight / 18,
+                                color: primaryThemeColor(),
                               ),
                               const SizedBox(
                                 width: 20,
                               ),
-                              const Text('Sign up with Google'),
+                              Text(
+                                'Sign up with Google',
+                                style: TextStyle(color: secondaryTextColor()),
+                              ),
                             ],
                           ),
                         ),
@@ -158,7 +159,7 @@ class _SignUpState extends State<SignUp> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("Already have an account?",
-                style: TextStyle(color: primaryTextColor())),
+                style: TextStyle(color: secondaryTextColor())),
             GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(context,
@@ -177,7 +178,7 @@ class _SignUpState extends State<SignUp> {
         const SizedBox(
           height: 10,
         ),
-        Text("or", style: TextStyle(color: primaryTextColor())),
+        Text("or", style: TextStyle(color: secondaryTextColor())),
         const SizedBox(
           height: 10,
         ),

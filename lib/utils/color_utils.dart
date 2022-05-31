@@ -9,19 +9,19 @@ hexStringToColor(String hexColor) {
 }
 
 primaryThemeColor() {
-  return Colors.deepOrange;
+  return Colors.blue;
 }
 
 secondaryThemeColor() {
-  return hexStringToColor('e8e8e8');
+  return Colors.black;
 }
 
-// tertiaryThemeColor() {
-//   return Colors.blue;
-// }
+tertiaryThemeColor() {
+  return hexStringToColor('1a1919');
+}
 
 primaryTextColor() {
-  return Colors.black;
+  return Colors.white;
 }
 
 secondaryTextColor() {

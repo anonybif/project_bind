@@ -69,7 +69,7 @@ class _AddBusinessState extends State<AddBusiness> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          // backgroundColor: primaryThemeColor()[600],
+          backgroundColor: tertiaryThemeColor(),
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -127,7 +127,7 @@ class _AddBusinessState extends State<AddBusiness> {
                           Container(
                             height: sheight / 7,
                             decoration: BoxDecoration(
-                                color: secondaryTextColor(),
+                                color: tertiaryThemeColor(),
                                 borderRadius: BorderRadius.circular(16)),
                             child: GridView.builder(
                               itemCount: items.length,
@@ -150,7 +150,7 @@ class _AddBusinessState extends State<AddBusiness> {
                                       decoration: BoxDecoration(
                                           color: selected[index]
                                               ? primaryThemeColor()
-                                              : secondaryTextColor(),
+                                              : tertiaryThemeColor(),
                                           borderRadius:
                                               BorderRadius.circular(12),
                                           border: Border.all(
@@ -160,7 +160,7 @@ class _AddBusinessState extends State<AddBusiness> {
                                           item,
                                           style: TextStyle(
                                               color: selected[index]
-                                                  ? secondaryTextColor()
+                                                  ? tertiaryThemeColor()
                                                   : primaryThemeColor()),
                                         ),
                                       ),
@@ -198,7 +198,7 @@ class _AddBusinessState extends State<AddBusiness> {
                       Container(
                         height: sheight / 7,
                         decoration: BoxDecoration(
-                            color: secondaryTextColor(),
+                            color: tertiaryThemeColor(),
                             borderRadius: BorderRadius.circular(16)),
                         child: GridView.builder(
                           itemCount: tags.length,
@@ -263,7 +263,7 @@ class _AddBusinessState extends State<AddBusiness> {
                                 filled: true,
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.never,
-                                fillColor: secondaryTextColor(),
+                                fillColor: tertiaryThemeColor(),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                     borderSide: const BorderSide(

@@ -10,7 +10,7 @@ Widget bottomAppbarWidget() {
     ),
     child: BottomNavigationBar(
       selectedItemColor: primaryTextColor(),
-      unselectedItemColor: secondaryTextColor(),
+      unselectedItemColor: tertiaryThemeColor(),
       elevation: 0.0,
 
       items: const <BottomNavigationBarItem>[
@@ -33,7 +33,7 @@ Widget bottomAppbarWidget() {
         ),
       ],
       // currentIndex: _selectedIndex,
-      // selectedItemColor: Colors.amber[800],
+      // selectedItemColor: Colors.amber,
       // onTap: _onItemTapped,
     ),
   );

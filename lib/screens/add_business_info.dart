@@ -52,7 +52,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: primaryThemeColor()[600],
+          backgroundColor: primaryThemeColor(),
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -109,7 +109,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                         backgroundColor:
                             MaterialStateProperty.resolveWith((states) {
                           if (states.contains(MaterialState.pressed)) {
-                            return primaryThemeColor()[300];
+                            return primaryThemeColor();
                           }
                           return primaryThemeColor();
                         }),
@@ -138,7 +138,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                         backgroundColor:
                             MaterialStateProperty.resolveWith((states) {
                           if (states.contains(MaterialState.pressed)) {
-                            return primaryThemeColor()[300];
+                            return primaryThemeColor();
                           }
                           return primaryThemeColor();
                         }),

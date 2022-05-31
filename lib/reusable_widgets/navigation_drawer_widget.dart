@@ -19,12 +19,13 @@ class NaviagtionDrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Material(
+        color: tertiaryThemeColor(),
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: primaryThemeColor()[600],
+                color: secondaryThemeColor(),
               ),
               child: StreamBuilder<User?>(
                   stream: FirebaseAuth.instance.authStateChanges(),
@@ -84,6 +85,7 @@ class NaviagtionDrawerWidget extends StatelessWidget {
     VoidCallback? onClicked,
   }) {
     return ListTile(
+      tileColor: tertiaryThemeColor(),
       leading: Icon(
         icon,
         color: primaryThemeColor(),
@@ -204,10 +206,8 @@ Column userInfo(BuildContext context) {
         children: [
           TextButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const BusinessPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => BusinessPage()));
             },
             child: Text(
               "My Businesses",
@@ -215,7 +215,7 @@ Column userInfo(BuildContext context) {
             ),
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.all<Color>(secondaryTextColor()),
+                  MaterialStateProperty.all<Color>(primaryThemeColor()),
             ),
           ),
           const SizedBox(
@@ -229,7 +229,7 @@ Column userInfo(BuildContext context) {
             ),
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.all<Color>(secondaryTextColor()),
+                  MaterialStateProperty.all<Color>(primaryThemeColor()),
             ),
           ),
         ],

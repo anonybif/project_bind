@@ -41,7 +41,10 @@ dependencies:
   firebase_storage: ^8.0.2
   file_picker: ^3.0.1
   flutter_map: ^0.14.0
+  latlong2: ^0.8.1
+  # flutter_mapbox_navigation: ^0.0.26
   provider: ^5.0.0
+  location: ^4.4.0
   font_awesome_flutter: ^9.0.0
   flutter_spinkit: ^5.1.0
 

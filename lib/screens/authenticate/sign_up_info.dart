@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_bind/reusable_widgets/reusable_widget.dart';
@@ -22,6 +23,8 @@ class _SignUpInfoState extends State<SignUpInfo> {
   final formKey = GlobalKey<FormState>();
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
 
+  bool userExist = false;
+
   @override
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
@@ -34,7 +37,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
         child: Scaffold(
           extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: primaryThemeColor()[600],
+            backgroundColor: primaryThemeColor(),
             elevation: 0,
             leading: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -92,10 +95,39 @@ class _SignUpInfoState extends State<SignUpInfo> {
     );
   }
 
+  checkUsername() async {
+    userExist = false;
+    String userNames = '';
+    final int docNum =
+        await FirebaseFirestore.instance.collection('user').snapshots().length;
+    print(docNum);
+
+    await FirebaseFirestore.instance.collection('user').get().then((value) {
+      for (int i = 0; i < docNum; i++) {
+        userNames = value.docs[i]["Username"];
+        print(userNames);
+        if (userNameController.text.trim() == userNames) {
+          setState(() {
+            userExist = true;
+          });
+        }
+      }
+    }).catchError((e) => print(e.toString()));
+  }
+
   Future signUp() async {
     final isValid = formKey.currentState!.validate();
-    if (!isValid) return;
+    if (!isValid) {
+      return;
+    }
     loading(context);
+    // await checkUsername();
+    if (userExist) {
+      Utils.showSnackBar('Username already exists', messengerKey);
+      Navigator.of(context).pop();
+      return;
+    }
+
     createUser();
     Navigator.of(context).pop();
   }

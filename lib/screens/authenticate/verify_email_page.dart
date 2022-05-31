@@ -70,7 +70,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       ? const Home()
       : Scaffold(
           appBar: AppBar(
-            backgroundColor: primaryThemeColor()[600],
+            backgroundColor: primaryThemeColor(),
             title: const Text('Verify Email'),
             centerTitle: true,
             leading: Padding(

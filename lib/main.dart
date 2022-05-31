@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => GoogleSignInProvider(),
       child: MaterialApp(
+          // theme: ThemeData.dark(),
           debugShowCheckedModeBanner: false,
           home: StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),

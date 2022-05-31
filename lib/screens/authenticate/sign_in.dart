@@ -65,7 +65,7 @@ class _SignInState extends State<SignIn> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
-                          color: primaryTextColor(),
+                          color: secondaryTextColor(),
                         )),
                     SizedBox(
                       height: sheight / 32,
@@ -106,7 +106,7 @@ class _SignInState extends State<SignIn> {
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(21),
-                        color: secondaryTextColor(),
+                        color: tertiaryThemeColor(),
                       ),
                       child: GestureDetector(
                         onTap: () {
@@ -120,18 +120,18 @@ class _SignInState extends State<SignIn> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(36),
-                              child: Image.asset(
-                                "assets/images/google_logo.png",
-                                height: sheight / 16,
-                                width: sheight / 16,
-                              ),
+                            Icon(
+                              FontAwesomeIcons.google,
+                              size: sheight / 18,
+                              color: primaryThemeColor(),
                             ),
                             const SizedBox(
                               width: 20,
                             ),
-                            const Text('Sign in with Google'),
+                            Text('Sign in with Google',
+                                style: TextStyle(
+                                  color: secondaryTextColor(),
+                                )),
                           ],
                         ),
                       ),
@@ -196,7 +196,7 @@ class _SignInState extends State<SignIn> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("Don't have an account?",
-                style: TextStyle(color: primaryTextColor())),
+                style: TextStyle(color: secondaryTextColor())),
             GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(
@@ -215,7 +215,7 @@ class _SignInState extends State<SignIn> {
         const SizedBox(
           height: 10,
         ),
-        Text("or", style: TextStyle(color: primaryTextColor())),
+        Text("or", style: TextStyle(color: secondaryTextColor())),
         const SizedBox(
           height: 10,
         ),
