@@ -100,8 +100,8 @@ class _AddBusinessState extends State<AddBusiness> {
                 SizedBox(
                   height: sheight / 48,
                 ),
-                reusableTextArea(
-                    "Description", Icons.message, businessDiscController),
+                reusableTextArea("Description", Icons.message, false,
+                    businessDiscController),
                 const SizedBox(
                   height: 10,
                 ),

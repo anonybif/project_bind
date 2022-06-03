@@ -67,7 +67,10 @@ class _HomeState extends State<Home> {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text('First Name:${data.docs[index]['FirstName']}'),
+                          Text(
+                            'First Name:${data.docs[index]['FirstName']}',
+                            style: TextStyle(color: primaryTextColor()),
+                          ),
                           Text('Last Name:${data.docs[index]['LastName']}'),
                           Text('Username:${data.docs[index]['Username']}'),
                           Text('Email:${data.docs[index]['Email']}'),

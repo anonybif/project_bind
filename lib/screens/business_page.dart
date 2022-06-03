@@ -1,6 +1,15 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:project_bind/reusable_widgets/Review.dart';
+import 'package:project_bind/reusable_widgets/business.dart';
+import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/screens/SampleNavigationApp.dart';
 import 'package:project_bind/screens/business_direction_page.dart';
 import 'package:project_bind/screens/home/home.dart';
@@ -21,19 +30,44 @@ class BusinessPage extends StatefulWidget {
 }
 
 class _BusinessPageState extends State<BusinessPage> {
-  final Stream<QuerySnapshot> business =
-      FirebaseFirestore.instance.collection('business').snapshots();
+  final Stream<QuerySnapshot> reviews = FirebaseFirestore.instance
+      .collection('business')
+      .doc('mR2hVOogJqDvH9d5I2Z8')
+      .collection('review')
+      .snapshots();
+  final formKey = GlobalKey<FormState>();
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
-
+  TextEditingController reviewController = TextEditingController();
   Map businessInfo = Map<String, dynamic>();
+  List<Map<String, dynamic>> businessReview = List.empty(growable: true);
+  Map userReview = Map<String, dynamic>();
+  Map userInfo = Map<String, dynamic>();
+  Map myInfo = Map<String, dynamic>();
   double distance = 0;
   List<bool> stars = List.filled(5, false);
   bool loading = true;
   bool connected = false;
+  double rating = 0;
+  String unrated = '';
+  bool Liked = false;
+
+  File? file1;
+  File? file2;
+  File? file3;
+
+  List<String> path = ['', '', ''];
+  List<String> imageName = ['', '', ''];
+
+  UploadTask? uploadTask1;
+  UploadTask? uploadTask2;
+  UploadTask? uploadTask3;
+
+  List<String> ImageUrl = ['', '', ''];
 
   @override
   void initState() {
     getBusinessInfo();
+
     super.initState();
   }
 
@@ -42,6 +76,10 @@ class _BusinessPageState extends State<BusinessPage> {
     if (connected) {
       await fetchBusiness();
       await getDistance();
+      await fetchReviews();
+      await getuserReview();
+      await getmyInfo();
+
       setState(() {
         loading = false;
       });
@@ -89,6 +127,71 @@ class _BusinessPageState extends State<BusinessPage> {
       businessInfo["Stars"] = ds.data()!["Stars"];
       businessInfo["AveragePrice"] = ds.data()!["AveragePrice"];
     }
+  }
+
+  getuserReview() async {
+    var ds = await FirebaseFirestore.instance
+        .collection('business')
+        .doc('mR2hVOogJqDvH9d5I2Z8')
+        .collection('review')
+        .where('Uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    for (var doc in ds.docs) {
+      userReview = doc.data();
+    }
+  }
+
+  getmyInfo() async {
+    var ds = await FirebaseFirestore.instance
+        .collection('user')
+        .where('Uid', isEqualTo: userReview['Uid'])
+        .get();
+    for (var doc in ds.docs) {
+      myInfo = doc.data();
+    }
+  }
+
+  getuserInfo(int num) async {
+    var ds = await FirebaseFirestore.instance
+        .collection('user')
+        .where('Uid', isEqualTo: businessReview[num]['Uid'])
+        .get();
+    for (var doc in ds.docs) {
+      userInfo = doc.data();
+    }
+  }
+
+  fetchReviews() async {
+    var ds = await FirebaseFirestore.instance
+        .collection('business')
+        .doc('mR2hVOogJqDvH9d5I2Z8')
+        .collection('review')
+        .where('Uid', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    for (int i = 0; i < ds.size; i++) {
+      businessReview.add({'Content': ds.docs[i].data()['Content']});
+      businessReview[i]["Content"] = ds.docs[i].data()['Content'];
+      businessReview.add({'Likes': ds.docs[i].data()['Likes']});
+      businessReview[i]["Likes"] = ds.docs[i].data()["Likes"];
+      businessReview.add({'Date': ds.docs[i].data()['Date']});
+      businessReview[i]["Date"] = ds.docs[i].data()['Date'];
+      businessReview.add({'Rating': ds.docs[i].data()['Rating']});
+      businessReview[i]["Rating"] = ds.docs[i].data()['Rating'];
+      businessReview.add({'Liked': false});
+      businessReview[i]["Liked"] = false;
+      businessReview
+          .add({'ImageUrl': List.from(ds.docs[i].data()['ImageUrl'])});
+      businessReview[i]["ImageUrl"] = List.from(ds.docs[i].data()['ImageUrl']);
+    }
+  }
+
+  sortReview() {
+    businessReview.sort((a, b) {
+      var adate = a['Date']; //before -> var adate = a.expiry;
+      var bdate = b['Date']; //before -> var bdate = b.expiry;
+      return DateTime.parse(adate).compareTo(DateTime.parse(bdate));
+    });
   }
 
   getDistance() async {
@@ -448,20 +551,26 @@ class _BusinessPageState extends State<BusinessPage> {
                     ),
                   ])),
               Container(
-                padding: EdgeInsets.all(8),
-                margin: EdgeInsets.all(5),
+                margin: EdgeInsets.fromLTRB(5, 5, 5, 3),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: tertiaryThemeColor(),
+                    borderRadius: BorderRadius.circular(12)),
+                height: sheight / 21,
+                child: Text(
+                  'Descrption',
+                  style: TextStyle(color: primaryThemeColor(), fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.fromLTRB(5, 3, 5, 5),
                 decoration: BoxDecoration(
                     color: tertiaryThemeColor(),
                     borderRadius: BorderRadius.circular(12)),
                 child: Column(
                   children: [
-                    Text(
-                      'Description',
-                      style: TextStyle(color: primaryTextColor(), fontSize: 16),
-                    ),
-                    SizedBox(
-                      height: sheight / 48,
-                    ),
                     Text(
                       '   ${businessInfo['Description']}',
                       style: TextStyle(color: primaryTextColor(), fontSize: 16),
@@ -470,20 +579,26 @@ class _BusinessPageState extends State<BusinessPage> {
                 ),
               ),
               Container(
+                margin: EdgeInsets.fromLTRB(5, 5, 5, 3),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: tertiaryThemeColor(),
+                    borderRadius: BorderRadius.circular(12)),
+                height: sheight / 21,
+                child: Text(
+                  'Business Information',
+                  style: TextStyle(color: primaryThemeColor(), fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Container(
                 padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                margin: EdgeInsets.all(5),
+                margin: EdgeInsets.fromLTRB(5, 3, 5, 5),
                 decoration: BoxDecoration(
                     color: tertiaryThemeColor(),
                     borderRadius: BorderRadius.circular(12)),
                 child: Column(
                   children: [
-                    Text(
-                      'Business Information',
-                      style: TextStyle(color: primaryTextColor(), fontSize: 16),
-                    ),
-                    SizedBox(
-                      height: sheight / 48,
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -616,151 +731,422 @@ class _BusinessPageState extends State<BusinessPage> {
                   ),
                 ),
               ),
+              // if (userReview['Content'] == null)
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
                 margin: EdgeInsets.all(5),
                 decoration: BoxDecoration(
                     color: tertiaryThemeColor(),
                     borderRadius: BorderRadius.circular(12)),
-                height: sheight / 3.5,
                 child: Column(
                   children: [
                     Text(
-                      'Rate',
-                      style: TextStyle(color: primaryTextColor(), fontSize: 16),
+                      'Leave A Review',
+                      style:
+                          TextStyle(color: primaryThemeColor(), fontSize: 16),
                     ),
                     SizedBox(
                       height: sheight / 64,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              getRating(1);
-                            },
-                            icon: Icon(
-                              Icons.star,
-                              color: stars[0]
-                                  ? primaryThemeColor()
-                                  : primaryTextColor(),
-                              size: sheight / 24,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              getRating(2);
-                            },
-                            icon: Icon(
-                              Icons.star,
-                              color: stars[1]
-                                  ? primaryThemeColor()
-                                  : primaryTextColor(),
-                              size: sheight / 24,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              getRating(3);
-                            },
-                            icon: Icon(
-                              Icons.star,
-                              color: stars[2]
-                                  ? primaryThemeColor()
-                                  : primaryTextColor(),
-                              size: sheight / 24,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              getRating(4);
-                            },
-                            icon: Icon(
-                              Icons.star,
-                              color: stars[3]
-                                  ? primaryThemeColor()
-                                  : primaryTextColor(),
-                              size: sheight / 24,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              getRating(5);
-                            },
-                            icon: Icon(
-                              Icons.star,
-                              color: stars[4]
-                                  ? primaryThemeColor()
-                                  : primaryTextColor(),
-                              size: sheight / 24,
-                            )),
-                      ],
+                    Center(
+                      child: RatingBar.builder(
+                        minRating: 1,
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: primaryThemeColor(),
+                        ),
+                        updateOnDrag: true,
+                        allowHalfRating: true,
+                        onRatingUpdate: (rating) => setState(() {
+                          this.rating = rating;
+                        }),
+                      ),
+                    ),
+                    Text(
+                      unrated,
+                      style: TextStyle(color: Colors.red),
                     ),
                     SizedBox(
                       height: sheight / 32,
                     ),
-                    Row(
+                    Form(
+                      key: formKey,
+                      child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: primaryThemeColor()),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: reusableTextArea('Write a review',
+                              Icons.comment, false, reviewController)),
+                    ),
+                    SizedBox(
+                      height: sheight / 32,
+                    ),
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Column(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CircleAvatar(
-                              backgroundColor: primaryThemeColor(),
-                              child: IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.add_a_photo,
-                                    color: primaryTextColor(),
-                                  )),
-                              radius: 28,
+                            Container(
+                              height: sheight / 10,
+                              width: sheight / 10,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: primaryThemeColor()),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Stack(children: [
+                                Center(
+                                  child: IconButton(
+                                      onPressed: () {
+                                        selectFile(0);
+                                        setState(() {});
+                                      },
+                                      icon: Icon(
+                                        Icons.add_a_photo,
+                                        color: primaryTextColor(),
+                                      )),
+                                ),
+                                if (file1 != null)
+                                  GestureDetector(
+                                    child: Container(
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: primaryThemeColor()),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Center(
+                                        child: Image.file(
+                                          File(file1!.path),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      selectFile(0);
+                                      setState(() {});
+                                    },
+                                  )
+                              ]),
                             ),
                             SizedBox(
-                              height: sheight / 48,
+                              width: swidth / 32,
                             ),
-                            Text(
-                              'Add an Image',
-                              style: TextStyle(
-                                  color: primaryTextColor(), fontSize: 16),
+                            Container(
+                              height: sheight / 10,
+                              width: sheight / 10,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: primaryThemeColor()),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Stack(children: [
+                                Center(
+                                  child: IconButton(
+                                      onPressed: () {
+                                        selectFile(1);
+                                        setState(() {});
+                                      },
+                                      icon: Icon(
+                                        Icons.add_a_photo,
+                                        color: primaryTextColor(),
+                                      )),
+                                ),
+                                if (file2 != null)
+                                  GestureDetector(
+                                    child: Container(
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: primaryThemeColor()),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Center(
+                                        child: Image.file(
+                                          File(file2!.path),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      selectFile(1);
+                                      setState(() {});
+                                    },
+                                  )
+                              ]),
+                            ),
+                            SizedBox(
+                              width: swidth / 32,
+                            ),
+                            Container(
+                              height: sheight / 10,
+                              width: sheight / 10,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: primaryThemeColor()),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Stack(children: [
+                                Center(
+                                  child: IconButton(
+                                      onPressed: () {
+                                        selectFile(2);
+                                        setState(() {});
+                                      },
+                                      icon: Icon(
+                                        Icons.add_a_photo,
+                                        color: primaryTextColor(),
+                                      )),
+                                ),
+                                if (file3 != null)
+                                  GestureDetector(
+                                    child: Container(
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: primaryThemeColor()),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Center(
+                                        child: Image.file(
+                                          File(file3!.path),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      selectFile(2);
+                                      setState(() {});
+                                    },
+                                  )
+                              ]),
                             ),
                           ],
                         ),
-                        Column(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: primaryThemeColor(),
-                              child: IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.comment,
-                                    color: primaryTextColor(),
-                                  )),
-                              radius: 28,
-                            ),
-                            SizedBox(
-                              height: sheight / 48,
-                            ),
-                            Text(
-                              'Add a review',
-                              style: TextStyle(
-                                  color: primaryTextColor(), fontSize: 16),
-                            ),
-                          ],
+                        SizedBox(
+                          height: sheight / 48,
                         ),
+                        reusableIconButton(
+                            context, 'Post Review', Icons.comment, swidth / 2,
+                            () async {
+                          var isValid = formKey.currentState!.validate();
+                          if (!isValid) {
+                            return;
+                          }
+                          if (rating == 0) {
+                            setState(() {
+                              unrated = 'Give us a rating';
+                            });
+                            return;
+                          } else {
+                            unrated = '';
+                            await createReview(context);
+                            reviewController.text = '';
+                            await getBusinessInfo();
+                            // sortReview();
+                            setState(() {});
+                          }
+                        })
                       ],
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.all(5),
+                margin: EdgeInsets.fromLTRB(5, 5, 5, 3),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     color: tertiaryThemeColor(),
                     borderRadius: BorderRadius.circular(12)),
-                height: sheight / 4,
+                height: sheight / 21,
+                child: Text(
+                  'Reviews',
+                  style: TextStyle(color: primaryTextColor(), fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              Container(
-                margin: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    color: tertiaryThemeColor(),
-                    borderRadius: BorderRadius.circular(12)),
-                height: sheight / 4,
-              ),
+              if (userReview['Content'] != null)
+                Container(
+                  margin: EdgeInsets.fromLTRB(5, 3, 5, 5),
+                  decoration: BoxDecoration(
+                      color: Colors.brown,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(12, 5, 12, 0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12)),
+                        height: sheight / 16,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: primaryThemeColor(),
+                                ),
+                                SizedBox(
+                                  width: swidth / 36,
+                                ),
+                                Text(
+                                  '${myInfo['Username']}',
+                                  style: TextStyle(color: primaryTextColor()),
+                                )
+                              ],
+                            ),
+                            RatingBarIndicator(
+                              rating: userReview['Rating'],
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star,
+                                color: primaryThemeColor(),
+                              ),
+                              itemCount: 5,
+                              itemSize: swidth / 16,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: sheight / 48,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: primaryThemeColor()),
+                            borderRadius: BorderRadius.circular(12)),
+                        width: swidth,
+                        child: Text(
+                          '${userReview['Content']}',
+                          style: TextStyle(color: primaryTextColor()),
+                        ),
+                      ),
+                      SizedBox(
+                        height: sheight / 64,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          if (userReview['ImageUrl'][0] != null &&
+                              userReview['ImageUrl'][0] != '')
+                            Container(
+                              height: sheight / 8,
+                              width: sheight / 8,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: primaryThemeColor()),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Center(
+                                child: Image.network(
+                                  userReview['ImageUrl'][0],
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          if (userReview['ImageUrl'][0] != null &&
+                              userReview['ImageUrl'][1] != '')
+                            Container(
+                              height: sheight / 8,
+                              width: sheight / 8,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: primaryThemeColor()),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Center(
+                                child: Image.network(
+                                  userReview['ImageUrl'][1],
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          if (userReview['ImageUrl'][0] != null &&
+                              userReview['ImageUrl'][2] != '')
+                            Container(
+                              height: sheight / 8,
+                              width: sheight / 8,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: primaryThemeColor()),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Center(
+                                child: Image.network(
+                                  userReview['ImageUrl'][1],
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            '${userReview['Date']}',
+                            style: TextStyle(color: primaryTextColor()),
+                          ),
+                          SizedBox(
+                            width: swidth / 12,
+                          ),
+                          Row(
+                            children: [
+                              Text('${userReview['Likes']}',
+                                  style: TextStyle(color: primaryThemeColor())),
+                              SizedBox(
+                                width: swidth / 48,
+                              ),
+                              Text('Likes',
+                                  style: TextStyle(color: primaryTextColor())),
+                            ],
+                          ),
+                          SizedBox(
+                            width: swidth / 48,
+                          ),
+                          Center(
+                            child: IconButton(
+                                onPressed: () async {
+                                  if (!Liked) {
+                                    await ReviewManagement().updateReviewLikes(
+                                        userReview['Rid'], 'plus');
+                                  } else if (Liked) {
+                                    await ReviewManagement().updateReviewLikes(
+                                        userReview['Rid'], 'minus');
+                                  }
+                                  await getuserReview();
+                                  setState(() {
+                                    Liked = !Liked;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: Liked
+                                      ? primaryThemeColor()
+                                      : primaryTextColor(),
+                                  size: swidth / 15,
+                                )),
+                          ),
+                          IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.share,
+                                color: primaryThemeColor(),
+                                size: swidth / 20,
+                              ))
+                        ],
+                      ),
+                      SizedBox(
+                        height: sheight / 48,
+                      ),
+                    ],
+                  ),
+                ),
+              if (businessReview[0]['Content'] != null)
+                reviewCard(0, sheight, swidth),
+              if (businessReview[1]['Content'] != null)
+                reviewCard(1, sheight, swidth),
+              if (businessReview[2]['Content'] != null)
+                reviewCard(2, sheight, swidth),
               Container(
                 margin: EdgeInsets.all(5),
                 decoration: BoxDecoration(
@@ -842,5 +1228,279 @@ class _BusinessPageState extends State<BusinessPage> {
             backgroundColor: secondaryThemeColor(),
           );
         });
+  }
+
+  Container reviewCard(int num, double sheight, double swidth) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(5, 3, 5, 5),
+      decoration: BoxDecoration(
+          color: tertiaryThemeColor(), borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(12, 5, 12, 0),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+            height: sheight / 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: primaryThemeColor(),
+                    ),
+                    SizedBox(
+                      width: swidth / 36,
+                    ),
+                    Text(
+                      //  '${userInfo['Username']}'
+                      'Anonymous',
+                      style: TextStyle(color: primaryTextColor()),
+                    )
+                  ],
+                ),
+                RatingBarIndicator(
+                  rating: businessReview[num]['Rating'],
+                  itemBuilder: (context, index) => Icon(
+                    Icons.star,
+                    color: primaryThemeColor(),
+                  ),
+                  itemCount: 5,
+                  itemSize: swidth / 16,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: sheight / 48,
+          ),
+          Container(
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+                border: Border.all(color: primaryThemeColor()),
+                borderRadius: BorderRadius.circular(12)),
+            width: swidth,
+            child: Text(
+              '${businessReview[num]['Content']}',
+              style: TextStyle(color: primaryTextColor()),
+            ),
+          ),
+          SizedBox(
+            height: sheight / 64,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              if (businessReview[num]['ImageUrl'][0] != null &&
+                  businessReview[num]['ImageUrl'][0] != '')
+                Container(
+                  height: sheight / 8,
+                  width: sheight / 8,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: primaryThemeColor()),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Center(
+                    child: Image.network(
+                      businessReview[num]['ImageUrl'][0],
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              if (businessReview[num]['ImageUrl'][1] != null &&
+                  businessReview[num]['ImageUrl'][1] != '')
+                Container(
+                  height: sheight / 8,
+                  width: sheight / 8,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: primaryThemeColor()),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Center(
+                    child: Image.network(
+                      businessReview[num]['ImageUrl'][1],
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              if (businessReview[num]['ImageUrl'][2] != null &&
+                  businessReview[num]['ImageUrl'][2] != '')
+                Container(
+                  height: sheight / 8,
+                  width: sheight / 8,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: primaryThemeColor()),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Center(
+                    child: Image.network(
+                      businessReview[num]['ImageUrl'][2],
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                '${businessReview[num]['Date']}',
+                style: TextStyle(color: primaryTextColor()),
+              ),
+              SizedBox(
+                width: swidth / 12,
+              ),
+              Row(
+                children: [
+                  Text('${businessReview[num]['Likes']}',
+                      style: TextStyle(color: primaryThemeColor())),
+                  SizedBox(
+                    width: swidth / 48,
+                  ),
+                  Text('Likes', style: TextStyle(color: primaryTextColor())),
+                ],
+              ),
+              SizedBox(
+                width: swidth / 48,
+              ),
+              Center(
+                child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        businessReview[num]['Liked'] =
+                            !businessReview[num]['Liked'];
+                      });
+                    },
+                    icon: Icon(
+                      Icons.favorite,
+                      color: businessReview[num]['Liked']
+                          ? primaryThemeColor()
+                          : primaryTextColor(),
+                      size: swidth / 15,
+                    )),
+              ),
+              IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.share,
+                    color: primaryThemeColor(),
+                    size: swidth / 20,
+                  ))
+            ],
+          ),
+          SizedBox(
+            height: sheight / 48,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future selectFile(int num) async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.image,
+    );
+    if (result == null)
+      return;
+    else if (num == 0) {
+      path[num] = result.files.single.path!;
+      imageName[num] = result.files.single.name;
+
+      setState(() {
+        file1 = File(path[num]);
+      });
+    } else if (num == 1) {
+      path[num] = result.files.single.path!;
+      imageName[num] = result.files.single.name;
+
+      setState(() {
+        file2 = File(path[num]);
+      });
+    } else if (num == 2) {
+      path[num] = result.files.single.path!;
+      imageName[num] = result.files.single.name;
+
+      setState(() {
+        file3 = File(path[num]);
+      });
+    }
+  }
+
+  Future uploadImage(int num) async {
+    if (num == 0) {
+      final cloudPath =
+          'business/${businessInfo['BusinessName']}/review/${imageName[0]}';
+      final file1 = File(path[0]);
+
+      final ref = FirebaseStorage.instance.ref().child(cloudPath);
+      setState(() {
+        uploadTask1 = ref.putFile(file1);
+      });
+      final snapshot = await uploadTask1!.whenComplete(() {});
+      ImageUrl[0] = await snapshot.ref.getDownloadURL();
+      print(ImageUrl);
+      setState(() {
+        uploadTask1 = null;
+      });
+    } else if (num == 1) {
+      final cloudPath =
+          'business/${businessInfo['BusinessName']}/review/${imageName[1]}';
+      final file2 = File(path[1]);
+
+      final ref = FirebaseStorage.instance.ref().child(cloudPath);
+      setState(() {
+        uploadTask2 = ref.putFile(file2);
+      });
+      final snapshot = await uploadTask2!.whenComplete(() {});
+      ImageUrl[1] = await snapshot.ref.getDownloadURL();
+      print(ImageUrl);
+      setState(() {
+        uploadTask2 = null;
+      });
+    } else if (num == 2) {
+      final cloudPath =
+          'business/${businessInfo['BusinessName']}/review/${imageName[2]}';
+      final file3 = File(path[2]);
+
+      final ref = FirebaseStorage.instance.ref().child(cloudPath);
+      setState(() {
+        uploadTask3 = ref.putFile(file3);
+      });
+      final snapshot = await uploadTask3!.whenComplete(() {});
+      ImageUrl[2] = await snapshot.ref.getDownloadURL();
+      print(ImageUrl);
+      setState(() {
+        uploadTask3 = null;
+      });
+    }
+  }
+
+  String getDate() {
+    var now = new DateTime.now();
+    var formatter = new DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(now);
+    return formattedDate;
+  }
+
+  Future createReview(BuildContext context) async {
+    if (file1 != null) await uploadImage(0);
+    if (file2 != null) await uploadImage(1);
+    if (file3 != null) await uploadImage(2);
+    await getDate();
+
+    final json = {
+      'Content': reviewController.text.trim(),
+      'Date': getDate(),
+      'Rating': rating,
+      'Uid': FirebaseAuth.instance.currentUser!.uid,
+      'Rid': '',
+      'Likes': 0,
+      'ImageUrl': List.from(ImageUrl),
+    };
+
+    ReviewManagement().storeNewReview(json, context);
   }
 }

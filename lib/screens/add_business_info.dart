@@ -314,7 +314,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
   }
 
   Future uploadImage() async {
-    final cloudPath = 'business/images/${widget.businessInfo[0]}/${imageName}';
+    final cloudPath = 'business/${widget.businessInfo[0]}/banner/${imageName}';
     final file = File(path);
 
     final ref = FirebaseStorage.instance.ref().child(cloudPath);

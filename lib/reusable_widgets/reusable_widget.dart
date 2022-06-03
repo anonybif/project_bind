@@ -91,8 +91,8 @@ TextFormField reusableTextField(String text, IconData icon, String type,
                       : null);
 }
 
-TextFormField reusableTextArea(
-    String text, IconData icon, TextEditingController controller) {
+TextFormField reusableTextArea(String text, IconData icon, bool isOptional,
+    TextEditingController controller) {
   return TextFormField(
       controller: controller,
       maxLines: null,
@@ -112,8 +112,10 @@ TextFormField reusableTextArea(
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
       ),
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) =>
-          value != null && value.isEmpty ? 'Field can\'t be empty' : null,
+      validator: isOptional
+          ? ((value) => null)
+          : (value) =>
+              value != null && value.isEmpty ? 'Field can\'t be empty' : null,
       keyboardType: TextInputType.multiline);
 }
 
