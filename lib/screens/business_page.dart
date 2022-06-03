@@ -174,6 +174,7 @@ class _BusinessPageState extends State<BusinessPage> {
                   title: Container(
                     padding: EdgeInsets.symmetric(horizontal: 5),
                     decoration: BoxDecoration(
+                      
                         color: tertiaryThemeColor().withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8)),
                   ),

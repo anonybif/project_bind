@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable
-
+import 'dart:ui';
+import 'package:project_bind/utils/color_utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,7 +38,7 @@ class _HomeState extends State<Home> {
 
   TabStyle _tabStyle = TabStyle.reactCircle;
 
-   var body;
+  var body;
   @override
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
@@ -48,270 +49,206 @@ class _HomeState extends State<Home> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         drawer: NaviagtionDrawerWidget(),
-        
         backgroundColor: Colors.white,
-    
-           body: CustomScrollView(
+        body: CustomScrollView(
           slivers: [
-            
             SliverAppBar(
-    
-         backgroundColor: Colors.black,
-    
-             expandedHeight: 300,
-             floating: true,
-             pinned: true,
-            //  toolbarHeight: 100,
-             
+              backgroundColor: Colors.black,
+
+              expandedHeight: 300,
+              floating: true,
+              pinned: true,
+              //  toolbarHeight: 100,
+
               flexibleSpace: FlexibleSpaceBar(
-                background: Image.asset('assets/images/sliv.jpg', 
-                
-                fit: BoxFit.cover,
+                background: Image.asset(
+                  'assets/images/sliv.jpg',
+                  fit: BoxFit.cover,
                 ),
-                
                 centerTitle: true,
                 title: Container(
                   padding: EdgeInsets.fromLTRB(8, 5, 8, 0),
-                
                   child: CupertinoTextField(
-           
-            keyboardType: TextInputType.text,
-            placeholder: 'Search',
-            placeholderStyle: TextStyle(
-              color: Color(0xffC4C6CC),
-              fontSize: 14.0,
-              fontFamily: 'Brutal',
-            ),
-            prefix: Padding(
-              padding: const EdgeInsets.fromLTRB(5.0, 5.0, 0.0, 5.0),
-              child: Icon(
-                Icons.search,
-                size: 18,
-                color: Colors.black,
+                    keyboardType: TextInputType.text,
+                    placeholder: 'Search',
+                    placeholderStyle: TextStyle(
+                      color: Color(0xffC4C6CC),
+                      fontSize: 14.0,
+                      fontFamily: 'Brutal',
+                    ),
+                    prefix: Padding(
+                      padding: const EdgeInsets.fromLTRB(5.0, 5.0, 0.0, 5.0),
+                      child: Icon(
+                        Icons.search,
+                        size: 18,
+                        color: Colors.black,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
-              color: Colors.white,
+          //   SliverFixedExtentList(
+          //   itemExtent: 100,
+            
+          //   delegate: SliverChildBuilderDelegate(
+          //     (BuildContext context, int index) {
+          //       return _buildListItem();
+          //     },
+          //     // childCount: tutorials.length,
+          //   ),
+          // ),
+          
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  SizedBox(height: 50),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    elevation: 10.0,
+                    margin: const EdgeInsets.all(10.0),
+                    child: Row(
+                      // mainAxisSize: MainAxisSize.min,
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: swidth*0.4,
+                          width: swidth*0.4,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                   
+                          ),
+                          child:  Image.asset("assets/images/sliv.jpg", 
+                          fit: BoxFit.cover,
+                          ),
+                          
+
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'hello',
+                                  style: const TextStyle(
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Text(
+                                  'yeeeeeeee',
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ]),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Container(
+                  //   padding: EdgeInsets.all(8),
+                  //   margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  //   decoration: BoxDecoration(
+                  //       color: tertiaryThemeColor(),
+                  //       borderRadius: BorderRadius.circular(12)),
+                  //   height: sheight / 6,
+                  // ),
+                  // Positioned(
+                  //   child: Card(
+                  //     elevation: 10,
+                  //     shadowColor: Colors.grey.withOpacity(0.5),
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //       Image: DecorationImage(
+                  //         image: AssetImage("sliv.jpg",)
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
-          ),
-          
+          ],
         ),
+        
+        
+        
+        
+            
     
-                ),
-                
-    //                   Container(
-    //                /* child: Text(
-    //                   "Find the best service for you",
-    //                   style: (fontSize: 35,
-    //                   ),
-    //                 ), //text
-    //                 */
-    //                
+        
     
-               //  color: Colors.cyan[600],
-    // // child: , can enter any widget child here
-    //               ),
-               // title: Text(' put sth here'),
-              ), 
-              
-              SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
     
-                  child: Container(
-                    height: 175,
-                    color: Colors.black54,
-                  ), 
-                ), 
-              ), 
-            ), 
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-    
-                  child: Container(
-                    height: 175,
-                    color: Colors.black54,
-                  ), 
-                ), 
-              ), 
-            ), 
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-    
-                  child: Container(
-                    height: 175,
-                    color: Colors.black54,
-                  ), 
-                ), 
-              ), 
-            ), 
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-    
-                  child: Container(
-                    height: 175,
-                    color: Colors.black54,
-                  ), 
-                ), 
-              ), 
-            ), 
-           ],
-            ), 
-    
-    //           
-    //            SliverToBoxAdapter(
-    //             child: Padding(
-    //               padding: const EdgeInsets.all(20.0),
-    //               child: ClipRRect(
-    //                 borderRadius: BorderRadius.circular(20),
-    
-    //                 child: Container(
-    //                   height: 400,
-    //                   color: Colors.deepPurple[300],
-    //                 ), //container
-    //               ), //clipRRect
-    //             ), //padding
-    //           ), //sliverToboxadopter
-    //         ],
-    //       ), //CustomScrollView
   
-      
-        // body: CustomScrollView(
-          
-        //     headerSliverBuilder: (BuildContext context, bool innerBoxScrolled) {
-        //       return <Widget>[
-        //       //  createSilverAppBar1(),
-        //         createSilverAppBar2(),
-        //               SliverToBoxAdapter(
-        //       child: Padding(
-        //         padding: const EdgeInsets.all(20.0),
-        //         child: ClipRRect(
-        //           borderRadius: BorderRadius.circular(20),
-                  
-    
-        //           child: Container(
-        //             height: 400,
-        //             color: Colors.deepPurple[300],
-        //           ), //container
-        //         ), //clipRRect
-        //       ), //padding
-        //     ) //sliverToboxadopter
-        //       ];
-        //     },
-        //     body: ListView.builder(
-              
-             
-        //       //  itemCount: itemList.length,
-        //         itemBuilder: (context, index) {
-        //           return Card(
-                    
-        //             // child: ListTile(
-                      
-        //             //   title: Text(itemList]),
-        //             // ),
-                    
-        //           );
-        //         }
-        //         )
-                
-        //         ),
-                
-                bottomNavigationBar: ConvexAppBar.badge(
+        bottomNavigationBar: ConvexAppBar.badge(
           // Optional badge argument: keys are tab indices, values can be
           // String, IconData, Color or Widget.
           /*badge=*/ const <int, dynamic>{3: '99+'},
           style: _tabStyle,
           color: Colors.blue,
           //cornerRadius: 20,
-    
+
           backgroundColor: Colors.black87,
           items: <TabItem>[
             for (final entry in _kPages.entries)
               TabItem(icon: entry.value, title: entry.key),
           ],
           onTap: (int i) => print('click index=$i'),
-        )
+        ),
+      ),
+    );
+  }
+}
+ Card _buildListItem() {
+    return Card(
+      margin: const EdgeInsets.all(5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          
+            Image.asset("assets/images/sliv.jpg"),
+        
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  left: 10, right: 10, bottom: 10, top: 0),
+              child: Text(
+                "heeeeey",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // SliverAppBar createSilverAppBar1() {
-  //   return SliverAppBar(
-      
-  //     //backgroundColor: Colors.grey,
-  //     expandedHeight: 300,
-      
-  //     floating: true,
-  //     elevation: 0,
-  //     flexibleSpace: LayoutBuilder(
-  //         builder: (BuildContext context, BoxConstraints constraints) {
-  //           return FlexibleSpaceBar(
-  //             collapseMode: CollapseMode.none,
-  //             background: Container(
-  //               color: Colors.white,
-  //               child: Image.asset(
-  //                 'assets/images/bar.jpg',
-  //                 fit: BoxFit.cover,
-  //               ),
-  //             ),
-  //           );
-  //         }),
-  //   );
-  // }
 
-  // SliverAppBar createSilverAppBar2() {
-  //   return SliverAppBar(
-  //     backgroundColor: Colors.grey[50],
-  //     pinned: true,
-  //     expandedHeight: 300,
-      
-  //     title: Container(
-  //       margin: EdgeInsets.symmetric(horizontal: 10),
-  //       height: 40,
-        
-  //       decoration: BoxDecoration(
-  //         boxShadow: <BoxShadow>[
-  //           BoxShadow(
-  //               color: Colors.grey.withOpacity(0.6),
-  //               offset: const Offset(1.1, 1.1),
-  //               blurRadius: 5.0),
-  //         ],
-  //       ),
-  //       
-       
-
-   
-    
-  }
-  
-
-  fetch() async {
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-    if (firebaseUser != null) {
-      await FirebaseFirestore.instance
-          .collection('user')
-          .doc(firebaseUser.uid)
-          .get()
-          .then((ds) {
+fetch() async {
+  final firebaseUser = FirebaseAuth.instance.currentUser;
+  if (firebaseUser != null) {
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(firebaseUser.uid)
+        .get()
+        .then((ds) {
       //  userName = ds.data()!["Username"];
-      }).catchError((e) {
-        print(e);
-      });
-    }
+    }).catchError((e) {
+      print(e);
+    });
   }
-
+}
 
 class CustomSearchDelegate extends SearchDelegate {
   List<String> searchTerms = [];
@@ -376,3 +313,67 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 }
 
+// SliverAppBar createSilverAppBar2() {
+  //   return SliverAppBar(
+  //     backgroundColor: Colors.grey[50],
+  //     pinned: true,
+  //     expandedHeight: 300,
+      
+  //     title: Container(
+  //       margin: EdgeInsets.symmetric(horizontal: 10),
+  //       height: 40,
+        
+  //       decoration: BoxDecoration(
+  //         boxShadow: <BoxShadow>[
+  //           BoxShadow(
+  //               color: Colors.grey.withOpacity(0.6),
+  //               offset: const Offset(1.1, 1.1),
+  //               blurRadius: 5.0),
+  //         ],
+  //       ),
+  //       
+
+  
+
+
+  //           
+    //            SliverToBoxAdapter(
+    //             child: Padding(
+    //               padding: const EdgeInsets.all(20.0),
+    //               child: ClipRRect(
+    //                 borderRadius: BorderRadius.circular(20),
+    
+    //                 child: Container(
+    //                   height: 400,
+    //                   color: Colors.deepPurple[300],
+    //                 ), //container
+    //               ), //clipRRect
+    //             ), //padding
+    //           ), //sliverToboxadopter
+    //         ],
+    //       ), //CustomScrollView
+
+
+        
+                  
+                  
+          //     SliverList(
+          // delegate: SliverChildBuilderDelegate(
+          //   (BuildContext context, int index) {
+          //     return Card(
+          //       margin: const EdgeInsets.all(15),
+          //       child: Container(
+          //         color: Colors.blue[100 * (index % 9 + 1)],
+          //         height: 80,
+          //         alignment: Alignment.center,
+          //         child: Text(
+          //           "Item $index",
+          //           style: const TextStyle(fontSize: 30),
+          //         ),
+          //       ),
+          //     );
+          //   },
+          //   childCount: 8, // 1000 list items
+          // ),
+          //     ),
+         
