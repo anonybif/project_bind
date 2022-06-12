@@ -30,6 +30,8 @@ class _AddBusinessState extends State<AddBusiness> {
   String address = '';
   String locationError = '';
 
+  bool catPick = true;
+  String catPickWarning = '';
   List<String> tags = [];
   bool disabletag = false;
   TextEditingController tagController = TextEditingController();
@@ -98,7 +100,7 @@ class _AddBusinessState extends State<AddBusiness> {
                 reusableTextField("Business Name", Icons.business_center, '',
                     false, businessNameController),
                 SizedBox(
-                  height: sheight / 48,
+                  height: sheight * 0.0208,
                 ),
                 reusableTextArea("Description", Icons.message, false,
                     businessDiscController),
@@ -110,12 +112,12 @@ class _AddBusinessState extends State<AddBusiness> {
                   color: primaryTextColor(),
                 ),
                 Container(
-                    height: sheight / 5,
+                    height: sheight * 0.2,
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: sheight / 24,
+                            height: sheight * 0.04167,
                             child: Text(
                               'Categories',
                               style: TextStyle(
@@ -125,7 +127,7 @@ class _AddBusinessState extends State<AddBusiness> {
                             ),
                           ),
                           Container(
-                            height: sheight / 7,
+                            height: sheight * 0.1428,
                             decoration: BoxDecoration(
                                 color: tertiaryThemeColor(),
                                 borderRadius: BorderRadius.circular(16)),
@@ -143,6 +145,11 @@ class _AddBusinessState extends State<AddBusiness> {
                                           selected[i] = false;
                                         }
                                         selected[index] = !selected[index];
+                                        setState(() {
+                                          catPick = true;
+                                          catPickWarning = '';
+                                        });
+                                        print('cat selected');
                                       });
                                     },
                                     child: Container(
@@ -176,17 +183,23 @@ class _AddBusinessState extends State<AddBusiness> {
                             ),
                           ),
                         ])),
+                catPick
+                    ? Container()
+                    : Text(
+                        catPickWarning,
+                        style: TextStyle(color: Colors.red),
+                      ),
                 Divider(
                   thickness: 1,
                   color: primaryTextColor(),
                 ),
                 Container(
-                  height: sheight / 3.6,
+                  height: sheight * 0.278,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: sheight / 24,
+                        height: sheight * 0.04166,
                         child: Text(
                           'Tags',
                           style: TextStyle(
@@ -196,11 +209,12 @@ class _AddBusinessState extends State<AddBusiness> {
                         ),
                       ),
                       Container(
-                        height: sheight / 7,
+                        height: sheight * 0.1428,
                         decoration: BoxDecoration(
                             color: tertiaryThemeColor(),
                             borderRadius: BorderRadius.circular(16)),
                         child: GridView.builder(
+                          physics: NeverScrollableScrollPhysics(),
                           itemCount: tags.length,
                           itemBuilder: (context, index) {
                             final item = tags[index];
@@ -257,6 +271,8 @@ class _AddBusinessState extends State<AddBusiness> {
                             child: TextField(
                               enabled: !disabletag,
                               controller: tagController,
+                              style: TextStyle(color: primaryTextColor()),
+                              cursorColor: primaryTextColor(),
                               decoration: InputDecoration(
                                 labelText: 'Add a Tag',
                                 labelStyle: TextStyle(color: Colors.grey),
@@ -306,6 +322,20 @@ class _AddBusinessState extends State<AddBusiness> {
                 reusableUIButton(context, "Next", (swidth / 3), () async {
                   final isValid = formKey.currentState!.validate();
                   if (!isValid) {
+                    return;
+                  }
+                  bool catPicked = false;
+                  for (int i = 0; i < items.length; i++) {
+                    if (selected[i]) {
+                      catPicked = true;
+                    }
+                  }
+                  if (!catPicked) {
+                    setState(() {
+                      catPick = false;
+                      catPickWarning = 'Select a category';
+                    });
+                    print('cat not selected');
                     return;
                   }
                   setState(() {});

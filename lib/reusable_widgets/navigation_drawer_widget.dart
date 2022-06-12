@@ -206,8 +206,8 @@ Column userInfo(BuildContext context) {
         children: [
           TextButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => BusinessPage()));
+              // Navigator.push(context,
+              //     MaterialPageRoute(builder: (context) => BusinessPage()));
             },
             child: Text(
               "My Businesses",

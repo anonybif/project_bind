@@ -63,8 +63,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       const SizedBox(
                         height: 32,
                       ),
-                      reusableUIButton(context, 'Reset Password', swidth / 1.5,
-                          resetPassword),
+                      reusableUIButton(context, 'Reset Password',
+                          sheight * 0.67, resetPassword),
                       TextButton(
                         style: ElevatedButton.styleFrom(),
                         child: Text(

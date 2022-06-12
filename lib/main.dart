@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:project_bind/firebase_options.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
 import 'package:project_bind/screens/authenticate/google_sign_in.dart';
-import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/screens/landing_page.dart';
 import 'package:provider/provider.dart';
@@ -30,11 +28,9 @@ class MyApp extends StatelessWidget {
           home: StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasData) {
+                // if (snapshot.connectionState == ConnectionState.waiting) {
+                // } else
+                if (snapshot.hasData) {
                   return const Home();
                 } else {
                   return const LandingPage();

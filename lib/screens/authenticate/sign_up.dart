@@ -47,17 +47,17 @@ class _SignUpState extends State<SignUp> {
           backgroundColor: secondaryThemeColor(),
           body: SingleChildScrollView(
             child: Padding(
-                padding: EdgeInsets.fromLTRB(20, sheight / 32, 20, 0),
+                padding: EdgeInsets.fromLTRB(20, sheight * 0.03125, 20, 0),
                 child: Form(
                   key: formKey,
                   child: Column(
                     children: <Widget>[
                       SizedBox(
-                        height: sheight / 12,
+                        height: sheight * 0.0834,
                       ),
                       logoWidget("assets/images/bind_logo1.png"),
                       SizedBox(
-                        height: sheight / 12,
+                        height: sheight * 0.0834,
                       ),
                       Text('Create Account',
                           style: TextStyle(
@@ -71,18 +71,18 @@ class _SignUpState extends State<SignUp> {
                       reusableTextField("Email Address", Icons.mail, 'email',
                           false, emailController),
                       SizedBox(
-                        height: sheight / 32,
+                        height: sheight * 0.03125,
                       ),
                       reusableTextField("Password", Icons.lock_outlined,
                           'password', false, passwordController),
                       SizedBox(
-                        height: sheight / 64,
+                        height: sheight * 0.015625,
                       ),
                       reusableUIButton(context, "Continue", swidth, () {
                         signUp();
                       }),
                       SizedBox(
-                        height: sheight / 64,
+                        height: sheight * 0.015625,
                       ),
                       Container(
                         padding: const EdgeInsets.all(8),
@@ -104,7 +104,7 @@ class _SignUpState extends State<SignUp> {
                             children: [
                               Icon(
                                 FontAwesomeIcons.google,
-                                size: sheight / 18,
+                                size: swidth * 0.056,
                                 color: primaryThemeColor(),
                               ),
                               const SizedBox(
@@ -119,11 +119,11 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                       SizedBox(
-                        height: sheight / 32,
+                        height: sheight * 0.03125,
                       ),
                       signInOption(),
                       SizedBox(
-                        height: sheight / 32,
+                        height: sheight * 0.03125,
                       ),
                     ],
                   ),

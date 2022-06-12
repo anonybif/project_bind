@@ -13,11 +13,11 @@ primaryThemeColor() {
 }
 
 secondaryThemeColor() {
-  return Colors.black;
+  return hexStringToColor('1a1919');
 }
 
 tertiaryThemeColor() {
-  return hexStringToColor('1a1919');
+  return hexStringToColor('2d2e2e');
 }
 
 primaryTextColor() {
@@ -26,4 +26,8 @@ primaryTextColor() {
 
 secondaryTextColor() {
   return Colors.white;
+}
+
+warningColor() {
+  return Colors.red;
 }

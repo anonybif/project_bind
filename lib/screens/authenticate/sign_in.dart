@@ -49,17 +49,17 @@ class _SignInState extends State<SignIn> {
           backgroundColor: secondaryThemeColor(),
           body: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, sheight / 32, 20, 0),
+              padding: EdgeInsets.fromLTRB(20, sheight * 0.03125, 20, 0),
               child: Form(
                 key: formKey,
                 child: Column(
                   children: <Widget>[
                     SizedBox(
-                      height: sheight / 12,
+                      height: sheight * 0.0834,
                     ),
                     logoWidget("assets/images/bind_logo1.png"),
                     SizedBox(
-                      height: sheight / 12,
+                      height: sheight * 0.0834,
                     ),
                     Text('Welcome Back',
                         style: TextStyle(
@@ -68,17 +68,17 @@ class _SignInState extends State<SignIn> {
                           color: secondaryTextColor(),
                         )),
                     SizedBox(
-                      height: sheight / 32,
+                      height: sheight * 0.03125,
                     ),
                     reusableTextField("Enter Username", Icons.person_outline,
                         'username', false, userNameController),
                     SizedBox(
-                      height: sheight / 48,
+                      height: sheight * 0.0208,
                     ),
                     reusableTextField("Enter Password", Icons.lock_outline,
                         'password', false, passwordController),
                     SizedBox(
-                      height: sheight / 48,
+                      height: sheight * 0.0208,
                     ),
                     reusableIconButton(
                         context, "Login", Icons.lock_outline, swidth, () {
@@ -100,7 +100,7 @@ class _SignInState extends State<SignIn> {
                       ),
                     ),
                     SizedBox(
-                      height: sheight / 32,
+                      height: sheight * 0.03125,
                     ),
                     Container(
                       padding: const EdgeInsets.all(8),
@@ -122,7 +122,7 @@ class _SignInState extends State<SignIn> {
                           children: [
                             Icon(
                               FontAwesomeIcons.google,
-                              size: sheight / 18,
+                              size: swidth * 0.056,
                               color: primaryThemeColor(),
                             ),
                             const SizedBox(
@@ -137,11 +137,11 @@ class _SignInState extends State<SignIn> {
                       ),
                     ),
                     SizedBox(
-                      height: sheight / 32,
+                      height: sheight * 0.03125,
                     ),
                     signUpOption(),
                     SizedBox(
-                      height: sheight / 32,
+                      height: sheight * 0.03125,
                     ),
                   ],
                 ),

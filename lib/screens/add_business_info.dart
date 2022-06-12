@@ -68,7 +68,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
         backgroundColor: secondaryThemeColor(),
         body: SingleChildScrollView(
             child: Padding(
-          padding: EdgeInsets.fromLTRB(20, sheight / 48, 20, 0),
+          padding: EdgeInsets.fromLTRB(20, sheight * 0.0208, 20, 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -80,12 +80,12 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                 ),
               ),
               SizedBox(
-                height: sheight / 48,
+                height: sheight * 0.0208,
               ),
               reusableTextField("Average Price", FontAwesomeIcons.dollarSign,
                   'number', false, avgPriceController),
               SizedBox(
-                height: sheight / 48,
+                height: sheight * 0.0208,
               ),
               Divider(
                 thickness: 1,
@@ -125,12 +125,17 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                         timeOpens = newTime;
                       });
                     },
-                    child: const Text('Opens'),
+                    child: Text(
+                      'Opens',
+                      style: TextStyle(
+                        color: primaryTextColor(),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 5),
                   Text(
                     timeOpens.format(context),
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: primaryTextColor()),
                   ),
                   const SizedBox(width: 15),
                   ElevatedButton(
@@ -154,12 +159,17 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                         timeClosed = newTime;
                       });
                     },
-                    child: const Text('Closes'),
+                    child: Text(
+                      'Closes',
+                      style: TextStyle(
+                        color: primaryTextColor(),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 5),
                   Text(
                     timeClosed.format(context),
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: primaryTextColor()),
                   ),
                 ],
               ),
@@ -181,11 +191,14 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                 ),
               ),
               reusableIconButton(
-                  context, "pick location", Icons.location_on, (swidth / 2),
+                  context, "pick location", Icons.location_on, (sheight * 0.5),
                   () {
                 getLocation(context);
               }),
-              Text(location),
+              Text(
+                location,
+                style: TextStyle(color: primaryTextColor()),
+              ),
               Text(
                 locationError,
                 style: const TextStyle(color: Colors.red),
@@ -209,7 +222,8 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   reusableIconButton(
-                      context, "Select", Icons.attach_file, (swidth / 3), () {
+                      context, "Select", Icons.attach_file, (sheight * 0.33),
+                      () {
                     selectFile();
                   }),
                 ],
@@ -231,7 +245,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
               const SizedBox(
                 height: 10,
               ),
-              reusableUIButton(context, "Add", (swidth / 3), () async {
+              reusableUIButton(context, "Add", (sheight * 0.33), () async {
                 if (location == '') {
                   setState(() {
                     locationError = 'Location must be added';
@@ -293,8 +307,13 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
               )),
     );
     setState(() {
-      location = loc;
-      locationError = '';
+      if (loc != null) {
+        location = loc;
+        locationError = '';
+      } else {
+        location = '';
+        locationError = 'Location must be added';
+      }
     });
   }
 
@@ -345,16 +364,18 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
         widget.businessInfo[5],
         widget.businessInfo[6],
       ]),
-      'Claimed': 'false',
+      'Claimed': false,
       'Bid': '',
       'Email': '',
       'PhoneNumber': '',
       'OpeningTime': timeOpens.format(context),
       'ClosingTime': timeClosed.format(context),
       'Uid': '',
-      'ReviewNumber': '0',
-      'Stars': '0',
-      'FollowNumber': '0'
+      'Reviews': 0,
+      'Rating': 0,
+      'Follows': 0,
+      'BindScore': 0,
+      'Clicks': 0
     };
 
     BusinessManagement().storeNewBusiness(json, context);

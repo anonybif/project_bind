@@ -26,7 +26,7 @@ class _LandingPageState extends State<LandingPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                  height: sheight / 32,
+                  height: sheight * 0.03125,
                 ),
                 Align(
                   alignment: Alignment.topRight,
@@ -58,11 +58,11 @@ class _LandingPageState extends State<LandingPage> {
                   ),
                 ),
                 SizedBox(
-                  height: sheight / 8,
+                  height: sheight * 0.125,
                 ),
                 logoWidget("assets/images/bind_logo1.png"),
                 SizedBox(
-                  height: sheight / 32,
+                  height: sheight * 0.03125,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +84,7 @@ class _LandingPageState extends State<LandingPage> {
                   ],
                 ),
                 SizedBox(
-                  height: sheight / 64,
+                  height: sheight * 0.015625,
                 ),
                 Text('Discover the perfect business',
                     style: TextStyle(
@@ -93,12 +93,12 @@ class _LandingPageState extends State<LandingPage> {
                       color: primaryTextColor(),
                     )),
                 SizedBox(
-                  height: sheight / 4,
+                  height: sheight * 0.25,
                 ),
                 reusableUIButton(context, "Create Account", swidth, () {
                   toSignUp();
                 }),
-                SizedBox(height: sheight / 32),
+                SizedBox(height: sheight * 0.03125),
                 signUpOption()
               ]),
         ),

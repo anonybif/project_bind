@@ -218,7 +218,7 @@ void signUpDialogue(BuildContext context, String content) {
                       },
                       child: const Text('Sign up')),
                   SizedBox(
-                    width: swidth / 6,
+                    width: swidth * 0.167,
                   ),
                   TextButton(
                       style: ButtonStyle(
@@ -252,6 +252,73 @@ void signUpDialogue(BuildContext context, String content) {
               ),
             ],
           ),
+        );
+      });
+}
+
+void NoConnectionDialogue(
+  BuildContext context,
+  Future<dynamic> reload,
+) {
+  double sheight = MediaQuery.of(context).size.height;
+  double swidth = MediaQuery.of(context).size.width;
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          children: [
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all(warningColor())),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel')),
+                  SizedBox(
+                    width: swidth * 0.08,
+                  ),
+                  TextButton(
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all(primaryThemeColor())),
+                      onPressed: () {
+                        reload;
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Retry')),
+                  SizedBox(
+                    width: swidth * 0.08,
+                  ),
+                ],
+              ),
+            )
+          ],
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'No connection',
+                style: TextStyle(fontSize: 24, color: primaryTextColor()),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Connect to the internet and tap Retry ',
+                style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    color: primaryTextColor()),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          backgroundColor: secondaryThemeColor(),
         );
       });
 }
