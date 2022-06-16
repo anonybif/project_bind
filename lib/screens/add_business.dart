@@ -342,7 +342,7 @@ class _AddBusinessState extends State<AddBusiness> {
                   businessInfo[0] = businessNameController.text;
                   businessInfo[1] = businessDiscController.text;
                   for (int i = 0; i < items.length; i++) {
-                    if (catSelected()[i]) {
+                    if (selected[i]) {
                       businessInfo[2] = items[i];
                     }
                   }

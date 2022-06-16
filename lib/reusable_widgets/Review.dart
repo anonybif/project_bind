@@ -50,9 +50,10 @@ class ReviewManagement {
     }
   }
 
-  setReviewLikes(
+  Future setReviewLikes(
       DocumentReference docRef, double likes, List<String> LikedUserUid) async {
     docRef.update({'Likes': likes});
     docRef.update({'LikedUserUid': LikedUserUid});
+    print('likes');
   }
 }

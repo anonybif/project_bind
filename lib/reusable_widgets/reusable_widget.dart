@@ -53,10 +53,9 @@ TextFormField reusableTextField(String text, IconData icon, String type,
         labelText: text,
         labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
         filled: true,
-        floatingLabelBehavior: FloatingLabelBehavior.never,
         fillColor: tertiaryThemeColor(),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18.0),
+            borderRadius: BorderRadius.circular(12.0),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
       ),
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -105,10 +104,9 @@ TextFormField reusableTextArea(String text, IconData icon, bool isOptional,
         labelText: text,
         labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
         filled: true,
-        floatingLabelBehavior: FloatingLabelBehavior.never,
         fillColor: tertiaryThemeColor(),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24.0),
+            borderRadius: BorderRadius.circular(12.0),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
       ),
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -200,57 +198,61 @@ void signUpDialogue(BuildContext context, String content) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SimpleDialog(
-          children: [
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                      style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all(primaryThemeColor())),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignUp()));
-                      },
-                      child: const Text('Sign up')),
-                  SizedBox(
-                    width: swidth * 0.167,
+        return Dialog(
+          backgroundColor: tertiaryThemeColor(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'LogIn or SignUp',
+                  style: TextStyle(fontSize: 24, color: primaryTextColor()),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  content,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: primaryTextColor()),
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(
+                                  primaryThemeColor())),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const SignUp()));
+                          },
+                          child: const Text('SignUp')),
+                      SizedBox(
+                        width: swidth * 0.167,
+                      ),
+                      TextButton(
+                          style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(
+                                  primaryThemeColor())),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const SignIn()));
+                          },
+                          child: const Text('LogIn'))
+                    ],
                   ),
-                  TextButton(
-                      style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all(primaryThemeColor())),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignIn()));
-                      },
-                      child: const Text('Log in'))
-                ],
-              ),
-            )
-          ],
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Sign up or Log in',
-                style: TextStyle(fontSize: 24),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                content,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         );
       });

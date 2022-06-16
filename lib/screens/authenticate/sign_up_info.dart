@@ -19,6 +19,9 @@ class _SignUpInfoState extends State<SignUpInfo> {
   final lastNameController = TextEditingController();
   final bioController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final Map MostViewedCat = Map();
+  final List<String> FollowingBusinessBid = List.empty();
+  final List<String> OwnedBusinessBid = List.empty();
 
   final formKey = GlobalKey<FormState>();
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -132,7 +135,21 @@ class _SignUpInfoState extends State<SignUpInfo> {
     Navigator.of(context).pop();
   }
 
+  getMostViewedCat() async {
+    var ds = await FirebaseFirestore.instance
+        .collection('categories')
+        .doc('category')
+        .get();
+
+    List<dynamic> cat = ds.data()!['cat'];
+
+    for (int i = 0; i < cat.length; i++) {
+      MostViewedCat['${cat[i]}'] = 0;
+    }
+  }
+
   Future createUser() async {
+    await getMostViewedCat();
     final json = {
       'FirstName': firstNameController.text.trim(),
       'LastName': lastNameController.text.trim(),
@@ -140,8 +157,11 @@ class _SignUpInfoState extends State<SignUpInfo> {
       'Email': FirebaseAuth.instance.currentUser!.email,
       'PhoneNumber': phoneNumberController.text.trim(),
       'Bio': bioController.text.trim(),
-      'Badge': 'bronze',
-      'Uid': FirebaseAuth.instance.currentUser!.uid
+      'Badge': '',
+      'Uid': FirebaseAuth.instance.currentUser!.uid,
+      'FollowingBusinessBid': FollowingBusinessBid,
+      'OwnedBusinessBid': OwnedBusinessBid,
+      'MostViewedCat': MostViewedCat
     };
 
     UserManagement().storeNewUser(json, context);

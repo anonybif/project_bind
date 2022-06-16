@@ -44,6 +44,11 @@ class _HomeState extends State<Home> {
   List<String> items = <String>[];
   bool catPick = true;
   String catPickWarning = '';
+  String cat = '';
+
+  List<Map<String, dynamic>> duplicateItems = List.empty(growable: true);
+  List<Map<String, dynamic>> Nearitems = List.empty(growable: true);
+  List<Map<String, dynamic>> Recommenditems = List.empty(growable: true);
 
   @override
   void initState() {
@@ -57,7 +62,7 @@ class _HomeState extends State<Home> {
     return selected;
   }
 
-  fetchCategory() async {
+  Future fetchCategory() async {
     await FirebaseFirestore.instance
         .collection('categories')
         .get()
@@ -72,17 +77,20 @@ class _HomeState extends State<Home> {
     print(items);
   }
 
-  getBusinessInfo() async {
+  Future getBusinessInfo() async {
     await checkConnection();
     if (connected) {
       await BusinessData.businessApi.getBusinessId();
       await BusinessData.businessApi.getAllBusiness();
       await BusinessData.businessApi.getDistance();
       await BusinessData.businessApi.getTime();
-      await BusinessData.businessApi.fetchNearbyBusiness();
-      await BusinessData.businessApi.fetchRecommendBusiness();
-      print(BusinessData.businessApi.businessList.length);
-      amount = BusinessData.businessApi.businessRecommend.length;
+      await BusinessData.businessApi.getmyInfo();
+      await BusinessData.businessApi.getRecommendation();
+      duplicateItems.addAll(BusinessData.businessApi.businessList);
+      Nearitems.addAll(duplicateItems);
+      Recommenditems.addAll(duplicateItems);
+      getNearbyBusiness();
+      getRecommendedBusiness();
 
       setState(() {
         loading = false;
@@ -103,6 +111,58 @@ class _HomeState extends State<Home> {
       print('disconnected');
       connected = false;
     }
+  }
+
+  Future getSearchResult(String query) async {
+    List<Map<String, dynamic>> dummySearchList = List.empty(growable: true);
+    dummySearchList.addAll(duplicateItems);
+    print(dummySearchList);
+    if (query.isNotEmpty) {
+      List<Map<String, dynamic>> dummyListData = List.empty(growable: true);
+      for (int i = 0; i < dummySearchList.length; i++) {
+        if (dummySearchList[i]['Category'].toString().toLowerCase() ==
+            query.toLowerCase()) {
+          dummyListData.add(dummySearchList[i]);
+        }
+      }
+
+      setState(() {
+        Nearitems.clear();
+        Nearitems.addAll(dummyListData);
+        Recommenditems.clear();
+        Recommenditems.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        Nearitems.clear();
+        Nearitems.addAll(duplicateItems);
+        Recommenditems.clear();
+        Recommenditems.addAll(duplicateItems);
+      });
+    }
+  }
+
+  Future getNearbyBusiness() async {
+    var temp = Nearitems;
+    temp.sort((m1, m2) {
+      return m1['Distance'].compareTo(m2['Distance']);
+    });
+
+    setState(() {
+      Nearitems = List.from(temp);
+    });
+  }
+
+  Future getRecommendedBusiness() async {
+    var temp = Recommenditems;
+    temp.sort((m1, m2) {
+      return m2['BindScore'].compareTo(m1['BindScore']);
+    });
+
+    setState(() {
+      Recommenditems = List.from(temp);
+    });
   }
 
   @override
@@ -173,15 +233,20 @@ class _HomeState extends State<Home> {
                         return Container(
                           child: InkWell(
                             onTap: () {
-                              setState(() {
-                                if (!selected[index]) {
-                                  for (int i = 0; i < items.length; i++) {
-                                    selected[i] = false;
-                                  }
+                              if (!selected[index]) {
+                                for (int i = 0; i < items.length; i++) {
+                                  selected[i] = false;
                                 }
+                                getSearchResult(item);
+                                getNearbyBusiness();
+                                getRecommendedBusiness();
+                              } else {
+                                getSearchResult('');
+                                getNearbyBusiness();
+                                getRecommendedBusiness();
+                              }
+                              setState(() {
                                 selected[index] = !selected[index];
-
-                                print('cat selected');
                               });
                             },
                             child: Container(
@@ -249,7 +314,7 @@ class _HomeState extends State<Home> {
                                   child: FittedBox(
                                     child: FadeInImage(
                                       image: NetworkImage(
-                                          '${BusinessData.businessApi.businessNearby[index]['ImageUrl']} ',
+                                          '${Nearitems[index]['ImageUrl']} ',
                                           scale: sheight),
                                       placeholder: AssetImage(
                                           "assets/images/placeholder.png"),
@@ -270,9 +335,7 @@ class _HomeState extends State<Home> {
                                       horizontal: swidth * 0.05),
                                   child: Column(children: [
                                     Text(
-                                      BusinessData
-                                              .businessApi.businessNearby[index]
-                                          ['BusinessName'],
+                                      Nearitems[index]['BusinessName'],
                                       style: TextStyle(
                                           color: primaryTextColor(),
                                           fontWeight: FontWeight.w800),
@@ -297,10 +360,7 @@ class _HomeState extends State<Home> {
                                                 width: swidth * 0.03,
                                               ),
                                               Text(
-                                                BusinessData
-                                                    .businessApi
-                                                    .businessNearby[index]
-                                                        ['Rating']
+                                                Nearitems[index]['Rating']
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w500,
@@ -324,7 +384,7 @@ class _HomeState extends State<Home> {
                                                 width: swidth * 0.03,
                                               ),
                                               Text(
-                                                '${BusinessData.businessApi.businessNearby[index]['Distance'].toString()} KM',
+                                                '${Nearitems[index]['Distance'].toString()} KM',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     color: primaryTextColor()),
@@ -344,7 +404,7 @@ class _HomeState extends State<Home> {
                                         Container(
                                           width: swidth * 0.2,
                                           child: Text(
-                                            "${BusinessData.businessApi.businessNearby[index]['AveragePrice']} ETB"
+                                            "${Nearitems[index]['AveragePrice']} ETB"
                                                 .toString(),
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w500,
@@ -355,9 +415,7 @@ class _HomeState extends State<Home> {
                                           width: swidth * 0.18,
                                         ),
                                         Container(
-                                          child: BusinessData.businessApi
-                                                      .businessNearby[index]
-                                                  ['isOpen']
+                                          child: Nearitems[index]['isOpen']
                                               ? Text(
                                                   "Open",
                                                   style: TextStyle(
@@ -381,19 +439,17 @@ class _HomeState extends State<Home> {
                             ),
                           ),
                           onTap: () {
-                            BusinessManagement().updateBusinessClicks(
-                                BusinessData.businessApi.businessNearby[index]
-                                    ['Bid']);
+                            BusinessManagement()
+                                .updateBusinessClicks(Nearitems[index]['Bid']);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => BusinessPage(
-                                        Bid: BusinessData.businessApi
-                                            .businessNearby[index]['Bid'])));
+                                        Bid: Nearitems[index]['Bid'])));
                           },
                         );
                       },
-                      itemCount: BusinessData.businessApi.businessId.length,
+                      itemCount: Nearitems.length,
                     ),
                   ),
                   SizedBox(
@@ -432,7 +488,7 @@ class _HomeState extends State<Home> {
                                 child: FittedBox(
                                   child: FadeInImage(
                                     image: NetworkImage(
-                                        '${BusinessData.businessApi.businessRecommend[index]['ImageUrl']} ',
+                                        '${Recommenditems[index]['ImageUrl']} ',
                                         scale: sheight),
                                     placeholder: AssetImage(
                                         "assets/images/placeholder.png"),
@@ -453,9 +509,7 @@ class _HomeState extends State<Home> {
                                     horizontal: swidth * 0.05),
                                 child: Column(children: [
                                   Text(
-                                    BusinessData.businessApi
-                                            .businessRecommend[index]
-                                        ['BusinessName'],
+                                    Recommenditems[index]['BusinessName'],
                                     style: TextStyle(
                                         color: primaryTextColor(),
                                         fontWeight: FontWeight.w800),
@@ -479,10 +533,7 @@ class _HomeState extends State<Home> {
                                               width: swidth * 0.03,
                                             ),
                                             Text(
-                                              BusinessData
-                                                  .businessApi
-                                                  .businessRecommend[index]
-                                                      ['Rating']
+                                              Recommenditems[index]['Rating']
                                                   .toString(),
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w500,
@@ -506,7 +557,7 @@ class _HomeState extends State<Home> {
                                               width: swidth * 0.03,
                                             ),
                                             Text(
-                                              '${BusinessData.businessApi.businessRecommend[index]['Distance'].toString()} KM',
+                                              '${Recommenditems[index]['Distance'].toString()} KM',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   color: primaryTextColor()),
@@ -525,7 +576,7 @@ class _HomeState extends State<Home> {
                                       Container(
                                         width: swidth * 0.2,
                                         child: Text(
-                                          "${BusinessData.businessApi.businessRecommend[index]['AveragePrice']} ETB"
+                                          "${Recommenditems[index]['AveragePrice']} ETB"
                                               .toString(),
                                           style: TextStyle(
                                               fontWeight: FontWeight.w500,
@@ -536,9 +587,7 @@ class _HomeState extends State<Home> {
                                         width: swidth * 0.18,
                                       ),
                                       Container(
-                                        child: BusinessData.businessApi
-                                                    .businessRecommend[index]
-                                                ['isOpen']
+                                        child: Recommenditems[index]['isOpen']
                                             ? Text(
                                                 "Open",
                                                 style: TextStyle(
@@ -560,18 +609,19 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                         onTap: () {
-                          BusinessManagement().updateBusinessClicks(BusinessData
-                              .businessApi.businessRecommend[index]['Bid']);
+                          BusinessManagement().updateBusinessClicks(
+                              Recommenditems[index]['Bid']);
+                          BusinessManagement().updateCategoryClicks(
+                              Recommenditems[index]['Category']);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => BusinessPage(
-                                      Bid: BusinessData.businessApi
-                                          .businessRecommend[index]['Bid'])));
+                                      Bid: Recommenditems[index]['Bid'])));
                         },
                       );
                     },
-                    itemCount: BusinessData.businessApi.businessId.length,
+                    itemCount: Recommenditems.length,
                   ),
                 ],
               ),

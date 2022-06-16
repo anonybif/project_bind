@@ -9,6 +9,7 @@ import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/landing_page.dart';
+import 'package:project_bind/screens/my_business_page.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -206,8 +207,8 @@ Column userInfo(BuildContext context) {
         children: [
           TextButton(
             onPressed: () {
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => BusinessPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MyBusiness()));
             },
             child: Text(
               "My Businesses",

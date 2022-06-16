@@ -374,7 +374,6 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
       'Reviews': 0,
       'Rating': 0,
       'Follows': 0,
-      'BindScore': 0,
       'Clicks': 0
     };
 

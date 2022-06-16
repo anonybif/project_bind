@@ -17,9 +17,13 @@ class BusinessApi {
   Map businessInfo = Map<String, dynamic>();
   List<Map<String, dynamic>> businessReview = List.empty(growable: true);
   List<Map<String, dynamic>> businessList = List.empty(growable: true);
-  List<Map<String, dynamic>> businessRecommend = List.empty(growable: true);
-  List<Map<String, dynamic>> businessNearby = List.empty(growable: true);
+  List<Map<String, dynamic>> duplicateItems = List.empty(growable: true);
+  // List<Map<String, dynamic>> businessRecommend = List.empty(growable: true);
+  // List<Map<String, dynamic>> businessNearby = List.empty(growable: true);
   List<String> businessId = [];
+  List<String> myBusinessId = [];
+  List<Map<String, dynamic>> myBusinesses = List.empty(growable: true);
+
   Map userReview = Map<String, dynamic>();
   Map userInfo = Map<String, dynamic>();
   Map myInfo = Map<String, dynamic>();
@@ -32,7 +36,6 @@ class BusinessApi {
   bool noReviews = true;
   bool notReviewed = true;
   bool following = false;
-
   String isOpen = '';
 
   getDistance() async {
@@ -125,9 +128,111 @@ class BusinessApi {
     }
   }
 
+  Future getRecommendation() async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      //category
+      Map catValues = Map.from(myInfo['MostViewedCat']);
+      List catVal = catValues.values.toList();
+      List catKey = catValues.keys.toList();
+      double catViews = 0;
+      List cat = myInfo['MostViewedCat'].values.toList();
+
+      for (int i = 0; i < cat.length; i++) {
+        catViews = catViews + double.parse(cat[i].toString());
+      }
+
+      for (int i = 0; i < catVal.length; i++) {
+        catValues[catKey[i]] =
+            (2 / catViews) * double.parse(catVal[i].toString());
+      }
+
+      //reviews
+      double totalReviews = 0;
+
+      for (int i = 0; i < businessList.length; i++) {
+        totalReviews =
+            totalReviews + double.parse(businessList[i]['Reviews'].toString());
+      }
+
+      Map reviews = Map();
+      for (int num = 0; num < businessList.length; num++) {
+        reviews[businessList[num]['Bid']] =
+            (1 / totalReviews) * businessList[num]['Reviews'];
+      }
+      print(reviews);
+
+      //rating
+      double totalRating = 0;
+
+      for (int i = 0; i < businessList.length; i++) {
+        totalRating =
+            totalRating + double.parse(businessList[i]['Rating'].toString());
+      }
+
+      Map ratings = Map();
+
+      for (int num = 0; num < businessList.length; num++) {
+        ratings[businessList[num]['Bid']] =
+            (2 / totalRating) * businessList[num]['Rating'];
+      }
+
+      //total
+
+      for (int num = 0; num < businessList.length; num++) {
+        businessList[num]['BindScore'] = ratings[businessList[num]['Bid']] +
+            reviews[businessList[num]['Bid']] +
+            catValues[businessList[num]['Category']];
+        if (businessInfo['Bid'] == businessList[num]['Bid']) {
+          businessInfo['BindScore'] = businessList[num]['BindScore'];
+        }
+      }
+    } else {
+      //reviews
+      double totalReviews = 0;
+
+      for (int i = 0; i < businessList.length; i++) {
+        totalReviews =
+            totalReviews + double.parse(businessList[i]['Reviews'].toString());
+      }
+
+      Map reviews = Map();
+      for (int num = 0; num < businessList.length; num++) {
+        reviews[businessList[num]['Bid']] =
+            (1 / totalReviews) * businessList[num]['Reviews'];
+      }
+      print(reviews);
+
+      //rating
+      double totalRating = 0;
+
+      for (int i = 0; i < businessList.length; i++) {
+        totalRating =
+            totalRating + double.parse(businessList[i]['Rating'].toString());
+      }
+
+      Map ratings = Map();
+
+      for (int num = 0; num < businessList.length; num++) {
+        ratings[businessList[num]['Bid']] =
+            (2 / totalRating) * businessList[num]['Rating'];
+      }
+
+      //total
+
+      for (int num = 0; num < businessList.length; num++) {
+        businessList[num]['BindScore'] = ratings[businessList[num]['Bid']] +
+            reviews[businessList[num]['Bid']];
+        if (businessInfo['Bid'] == businessList[num]['Bid']) {
+          businessInfo['BindScore'] = businessList[num]['BindScore'];
+        }
+      }
+    }
+  }
+
   getBusinessId() async {
     var ds = await FirebaseFirestore.instance.collection('business').get();
     if (ds.size != 0) {
+      businessId.clear();
       for (int i = 0; i < ds.size; i++) {
         businessId.add(ds.docs[i].id);
         businessId[i] = ds.docs[i].id;
@@ -138,13 +243,37 @@ class BusinessApi {
   getAllBusiness() async {
     var ds = await FirebaseFirestore.instance.collection('business').get();
     if (ds.size != 0) {
+      businessList.clear();
       for (int i = 0; i < ds.size; i++) {
         businessList.add(ds.docs[i].data());
         businessList[i] = ds.docs[i].data();
-        // distance.add({'Bid': businessId[i]});
-        // distance[i]['Bid'] = businessId[i];
-        // distance.add({'Distance': 0});
-        // distance[i]['Distance'] = 0;
+      }
+    }
+  }
+
+  getMyBusiness() async {
+    myBusinesses.clear();
+    myBusinessId.clear();
+    var Uid = FirebaseAuth.instance.currentUser!.uid;
+    var ds = await FirebaseFirestore.instance
+        .collection('business')
+        .where('Uid', isEqualTo: Uid)
+        .get();
+
+    if (ds.size != 0) {
+      for (int i = 0; i < ds.size; i++) {
+        myBusinessId.add(ds.docs[i].id);
+        print(myBusinessId);
+      }
+      print(businessList.length);
+      print(myBusinessId.length);
+      for (int i = 0; i < businessId.length; i++) {
+        for (int j = 0; j < myBusinessId.length; j++) {
+          if (businessList[i]['Bid'] == myBusinessId[j]) {
+            myBusinesses.add(businessList[i]);
+            print('added');
+          }
+        }
       }
     }
   }
@@ -166,48 +295,55 @@ class BusinessApi {
   }
 
   getBusinessFollow(String Bid) {
-    List<String> FollowingBusinessBid = <String>[];
-    FollowingBusinessBid = List.from(myInfo['FollowingBusinessBid']);
+    if (FirebaseAuth.instance.currentUser != null) {
+      List<String> FollowingBusinessBid = <String>[];
+      FollowingBusinessBid = List.from(myInfo['FollowingBusinessBid']);
 
-    if (FollowingBusinessBid.contains(Bid)) {
-      following = true;
+      if (FollowingBusinessBid.contains(Bid)) {
+        following = true;
+      } else {
+        following = false;
+      }
     } else {
       following = false;
     }
   }
 
-  getuserReview(String Bid) async {
-    var ds = await FirebaseFirestore.instance
-        .collection('business')
-        .doc(Bid)
-        .collection('review')
-        .where('Uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .get();
+  // getuserReview(String Bid) async {
+  //   var ds = await FirebaseFirestore.instance
+  //       .collection('business')
+  //       .doc(Bid)
+  //       .collection('review')
+  //       .where('Uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+  //       .get();
 
-    if (ds.size != 0) {
-      notReviewed = false;
-      userReview = ds.docs[0].data();
+  //   if (ds.size != 0) {
+  //     notReviewed = false;
+  //     userReview = ds.docs[0].data();
 
-      LikedUserUid[5] = List.from(userReview['LikedUserUid']);
-      if (FirebaseAuth.instance.currentUser != null) {
-        var Uid = FirebaseAuth.instance.currentUser!.uid;
-        if (LikedUserUid[5].contains(Uid)) {
-          Liked[5] = true;
-        } else {
-          Liked[5] = false;
-        }
-      }
-    }
-  }
+  //     LikedUserUid[5] = List.from(userReview['LikedUserUid']);
+  //     if (FirebaseAuth.instance.currentUser != null) {
+  //       var Uid = FirebaseAuth.instance.currentUser!.uid;
+  //       if (LikedUserUid[5].contains(Uid)) {
+  //         Liked[5] = true;
+  //       } else {
+  //         Liked[5] = false;
+  //       }
+  //     }
+  //   }
+  // }
 
   getmyInfo() async {
-    var ds = await FirebaseFirestore.instance
-        .collection('user')
-        .where('Uid', isEqualTo: userReview['Uid'])
-        .get();
-    if (ds.size != 0) {
-      for (var doc in ds.docs) {
-        myInfo = doc.data();
+    if (FirebaseAuth.instance.currentUser != null) {
+      var Uid = FirebaseAuth.instance.currentUser!.uid;
+      var ds = await FirebaseFirestore.instance
+          .collection('user')
+          .where('Uid', isEqualTo: Uid)
+          .get();
+      if (ds.size != 0) {
+        for (var doc in ds.docs) {
+          myInfo = doc.data();
+        }
       }
     }
   }
@@ -224,33 +360,16 @@ class BusinessApi {
     }
   }
 
-  fetchBusinessbyCat() {}
-
-  fetchNearbyBusiness() async {
-    businessList.sort((m1, m2) {
-      return m1['Distance'].compareTo(m2['Distance']);
-    });
-
-    businessNearby = List.from(businessList);
-  }
-
-  fetchRecommendBusiness() async {
-    businessList.sort((m1, m2) {
-      return m2['BindScore'].compareTo(m1['BindScore']);
-    });
-
-    businessRecommend = List.from(businessList);
-  }
-
   fetchReviews(String Bid) async {
     var ds = await FirebaseFirestore.instance
         .collection('business')
         .doc(Bid)
         .collection('review')
-        .where('Uid', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        // .where('Uid', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
     if (ds.size != 0) {
       noReviews = false;
+      businessReview.clear();
       for (int i = 0; i < ds.size; i++) {
         businessReview.add(ds.docs[i].data());
         businessReview[i] = ds.docs[i].data();
@@ -265,6 +384,20 @@ class BusinessApi {
           Liked[i] = true;
         } else {
           Liked[i] = false;
+        }
+      }
+
+      for (int i = 0; i < businessReview.length; i++) {
+        if (businessReview[i]['Uid'].toString().contains(Uid)) {
+          notReviewed = false;
+          // Map<String, dynamic> userReview = businessReview.removeAt(i);
+
+          // List<Map<String, dynamic>> temp = List.empty(growable: true);
+          // temp.add(userReview);
+
+          // temp.addAll(businessReview);
+          // businessReview = List.from(temp);
+          // break;
         }
       }
     }
@@ -283,7 +416,6 @@ class BusinessApi {
         .collection('business')
         .doc(Bid)
         .collection('review')
-        .where('Uid', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
     if (ds.size != 0) {
       for (int i = 0; i < ds.size; i++) {
@@ -294,19 +426,19 @@ class BusinessApi {
     }
   }
 
-  updateUserLikes(String Bid) async {
-    var ds = await FirebaseFirestore.instance
-        .collection('business')
-        .doc(Bid)
-        .collection('review')
-        .where('Uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    if (ds.size != 0) {
-      for (var doc in ds.docs) {
-        userReview = doc.data();
-      }
-    }
-  }
+  // updateUserLikes(String Bid) async {
+  //   var ds = await FirebaseFirestore.instance
+  //       .collection('business')
+  //       .doc(Bid)
+  //       .collection('review')
+  //       .where('Uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+  //       .get();
+  //   if (ds.size != 0) {
+  //     for (var doc in ds.docs) {
+  //       userReview = doc.data();
+  //     }
+  //   }
+  // }
 
   sortReview() {
     businessReview.sort((a, b) {

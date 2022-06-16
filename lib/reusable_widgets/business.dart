@@ -118,4 +118,34 @@ class BusinessManagement {
   setBusinessClicks(DocumentReference docRef, double clicks) {
     docRef.update({'Clicks': clicks});
   }
+
+  updateCategoryClicks(String Category) async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      var Uid = FirebaseAuth.instance.currentUser!.uid;
+      print(Category);
+      final ds =
+          await FirebaseFirestore.instance.collection('user').doc(Uid).get();
+
+      userData = ds.data()!;
+      var ref = ds.reference;
+
+      var clicks = double.parse(userData["MostViewedCat"][Category].toString());
+      print(clicks);
+      clicks = clicks + 1;
+      print(clicks);
+      setCategroyClicks(ref, clicks, Category);
+    }
+  }
+
+  setCategroyClicks(DocumentReference docRef, double clicks, String Category) {
+    docRef.update({('MostViewedCat.$Category'): clicks});
+  }
+
+  updateBusinessInfo(String Bid, json) async {
+    final docRef = FirebaseFirestore.instance.collection('business').doc(Bid);
+
+    await docRef.set(json).catchError((e) {
+      print(e);
+    });
+  }
 }
