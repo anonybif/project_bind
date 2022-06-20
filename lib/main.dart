@@ -5,6 +5,7 @@ import 'package:project_bind/firebase_options.dart';
 import 'package:project_bind/screens/authenticate/google_sign_in.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/screens/landing_page.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

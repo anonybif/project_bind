@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/utils/color_utils.dart';
 //import 'package:geocoder/geocoder.dart';
 

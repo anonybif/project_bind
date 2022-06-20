@@ -9,11 +9,13 @@ hexStringToColor(String hexColor) {
 }
 
 primaryThemeColor() {
-  return Colors.blue;
+  // return Colors.blue;
+  return Colors.green;
 }
 
 secondaryThemeColor() {
-  return hexStringToColor('1a1919');
+  // return hexStringToColor('1a1919');
+  return hexStringToColor('262626');
 }
 
 tertiaryThemeColor() {

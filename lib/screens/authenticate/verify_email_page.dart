@@ -1,13 +1,20 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
+import 'package:project_bind/screens/authenticate/sign_up_info.dart';
 import 'package:project_bind/screens/home/home.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/utils/color_utils.dart';
 
 class VerifyEmailPage extends StatefulWidget {
-  const VerifyEmailPage({Key? key}) : super(key: key);
+  final String Username;
+
+  const VerifyEmailPage({
+    Key? key,
+    required this.Username,
+  }) : super(key: key);
 
   @override
   State<VerifyEmailPage> createState() => _VerifyEmailPageState();
@@ -55,13 +62,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   Future checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser!.reload();
+    var user = FirebaseAuth.instance.currentUser;
+    await user!.reload();
     setState(() {
       isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     });
 
     if (isEmailVerified) {
       timer?.cancel();
+      //here
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SignUpInfo(
+                    Username: widget.Username,
+                  )));
     }
   }
 
@@ -69,8 +84,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Widget build(BuildContext context) => isEmailVerified
       ? const Home()
       : Scaffold(
+          backgroundColor: secondaryThemeColor(),
           appBar: AppBar(
-            backgroundColor: primaryThemeColor(),
+            backgroundColor: tertiaryThemeColor(),
             title: const Text('Verify Email'),
             centerTitle: true,
             leading: Padding(
@@ -83,9 +99,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   "A verification email has been sent to your email",
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 20, color: primaryTextColor()),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -111,9 +127,16 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                     'Cancel',
                     style: TextStyle(fontSize: 24, color: primaryThemeColor()),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     timer?.cancel();
-                    FirebaseAuth.instance.signOut();
+                    final user = await FirebaseAuth.instance.currentUser;
+                    // var ds = FirebaseFirestore.instance
+                    //     .collection('user')
+                    //     .doc(user!.uid);
+
+                    // ds.delete();
+                    user!.delete();
+                    // FirebaseAuth.instance.signOut();
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

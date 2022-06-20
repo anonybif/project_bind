@@ -12,9 +12,19 @@ class UserManagement {
         .collection('user')
         .doc(firebaseUser!.uid)
         .set(json)
-        .then((value) => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const VerifyEmailPage())))
+        .then((value) => Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const Home())))
         .catchError((e) {
+      print(e);
+    });
+  }
+
+  updateUserInfo(json) async {
+    var firebaseUser = FirebaseAuth.instance.currentUser;
+    final docRef =
+        FirebaseFirestore.instance.collection('user').doc(firebaseUser!.uid);
+
+    await docRef.set(json).catchError((e) {
       print(e);
     });
   }

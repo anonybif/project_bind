@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:project_bind/utils/utils.dart';
@@ -64,11 +64,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         height: 32,
                       ),
                       reusableUIButton(context, 'Reset Password',
-                          sheight * 0.67, resetPassword),
+                          sheight * 0.67, 50, resetPassword),
                       TextButton(
                         style: ElevatedButton.styleFrom(),
                         child: Text(
-                          'Back To SignIn',
+                          'Back To Login',
                           style: TextStyle(
                               fontSize: 16, color: primaryThemeColor()),
                         ),

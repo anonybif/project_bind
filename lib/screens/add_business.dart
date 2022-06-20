@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:project_bind/reusable_widgets/business.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/business.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/add_business_info.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/home/home.dart';
@@ -319,7 +319,7 @@ class _AddBusinessState extends State<AddBusiness> {
                   thickness: 1,
                   color: primaryTextColor(),
                 ),
-                reusableUIButton(context, "Next", (swidth / 3), () async {
+                reusableUIButton(context, "Next", (swidth / 3),50, () async {
                   final isValid = formKey.currentState!.validate();
                   if (!isValid) {
                     return;

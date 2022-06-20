@@ -3,10 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:project_bind/screens/add_business.dart';
 import 'package:project_bind/screens/authenticate/forgot_password_page.dart';
 import 'package:project_bind/screens/authenticate/google_sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:project_bind/utils/utils.dart';
@@ -25,6 +26,7 @@ class _SignInState extends State<SignIn> {
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
+  bool passVisible = false;
   String userEmail = '';
   bool isLoading = false;
 
@@ -55,11 +57,11 @@ class _SignInState extends State<SignIn> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(
-                      height: sheight * 0.0834,
+                      height: sheight * 0.08,
                     ),
                     logoWidget("assets/images/bind_logo1.png"),
                     SizedBox(
-                      height: sheight * 0.0834,
+                      height: sheight * 0.07,
                     ),
                     Text('Welcome Back',
                         style: TextStyle(
@@ -75,10 +77,12 @@ class _SignInState extends State<SignIn> {
                     SizedBox(
                       height: sheight * 0.0208,
                     ),
-                    reusableTextField("Enter Password", Icons.lock_outline,
-                        'password', false, passwordController),
                     SizedBox(
-                      height: sheight * 0.0208,
+                      height: 70,
+                      child: passwordField(),
+                    ),
+                    SizedBox(
+                      height: sheight * 0.01,
                     ),
                     reusableIconButton(
                         context, "Login", Icons.lock_outline, swidth, () {
@@ -122,13 +126,13 @@ class _SignInState extends State<SignIn> {
                           children: [
                             Icon(
                               FontAwesomeIcons.google,
-                              size: swidth * 0.056,
+                              size: swidth * 0.08,
                               color: primaryThemeColor(),
                             ),
                             const SizedBox(
                               width: 20,
                             ),
-                            Text('Sign in with Google',
+                            Text('Login with Google',
                                 style: TextStyle(
                                   color: secondaryTextColor(),
                                 )),
@@ -151,6 +155,47 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     );
+  }
+
+  TextFormField passwordField() {
+    return TextFormField(
+        controller: passwordController,
+        obscureText: !passVisible,
+        enableSuggestions: false,
+        autocorrect: false,
+        style: TextStyle(color: primaryTextColor()),
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.lock_outline,
+            color: primaryThemeColor(),
+          ),
+          suffix: IconButton(
+            icon: Icon(
+              passVisible ? Icons.visibility_off : Icons.visibility,
+              color: primaryThemeColor(),
+            ),
+            splashColor: Colors.transparent,
+            onPressed: () {
+              setState(() {
+                passVisible = !passVisible;
+              });
+            },
+          ),
+          labelText: 'Enter Password',
+          labelStyle: TextStyle(color: Colors.grey.withOpacity(0.9)),
+          filled: true,
+          fillColor: tertiaryThemeColor(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(
+                width: 0, style: BorderStyle.none, color: primaryThemeColor()),
+          ),
+        ),
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: ((value) => value != null && value.length < 6
+            ? 'password needs to be atleast 6 characters'
+            : null),
+        keyboardType: TextInputType.visiblePassword);
   }
 
   fetchEmail() async {
@@ -184,9 +229,22 @@ class _SignInState extends State<SignIn> {
         return;
       }
     }
-    Navigator.of(context).pop();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Home()));
+
+    var user = FirebaseAuth.instance.currentUser;
+    if (user!.emailVerified) {
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const Home()));
+    } else {
+      var ds = FirebaseFirestore.instance.collection('user').doc(user.uid);
+      if (ds.path.isNotEmpty) {
+        ds.delete();
+      }
+      user.delete();
+      Utils.showSnackBar('Invalid Account', messengerKey);
+      Navigator.of(context).pop();
+      return;
+    }
   }
 
   Column signUpOption() {

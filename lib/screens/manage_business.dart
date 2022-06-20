@@ -6,8 +6,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:project_bind/reusable_widgets/business.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/business.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/screens/location_picker.dart';
@@ -58,7 +58,6 @@ class _ManageBusinessState extends State<ManageBusiness> {
   List<bool> selected = [];
 
   bool loading = true;
-  bool connected = false;
   bool newUpload = false;
 
   @override
@@ -89,18 +88,13 @@ class _ManageBusinessState extends State<ManageBusiness> {
   }
 
   Future getBusinessInfo() async {
-    await checkConnection();
-    if (connected) {
-      await BusinessData.businessApi.fetchBusiness(widget.Bid);
-      await fetchCategory();
-      await setBusinessInfo();
+    await BusinessData.businessApi.fetchBusiness(widget.Bid);
+    await fetchCategory();
+    await setBusinessInfo();
 
-      setState(() {
-        loading = false;
-      });
-    } else {
-      // NoConnectionDialogue(context, getBusinessInfo());
-    }
+    setState(() {
+      loading = false;
+    });
   }
 
   Future setBusinessInfo() async {
@@ -219,19 +213,6 @@ class _ManageBusinessState extends State<ManageBusiness> {
             ),
           );
         });
-  }
-
-  checkConnection() async {
-    try {
-      final result = await InternetAddress.lookup('www.google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('connected');
-        connected = true;
-      }
-    } on SocketException catch (_) {
-      print('disconnected');
-      connected = false;
-    }
   }
 
   @override
@@ -757,10 +738,10 @@ class _ManageBusinessState extends State<ManageBusiness> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               reusableUIButton(
-                                  context, "Cancel", (swidth * 0.33), () async {
+                                  context, "Cancel", (swidth * 0.33),50, () async {
                                 Navigator.pop(context);
                               }),
-                              reusableUIButton(context, "Update", (swidth / 3),
+                              reusableUIButton(context, "Update", (swidth / 3),50,
                                   () async {
                                 final isValid =
                                     formKey.currentState!.validate();

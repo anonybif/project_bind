@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/add_business.dart';
 import 'package:project_bind/screens/authenticate/google_sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';

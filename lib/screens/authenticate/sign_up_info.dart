@@ -1,13 +1,22 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
-import 'package:project_bind/reusable_widgets/user.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
+import 'package:project_bind/shared/user.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:project_bind/utils/utils.dart';
 
 class SignUpInfo extends StatefulWidget {
-  const SignUpInfo({Key? key}) : super(key: key);
+  final String Username;
+
+  const SignUpInfo({
+    Key? key,
+    required this.Username,
+  }) : super(key: key);
 
   @override
   State<SignUpInfo> createState() => _SignUpInfoState();
@@ -19,12 +28,21 @@ class _SignUpInfoState extends State<SignUpInfo> {
   final lastNameController = TextEditingController();
   final bioController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final ageController = TextEditingController();
+  String radioValue = 'Male';
   final Map MostViewedCat = Map();
   final List<String> FollowingBusinessBid = List.empty();
   final List<String> OwnedBusinessBid = List.empty();
 
   final formKey = GlobalKey<FormState>();
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
+
+  File? file;
+  String path = '';
+  String imageName = '';
+  UploadTask? uploadTask;
+  String ImageUrl = '';
+  bool newUpload = false;
 
   bool userExist = false;
 
@@ -40,7 +58,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
         child: Scaffold(
           extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: primaryThemeColor(),
+            backgroundColor: tertiaryThemeColor(),
             elevation: 0,
             leading: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -55,67 +73,100 @@ class _SignUpInfoState extends State<SignUpInfo> {
           ),
           backgroundColor: secondaryThemeColor(),
           body: SingleChildScrollView(
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-                child: Form(
+            padding: EdgeInsets.fromLTRB(20, sheight * 0.14, 20, 0),
+            child: Column(
+              children: [
+                Center(
+                  child: Stack(
+                    children: [
+                      if (file == null)
+                        ClipOval(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Container(
+                              width: swidth * 0.3,
+                              height: swidth * 0.3,
+                              child:
+                                  Image.asset("assets/images/placeholder.png"),
+                            ),
+                          ),
+                        ),
+                      if (file != null)
+                        ClipOval(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Ink.image(
+                              fit: BoxFit.cover,
+                              width: swidth * 0.3,
+                              height: swidth * 0.3,
+                              image: FileImage(
+                                File(file!.path),
+                              ),
+                            ),
+                          ),
+                        ),
+                      Positioned(
+                        height: sheight * 0.06,
+                        width: swidth * 0.10,
+                        bottom: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          backgroundColor: primaryThemeColor(),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.camera_alt,
+                              color: primaryTextColor(),
+                              size: swidth * 0.05,
+                            ),
+                            onPressed: () {
+                              selectFile();
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: sheight * 0.03),
+                Form(
                   key: formKey,
                   child: Column(
                     children: <Widget>[
                       reusableTextField("First Name", Icons.person, '', false,
                           firstNameController),
                       const SizedBox(
-                        height: 20,
+                        height: 16,
                       ),
                       reusableTextField("Last Name", Icons.person, '', false,
                           lastNameController),
                       const SizedBox(
-                        height: 20,
-                      ),
-                      reusableTextField("UserName", Icons.person, 'username',
-                          false, userNameController),
-                      const SizedBox(
-                        height: 20,
+                        height: 16,
                       ),
                       reusableTextField("Phone Number", Icons.phone, 'phone',
                           false, phoneNumberController),
                       const SizedBox(
-                        height: 20,
+                        height: 16,
                       ),
-                      reusableTextField("Bio (Optional)", Icons.assignment, '',
+                      reusableTextField("Bio (Optional)", Icons.comment, '',
                           true, bioController),
                       const SizedBox(
-                        height: 20,
+                        height: 16,
                       ),
-                      reusableUIButton(context, "Sign Up", swidth, () {
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      reusableUIButton(context, "Sign Up", swidth, 50, () {
                         signUp();
                       }),
                     ],
                   ),
-                )),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  checkUsername() async {
-    userExist = false;
-    String userNames = '';
-    final int docNum =
-        await FirebaseFirestore.instance.collection('user').snapshots().length;
-    print(docNum);
-
-    await FirebaseFirestore.instance.collection('user').get().then((value) {
-      for (int i = 0; i < docNum; i++) {
-        userNames = value.docs[i]["Username"];
-        print(userNames);
-        if (userNameController.text.trim() == userNames) {
-          setState(() {
-            userExist = true;
-          });
-        }
-      }
-    }).catchError((e) => print(e.toString()));
   }
 
   Future signUp() async {
@@ -124,15 +175,43 @@ class _SignUpInfoState extends State<SignUpInfo> {
       return;
     }
     loading(context);
-    // await checkUsername();
-    if (userExist) {
-      Utils.showSnackBar('Username already exists', messengerKey);
-      Navigator.of(context).pop();
-      return;
-    }
 
     createUser();
     Navigator.of(context).pop();
+  }
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.image,
+    );
+
+    if (result == null) return;
+    path = result.files.single.path!;
+    imageName = result.files.single.name;
+
+    setState(() {
+      file = File(path);
+      newUpload = true;
+    });
+  }
+
+  Future uploadImage() async {
+    final cloudPath =
+        'user/${userNameController.text.trim()}/profile/${imageName}';
+    final file = File(path);
+
+    final ref = FirebaseStorage.instance.ref().child(cloudPath);
+    setState(() {
+      uploadTask = ref.putFile(file);
+    });
+
+    final snapshot = await uploadTask!.whenComplete(() {});
+    ImageUrl = await snapshot.ref.getDownloadURL();
+    print(ImageUrl);
+    setState(() {
+      uploadTask = null;
+    });
   }
 
   getMostViewedCat() async {
@@ -150,18 +229,21 @@ class _SignUpInfoState extends State<SignUpInfo> {
 
   Future createUser() async {
     await getMostViewedCat();
+    await uploadImage();
+    var user = FirebaseAuth.instance.currentUser;
     final json = {
       'FirstName': firstNameController.text.trim(),
       'LastName': lastNameController.text.trim(),
-      'Username': userNameController.text.trim(),
-      'Email': FirebaseAuth.instance.currentUser!.email,
+      'Username': widget.Username,
+      'Email': user!.email,
       'PhoneNumber': phoneNumberController.text.trim(),
       'Bio': bioController.text.trim(),
       'Badge': '',
       'Uid': FirebaseAuth.instance.currentUser!.uid,
       'FollowingBusinessBid': FollowingBusinessBid,
       'OwnedBusinessBid': OwnedBusinessBid,
-      'MostViewedCat': MostViewedCat
+      'MostViewedCat': MostViewedCat,
+      'ImageUrl': ImageUrl
     };
 
     UserManagement().storeNewUser(json, context);

@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:project_bind/reusable_widgets/Review.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/Review.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/utils/color_utils.dart';
 
@@ -21,11 +21,6 @@ class _ReviewsPageState extends State<ReviewsPage> {
   var review;
   @override
   void initState() {
-    // review = FirebaseFirestore.instance
-    //     .collection('business')
-    //     .doc(widget.Bid)
-    //     .collection('review')
-    //     .snapshots();
     getBusinessInfo();
     super.initState();
   }
@@ -34,36 +29,17 @@ class _ReviewsPageState extends State<ReviewsPage> {
   bool connected = false;
   double rating = 0;
   String unrated = '';
-  // BusinessApi businessApi = BusinessApi();
 
   getBusinessInfo() async {
-    await checkConnection();
-    if (connected) {
-      print('1');
+    print('1');
+    await BusinessData.businessApi.getuserInfo();
+    await BusinessData.businessApi.fetchReviews(widget.Bid);
+    await BusinessData.businessApi.getmyInfo();
+    await BusinessData.businessApi.getBusinessFollow(widget.Bid);
 
-      await BusinessData.businessApi.fetchReviews(widget.Bid);
-      await BusinessData.businessApi.getmyInfo();
-      await BusinessData.businessApi.getBusinessFollow(widget.Bid);
-
-      setState(() {
-        loading = false;
-      });
-    } else {
-      NoConnectionDialogue(context, getBusinessInfo());
-    }
-  }
-
-  checkConnection() async {
-    try {
-      final result = await InternetAddress.lookup('www.google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('connected');
-        connected = true;
-      }
-    } on SocketException catch (_) {
-      print('disconnected');
-      connected = false;
-    }
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -118,12 +94,11 @@ class _ReviewsPageState extends State<ReviewsPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            padding: EdgeInsets.fromLTRB(12, 5, 12, 0),
+                            padding: EdgeInsets.fromLTRB(5, 5, 3, 0),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12)),
                             height: sheight * 0.0625,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
@@ -134,13 +109,14 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                       width: swidth * 0.0336,
                                     ),
                                     Text(
-                                      //  '${userInfo['Username']}'
-                                      'Anonymous',
+                                      'username',
+                                      //'${BusinessData.businessApi.businessReview[num]['Username']}',
                                       style:
                                           TextStyle(color: primaryTextColor()),
                                     )
                                   ],
                                 ),
+                                SizedBox(width: swidth * 0.18),
                                 RatingBarIndicator(
                                   rating: BusinessData.businessApi
                                       .businessReview[num]['Rating'],
@@ -149,8 +125,55 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                     color: primaryThemeColor(),
                                   ),
                                   itemCount: 5,
-                                  itemSize: swidth * 0.0625,
+                                  itemSize: swidth * 0.06,
                                 ),
+                                SizedBox(width: swidth * 0.035),
+                                if (FirebaseAuth.instance.currentUser != null &&
+                                    BusinessData.businessApi.businessReview[num]
+                                            ['Uid'] !=
+                                        FirebaseAuth.instance.currentUser!.uid)
+                                  PopupMenuButton<MenuItem>(
+                                    color: tertiaryThemeColor(),
+                                    icon: Icon(
+                                      Icons.more_vert,
+                                      color: primaryThemeColor(),
+                                    ),
+                                    onSelected: (item) => onSelected(
+                                        context,
+                                        item,
+                                        widget.Bid,
+                                        BusinessData.businessApi
+                                            .businessReview[num]['Rid'],
+                                        getBusinessInfo()),
+                                    itemBuilder: (context) => [
+                                      ...MenuItems.reportItems
+                                          .map(buildItem)
+                                          .toList(),
+                                    ],
+                                  ),
+                                if (FirebaseAuth.instance.currentUser != null &&
+                                    BusinessData.businessApi.businessReview[num]
+                                            ['Uid'] ==
+                                        FirebaseAuth.instance.currentUser!.uid)
+                                  PopupMenuButton<MenuItem>(
+                                    color: tertiaryThemeColor(),
+                                    icon: Icon(
+                                      Icons.more_vert,
+                                      color: primaryThemeColor(),
+                                    ),
+                                    onSelected: (item) => onSelected(
+                                        context,
+                                        item,
+                                        widget.Bid,
+                                        BusinessData.businessApi
+                                            .businessReview[num]['Rid'],
+                                        getBusinessInfo()),
+                                    itemBuilder: (context) => [
+                                      ...MenuItems.deleteItems
+                                          .map(buildItem)
+                                          .toList(),
+                                    ],
+                                  )
                               ],
                             ),
                           ),
@@ -337,4 +360,172 @@ class _ReviewsPageState extends State<ReviewsPage> {
       );
     }
   }
+}
+
+PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
+      value: item,
+      child: Row(
+        children: [
+          Icon(
+            item.icon,
+            color: warningColor(),
+            size: 20,
+          ),
+          const SizedBox(
+            width: 12,
+          ),
+          Text(
+            item.text,
+            style: TextStyle(color: primaryTextColor()),
+          ),
+        ],
+      ),
+    );
+
+void onSelected(BuildContext context, MenuItem item, String Bid, String Rid,
+    Function reload) {
+  switch (item) {
+    case MenuItems.itemReport:
+      reportReviewDialogue(context, Bid, Rid, reload);
+      break;
+    case MenuItems.itemDelete:
+      deleteReviewDialogue(context, Bid, Rid);
+      break;
+  }
+}
+
+Future reportReview() async {}
+
+void deleteReviewDialogue(BuildContext context, String Bid, String Rid) {
+  double sheight = MediaQuery.of(context).size.height;
+  double swidth = MediaQuery.of(context).size.width;
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: tertiaryThemeColor(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Delete?',
+                  style: TextStyle(fontSize: 24, color: primaryTextColor()),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Do you really want to delete your review?',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: primaryTextColor()),
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(
+                                  primaryThemeColor())),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Cancel')),
+                      SizedBox(
+                        width: swidth * 0.167,
+                      ),
+                      TextButton(
+                          style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(
+                                  primaryThemeColor())),
+                          onPressed: () {
+                            deleteReview(context, Bid, Rid);
+                          },
+                          child: Text('Delete'))
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
+}
+
+void reportReviewDialogue(
+    BuildContext context, String Bid, String Rid, Function reload) {
+  double sheight = MediaQuery.of(context).size.height;
+  double swidth = MediaQuery.of(context).size.width;
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: tertiaryThemeColor(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Delete?',
+                  style: TextStyle(fontSize: 24, color: primaryTextColor()),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Do you really want to delete your review?',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: primaryTextColor()),
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(
+                                  primaryThemeColor())),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Cancel')),
+                      SizedBox(
+                        width: swidth * 0.167,
+                      ),
+                      TextButton(
+                          style: ButtonStyle(
+                              foregroundColor:
+                                  MaterialStateProperty.all(warningColor())),
+                          onPressed: () async {
+                            deleteReview(context, Bid, Rid);
+                            await reload();
+                          },
+                          child: Text('Delete'))
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
+}
+
+Future deleteReview(BuildContext context, String Bid, String Rid) async {
+  var ds = await FirebaseFirestore.instance
+      .collection('business')
+      .doc(Bid)
+      .collection('review')
+      .doc(Rid);
+
+  ds.delete();
+  // Utils.showSnackBar('Business succesfully deleted', messengerKey);
+  Navigator.pop(context);
 }

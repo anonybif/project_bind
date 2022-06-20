@@ -6,8 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:project_bind/main.dart';
-import 'package:project_bind/reusable_widgets/business.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/business.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/screens/location_picker.dart';
@@ -245,7 +245,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
               const SizedBox(
                 height: 10,
               ),
-              reusableUIButton(context, "Add", (sheight * 0.33), () async {
+              reusableUIButton(context, "Add", (sheight * 0.33), 50, () async {
                 if (location == '') {
                   setState(() {
                     locationError = 'Location must be added';
@@ -372,7 +372,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
       'ClosingTime': timeClosed.format(context),
       'Uid': '',
       'Reviews': 0,
-      'Rating': 0,
+      'Rating': 1,
       'Follows': 0,
       'Clicks': 0
     };

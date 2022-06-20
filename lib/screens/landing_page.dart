@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
 import 'package:project_bind/screens/home/home.dart';
@@ -58,7 +58,7 @@ class _LandingPageState extends State<LandingPage> {
                   ),
                 ),
                 SizedBox(
-                  height: sheight * 0.125,
+                  height: sheight * 0.18,
                 ),
                 logoWidget("assets/images/bind_logo1.png"),
                 SizedBox(
@@ -95,7 +95,7 @@ class _LandingPageState extends State<LandingPage> {
                 SizedBox(
                   height: sheight * 0.25,
                 ),
-                reusableUIButton(context, "Create Account", swidth, () {
+                reusableUIButton(context, "Create Account", swidth, 50, () {
                   toSignUp();
                 }),
                 SizedBox(height: sheight * 0.03125),
@@ -126,7 +126,7 @@ class _LandingPageState extends State<LandingPage> {
                 MaterialPageRoute(builder: (context) => const SignIn()));
           },
           child: Text(
-            " Sign In",
+            " Login",
             style: TextStyle(
                 color: primaryThemeColor(),
                 fontWeight: FontWeight.bold,

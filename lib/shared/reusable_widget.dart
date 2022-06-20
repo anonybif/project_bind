@@ -3,6 +3,7 @@ import 'package:project_bind/screens/authenticate/sign_in.dart';
 import 'package:project_bind/screens/authenticate/sign_up.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:project_bind/utils/color_utils.dart';
+import 'package:shimmer/shimmer.dart';
 
 Image logoWidget(String imageName) {
   return Image.asset(
@@ -10,6 +11,7 @@ Image logoWidget(String imageName) {
     fit: BoxFit.fitWidth,
     width: 120,
     height: 120,
+    color: primaryThemeColor(),
   );
 }
 
@@ -55,8 +57,10 @@ TextFormField reusableTextField(String text, IconData icon, String type,
         filled: true,
         fillColor: tertiaryThemeColor(),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(
+              width: 0, style: BorderStyle.none, color: primaryThemeColor()),
+        ),
       ),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: isEmail
@@ -64,7 +68,7 @@ TextFormField reusableTextField(String text, IconData icon, String type,
               value != null && value.isEmpty ? 'Enter a valid Email' : null)
           : isPasswordType
               ? ((value) => value != null && value.length < 6
-                  ? 'needs to be atleast 6 characters'
+                  ? 'password needs to be atleast 6 characters'
                   : null)
               : isUsername
                   ? ((value) => value != null && value.length < 4
@@ -106,8 +110,10 @@ TextFormField reusableTextArea(String text, IconData icon, bool isOptional,
         filled: true,
         fillColor: tertiaryThemeColor(),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(
+              width: 0, style: BorderStyle.none, color: primaryThemeColor()),
+        ),
       ),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: isOptional
@@ -117,11 +123,11 @@ TextFormField reusableTextArea(String text, IconData icon, bool isOptional,
       keyboardType: TextInputType.multiline);
 }
 
-Container reusableUIButton(
-    BuildContext context, String title, double width, Function onTap) {
+Container reusableUIButton(BuildContext context, String title, double width,
+    double height, Function onTap) {
   return Container(
     width: width,
-    height: 50,
+    height: height,
     margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
     child: ElevatedButton(
         onPressed: () {
@@ -323,4 +329,126 @@ void NoConnectionDialogue(
           backgroundColor: secondaryThemeColor(),
         );
       });
+}
+
+Widget BusinessShimmerCard(double sheight, double swidth) {
+  return Row(
+    children: [
+      Shimmer.fromColors(
+        baseColor: secondaryThemeColor(),
+        highlightColor: tertiaryThemeColor(),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 20),
+          height: sheight * 0.15,
+          width: swidth * 0.3,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              color: tertiaryThemeColor()),
+        ),
+      ),
+      Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Shimmer.fromColors(
+            baseColor: secondaryThemeColor(),
+            highlightColor: tertiaryThemeColor(),
+            child: Container(
+              width: swidth * 0.3,
+              height: sheight * 0.02,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: tertiaryThemeColor()),
+            )),
+        SizedBox(
+          height: sheight * 0.025,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Shimmer.fromColors(
+                baseColor: secondaryThemeColor(),
+                highlightColor: tertiaryThemeColor(),
+                child: Container(
+                  width: swidth * 0.16,
+                  height: sheight * 0.02,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: tertiaryThemeColor()),
+                )),
+            SizedBox(
+              width: swidth * 0.1,
+            ),
+            Shimmer.fromColors(
+                baseColor: secondaryThemeColor(),
+                highlightColor: tertiaryThemeColor(),
+                child: Container(
+                  width: swidth * 0.2,
+                  height: sheight * 0.02,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: tertiaryThemeColor()),
+                )),
+          ],
+        ),
+        SizedBox(
+          height: sheight * 0.012,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Shimmer.fromColors(
+                baseColor: secondaryThemeColor(),
+                highlightColor: tertiaryThemeColor(),
+                child: Container(
+                  width: swidth * 0.2,
+                  height: sheight * 0.02,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: tertiaryThemeColor()),
+                )),
+            SizedBox(
+              width: swidth * 0.1,
+            ),
+            Shimmer.fromColors(
+                baseColor: secondaryThemeColor(),
+                highlightColor: tertiaryThemeColor(),
+                child: Container(
+                  width: swidth * 0.16,
+                  height: sheight * 0.02,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: tertiaryThemeColor()),
+                )),
+          ],
+        ),
+      ])
+    ],
+  );
+}
+
+class MenuItem {
+  final String text;
+  final IconData icon;
+  const MenuItem({required this.text, required this.icon});
+}
+
+class MenuItems {
+  static const List<MenuItem> reportItems = [itemReport];
+  static const List<MenuItem> deleteItems = [itemDelete];
+  static const List<MenuItem> settingItems = [
+    itemEditProfile,
+    itemSetting,
+    itemFaq,
+    itemSupport,
+    itemLogout
+  ];
+
+  static const itemReport = MenuItem(text: 'Report', icon: Icons.report);
+  static const itemDelete = MenuItem(text: 'Delete', icon: Icons.delete);
+  static const itemEditProfile =
+      MenuItem(text: 'Edit Profile', icon: Icons.edit);
+
+  static const itemFaq = MenuItem(text: 'FAQ', icon: Icons.question_answer);
+  static const itemSupport = MenuItem(text: 'Support', icon: Icons.support);
+  static const itemLogout = MenuItem(text: 'Logout', icon: Icons.logout);
+  static const itemSetting = MenuItem(text: 'Settings', icon: Icons.settings);
 }

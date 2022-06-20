@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:location/location.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/utils/color_utils.dart';
 //import 'package:geocoder/geocoder.dart';
 
 class Business_direction_page extends StatefulWidget {
-  const Business_direction_page({Key? key}) : super(key: key);
+  final String location;
+  final String deviceLocation;
+  const Business_direction_page(
+      {Key? key, required this.location, required this.deviceLocation})
+      : super(key: key);
 
   @override
   State<Business_direction_page> createState() =>
@@ -15,14 +20,57 @@ class Business_direction_page extends StatefulWidget {
 
 class _Business_direction_pageState extends State<Business_direction_page> {
   List<Marker> myMarker = [];
-  String location = '';
-  String loc = '';
-  String lat = '';
-  String long = '';
+
+  double lat = 0;
+  double long = 0;
+  double deviceLat = 0;
+  double deviceLong = 0;
 
   @override
   void initState() {
+    setLocation();
     super.initState();
+  }
+
+  setLocation() async {
+    myMarker = [];
+
+    await getBusinessLocation();
+
+    print(myMarker);
+  }
+
+  getBusinessLocation() async {
+    List<String> loc = widget.location.split(',');
+
+    if (widget.location != '') {
+      lat = num.tryParse(loc[0])!.toDouble();
+      long = num.tryParse(loc[1])!.toDouble();
+      print('$lat,$long');
+
+      myMarker.add(Marker(
+          width: 65.0,
+          height: 65.0,
+          point: LatLng(lat, long),
+          builder: (ctx) =>
+              Icon(Icons.location_on, color: primaryThemeColor())));
+    }
+
+    List<String> deviceLoc = widget.deviceLocation.split(',');
+
+    if (widget.deviceLocation != '') {
+      deviceLat = num.tryParse(deviceLoc[0])!.toDouble();
+      deviceLong = num.tryParse(deviceLoc[1])!.toDouble();
+
+      print('$deviceLat,$deviceLong');
+
+      myMarker.add(Marker(
+          width: 65.0,
+          height: 65.0,
+          point: LatLng(deviceLat, deviceLong),
+          builder: (ctx) =>
+              Icon(Icons.my_location, color: primaryThemeColor())));
+    }
   }
 
   @override
@@ -38,7 +86,7 @@ class _Business_direction_pageState extends State<Business_direction_page> {
       ),
       body: FlutterMap(
         options: MapOptions(
-          center: LatLng(9, 38.77),
+          center: LatLng(lat, long),
           zoom: 11.0,
         ),
         layers: [
@@ -57,11 +105,11 @@ class _Business_direction_pageState extends State<Business_direction_page> {
     );
   }
 
-  parselocation() {
-    final firstSplit = location.split(':');
-    final secondSplit = firstSplit[1].split(',');
-    lat = secondSplit[0];
-    final thirdSplit = firstSplit[2].toString().split(')');
-    long = thirdSplit[0];
-  }
+  // parselocation() {
+  //   final firstSplit = location.split(':');
+  //   final secondSplit = firstSplit[1].split(',');
+  //   lat = secondSplit[0];
+  //   final thirdSplit = firstSplit[2].toString().split(')');
+  //   long = thirdSplit[0];
+  // }
 }

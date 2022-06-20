@@ -3,8 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/business_page.dart';
-import 'package:project_bind/screens/home/search.dart';
-import 'package:project_bind/reusable_widgets/business.dart';
+import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:shimmer/shimmer.dart';
 

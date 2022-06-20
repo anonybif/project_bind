@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:project_bind/reusable_widgets/business.dart';
-import 'package:project_bind/reusable_widgets/reusable_widget.dart';
+import 'package:project_bind/shared/business.dart';
+import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/manage_business.dart';
 import 'package:project_bind/utils/color_utils.dart';
@@ -16,7 +16,6 @@ class MyBusiness extends StatefulWidget {
 
 class _MyBusinessState extends State<MyBusiness> {
   bool loading = true;
-  bool connected = false;
 
   @override
   void initState() {
@@ -25,29 +24,11 @@ class _MyBusinessState extends State<MyBusiness> {
   }
 
   getBusinessInfo() async {
-    await checkConnection();
-    if (connected) {
-      await BusinessData.businessApi.getMyBusiness();
+    await BusinessData.businessApi.getMyBusiness();
 
-      setState(() {
-        loading = false;
-      });
-    } else {
-      NoConnectionDialogue(context, getBusinessInfo());
-    }
-  }
-
-  checkConnection() async {
-    try {
-      final result = await InternetAddress.lookup('www.google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('connected');
-        connected = true;
-      }
-    } on SocketException catch (_) {
-      print('disconnected');
-      connected = false;
-    }
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
