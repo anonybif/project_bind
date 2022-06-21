@@ -5,6 +5,8 @@ import 'package:project_bind/screens/authenticate/verify_email_page.dart';
 import 'package:project_bind/screens/home/home.dart';
 
 class UserManagement {
+  Map userData = Map<String, dynamic>();
+
   storeNewUser(json, context) async {
     var firebaseUser = FirebaseAuth.instance.currentUser;
 
@@ -27,5 +29,30 @@ class UserManagement {
     await docRef.set(json).catchError((e) {
       print(e);
     });
+  }
+
+  updateUserFavorites(String Bid, String operation) async {
+    var Uid = FirebaseAuth.instance.currentUser!.uid;
+    final ds =
+        await FirebaseFirestore.instance.collection('user').doc(Uid).get();
+
+    userData = ds.data()!;
+    var userRef = ds.reference;
+    List<String> FavoriteBusinessBid = <String>[];
+    FavoriteBusinessBid = List.from(userData['FavoriteBusinessBid']);
+    FavoriteBusinessBid.removeWhere((element) => element == '');
+
+    if (operation == 'plus') {
+      FavoriteBusinessBid.add(Bid);
+      setBusinessFavorites(userRef, FavoriteBusinessBid);
+    } else if (operation == 'minus') {
+      FavoriteBusinessBid.removeWhere((element) => element == Bid);
+      setBusinessFavorites(userRef, FavoriteBusinessBid);
+    }
+  }
+
+  setBusinessFavorites(
+      DocumentReference userdocRef, List<String> FavoriteBusinessBid) async {
+    userdocRef.update({'FavoriteBusinessBid': FavoriteBusinessBid});
   }
 }

@@ -1,18 +1,21 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
+import 'package:profanity_filter/profanity_filter.dart';
 import 'package:project_bind/shared/Review.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/home/home.dart';
-import 'package:project_bind/screens/user_profile_page.dart';
+import 'package:project_bind/screens/home/user_profile_page.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:project_bind/utils/utils.dart';
 import 'package:searchfield/searchfield.dart';
 
 class WriteReview extends StatefulWidget {
@@ -30,13 +33,16 @@ const _kPages = <String, IconData>{
 
 class _WriteReviewState extends State<WriteReview> {
   final formKey = GlobalKey<FormState>();
+  final messengerKey = GlobalKey<ScaffoldMessengerState>();
   TabStyle _tabStyle = TabStyle.reactCircle;
   TextEditingController reviewController = TextEditingController();
   TextEditingController businessNameController = TextEditingController();
   String? _selectedItem;
   List<String> businessNames = [];
   double rating = 0;
+  String bizSelected = '';
   String unrated = '';
+
   int reviews = 0;
 
   File? file1;
@@ -69,11 +75,25 @@ class _WriteReviewState extends State<WriteReview> {
     print(businessNames);
   }
 
+  bool hasProfanity() {
+    final filter = ProfanityFilter();
+    bool hasProfanity = filter.hasProfanity(reviewController.text);
+    return hasProfanity;
+  }
+
+  List<String> bannedWords() {
+    List<String> moreProfaneWords = ['dicks'];
+    final filter = ProfanityFilter.filterAdditionally(moreProfaneWords);
+    List<String> wordsFound = filter.getAllProfanity(reviewController.text);
+    return wordsFound;
+  }
+
   @override
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
     double sheight = MediaQuery.of(context).size.height;
     return MaterialApp(
+      scaffoldMessengerKey: messengerKey,
       home: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
@@ -109,10 +129,10 @@ class _WriteReviewState extends State<WriteReview> {
                       Container(
                         width: double.infinity,
                         margin: EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        // decoration: BoxDecoration(
+                        //   color: Colors.white,
+                        //   borderRadius: BorderRadius.circular(10),
+                        // ),
                         child: SearchField(
                             hint: 'Search',
                             controller: businessNameController,
@@ -121,18 +141,18 @@ class _WriteReviewState extends State<WriteReview> {
                                   Icons.search,
                                   color: primaryTextColor(),
                                 ),
-                                enabledBorder: OutlineInputBorder(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
                                   borderSide: BorderSide(
-                                    color: primaryThemeColor(),
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
+                                      width: 0,
+                                      style: BorderStyle.none,
+                                      color: primaryThemeColor()),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2, color: primaryThemeColor()),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                                // focusedBorder: OutlineInputBorder(
+                                //   borderSide: BorderSide(
+                                //       width: 2, color: primaryThemeColor()),
+                                //   borderRadius: BorderRadius.circular(10),
+                                // ),
                                 hintStyle: TextStyle(color: Colors.grey),
                                 filled: true,
                                 fillColor: tertiaryThemeColor()),
@@ -156,6 +176,15 @@ class _WriteReviewState extends State<WriteReview> {
                               print(value);
                             },
                             suggestions: businessNames),
+                      ),
+                      SizedBox(
+                        height: sheight * 0.01,
+                      ),
+                      Center(
+                        child: Text(
+                          bizSelected,
+                          style: TextStyle(color: warningColor()),
+                        ),
                       ),
                       Container(
                         padding:
@@ -191,35 +220,38 @@ class _WriteReviewState extends State<WriteReview> {
                             SizedBox(
                               height: sheight * 0.02,
                             ),
+                            //here
                             Form(
                               key: formKey,
                               child: Container(
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: primaryThemeColor()),
-                                    borderRadius: BorderRadius.circular(12)),
+                                // decoration: BoxDecoration(
+                                //     border:
+                                //         Border.all(color: primaryThemeColor()),
+                                //     borderRadius: BorderRadius.circular(12)),
                                 child: TextFormField(
                                     controller: reviewController,
-                                    maxLines: 10,
+                                    maxLines: 5,
                                     style: TextStyle(color: primaryTextColor()),
                                     decoration: InputDecoration(
-                                      labelText: 'Write a review',
-                                      labelStyle: TextStyle(
-                                          color: Colors.grey.withOpacity(0.9)),
-                                      filled: true,
-                                      fillColor: tertiaryThemeColor(),
-                                      border: UnderlineInputBorder(
+                                        labelText: 'Write a review',
+                                        labelStyle: TextStyle(
+                                            color:
+                                                Colors.grey.withOpacity(0.9)),
+                                        filled: true,
+                                        fillColor: tertiaryThemeColor(),
+                                        border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(12.0),
-                                          borderSide: const BorderSide(
+                                          borderSide: BorderSide(
                                               width: 0,
-                                              style: BorderStyle.none)),
-                                    ),
+                                              style: BorderStyle.none,
+                                              color: primaryThemeColor()),
+                                        )),
                                     autovalidateMode:
                                         AutovalidateMode.onUserInteraction,
                                     validator: (value) =>
                                         value != null && value.isEmpty
-                                            ? 'Field can\'t be empty'
+                                            ? 'write something here'
                                             : null,
                                     keyboardType: TextInputType.multiline),
                               ),
@@ -383,22 +415,76 @@ class _WriteReviewState extends State<WriteReview> {
                                     Icons.comment, sheight * 0.5, () async {
                                   if (FirebaseAuth.instance.currentUser !=
                                       null) {
-                                    var isValid =
-                                        formKey.currentState!.validate();
-                                    if (!isValid) {
+                                    if (businessNameController.text.isEmpty) {
+                                      setState(() {
+                                        bizSelected = 'select a business';
+                                      });
                                       return;
                                     }
+                                    setState(() {
+                                      bizSelected = '';
+                                    });
+
                                     if (rating == 0) {
                                       setState(() {
                                         unrated = 'Give us a rating';
                                       });
                                       return;
-                                    } else {
-                                      unrated = '';
-                                      await createReview(context);
-
-                                      setState(() {});
                                     }
+                                    setState(() {
+                                      unrated = '';
+                                    });
+                                    var isValid =
+                                        formKey.currentState!.validate();
+                                    if (!isValid) {
+                                      return;
+                                    }
+                                    if (hasProfanity()) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            backgroundColor:
+                                                tertiaryThemeColor(),
+                                            title: Center(
+                                                child: Text(
+                                              "Alert!",
+                                              style: TextStyle(
+                                                  color: primaryTextColor()),
+                                            )),
+                                            content: Text(
+                                                'The use of profane language is strictly prohibited. Return to your review and make any necessary adjustments',
+                                                style: TextStyle(
+                                                    color: primaryTextColor())),
+                                            actions: <Widget>[
+                                              Center(
+                                                child: ElevatedButton(
+                                                  style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty.all(
+                                                              primaryThemeColor())),
+                                                  child: Text("OK",
+                                                      style: TextStyle(
+                                                          color:
+                                                              primaryTextColor())),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                      // Utils.showSnackBar(
+                                      //     'The use of ${bannedWords()} word is forbidden',
+                                      //     messengerKey);
+                                      return;
+                                    }
+
+                                    await createReview(context);
+
+                                    setState(() {});
                                   } else {
                                     signUpDialogue(context,
                                         'Login or SignUp to post a review');
@@ -541,6 +627,10 @@ class _WriteReviewState extends State<WriteReview> {
     }
     print(Bid);
 
+    DocumentReference Uid = FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+
     if (file1 != null) await uploadImage(0);
     if (file2 != null) await uploadImage(1);
     if (file3 != null) await uploadImage(2);
@@ -550,12 +640,13 @@ class _WriteReviewState extends State<WriteReview> {
       'Content': reviewController.text.trim(),
       'Date': getDate(),
       'Rating': rating,
-      'Uid': FirebaseAuth.instance.currentUser!.uid,
+      'Uid': Uid,
       'Rid': '',
       'Likes': 0,
       'ImageUrl': List.from(ImageUrl),
       'LikedUserUid': LikedUserUid,
-      'Reports': 0
+      'Reports': 0,
+      'Bid': Bid
     };
 
     ReviewManagement().storeNewReview(json, context, Bid);

@@ -9,7 +9,7 @@ import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/home/search_page.dart';
 import 'package:project_bind/screens/home/write_review_page.dart';
-import 'package:project_bind/screens/user_profile_page.dart';
+import 'package:project_bind/screens/home/user_profile_page.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -195,79 +195,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: sheight * 0.02,
                 ),
-                Container(
-                  height: sheight * 0.1428,
-                  decoration: BoxDecoration(
-                      color: tertiaryThemeColor(),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: FutureBuilder(
-                    future: fetchCategory(),
-                    builder: (context, AsyncSnapshot snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                            child: SpinKitThreeBounce(
-                          color: primaryThemeColor(),
-                          size: 32,
-                        ));
-                      } else {
-                        return GridView.builder(
-                          itemCount: items.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            final item = items[index];
-
-                            return Container(
-                              child: InkWell(
-                                onTap: () {
-                                  if (!selected[index]) {
-                                    for (int i = 0; i < items.length; i++) {
-                                      selected[i] = false;
-                                    }
-                                    getSearchResult(item);
-                                    getNearbyBusiness();
-                                    getRecommendedBusiness();
-                                  } else {
-                                    getSearchResult('');
-                                    getNearbyBusiness();
-                                    getRecommendedBusiness();
-                                  }
-                                  setState(() {
-                                    selected[index] = !selected[index];
-                                  });
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 10),
-                                  decoration: BoxDecoration(
-                                      color: selected[index]
-                                          ? primaryThemeColor()
-                                          : tertiaryThemeColor(),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                          color: primaryThemeColor())),
-                                  child: Center(
-                                    child: Text(
-                                      item,
-                                      style: TextStyle(
-                                          color: selected[index]
-                                              ? tertiaryThemeColor()
-                                              : primaryThemeColor()),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: (1 / 1.8),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
+                categories(sheight),
                 SizedBox(
                   height: sheight * 0.03,
                 ),
@@ -281,191 +209,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: sheight * 0.02,
                 ),
-                SizedBox(
-                  height: sheight * 0.15,
-                  child: FutureBuilder(
-                      future: getNearbyBusiness(),
-                      builder: (context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(
-                              child: SpinKitThreeBounce(
-                            color: primaryThemeColor(),
-                            size: 32,
-                          ));
-                        } else {
-                          return ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                child: Card(
-                                  // margin: EdgeInsets.symmetric(horizontal: 5),
-                                  color: tertiaryThemeColor(),
-                                  elevation: 10,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        height: sheight * 0.15,
-                                        width: swidth * 0.3,
-                                        clipBehavior: Clip.antiAlias,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: FittedBox(
-                                          child: FadeInImage(
-                                            image: NetworkImage(
-                                                '${Nearitems[index]['ImageUrl']} ',
-                                                scale: sheight),
-                                            placeholder: AssetImage(
-                                                "assets/images/placeholder.png"),
-                                            imageErrorBuilder:
-                                                (context, error, stackTrace) {
-                                              return Image.asset(
-                                                  'assets/images/error.png',
-                                                  fit: BoxFit.fitWidth);
-                                            },
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: sheight * 0.02,
-                                            horizontal: swidth * 0.05),
-                                        child: Column(children: [
-                                          Text(
-                                            Nearitems[index]['BusinessName'],
-                                            style: TextStyle(
-                                                color: primaryTextColor(),
-                                                fontWeight: FontWeight.w800),
-                                          ),
-                                          SizedBox(
-                                            height: sheight * 0.012,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                width: swidth * 0.2,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.star,
-                                                      color:
-                                                          primaryThemeColor(),
-                                                      size: swidth * 0.05,
-                                                    ),
-                                                    SizedBox(
-                                                      width: swidth * 0.03,
-                                                    ),
-                                                    Text(
-                                                      Nearitems[index]['Rating']
-                                                          .toStringAsFixed(1),
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color:
-                                                              primaryTextColor()),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: swidth * 0.1,
-                                              ),
-                                              Container(
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_on,
-                                                      color:
-                                                          primaryThemeColor(),
-                                                      size: swidth * 0.05,
-                                                    ),
-                                                    SizedBox(
-                                                      width: swidth * 0.03,
-                                                    ),
-                                                    Text(
-                                                      '${Nearitems[index]['Distance'].toString()} KM',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color:
-                                                              primaryTextColor()),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: sheight * 0.018,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                width: swidth * 0.2,
-                                                child: Text(
-                                                  "${Nearitems[index]['AveragePrice']} ETB"
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          primaryTextColor()),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: swidth * 0.18,
-                                              ),
-                                              Container(
-                                                child: Nearitems[index]
-                                                        ['isOpen']
-                                                    ? Text(
-                                                        "Open",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color:
-                                                                Colors.green),
-                                                      )
-                                                    : Text(
-                                                        "Closed",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: Colors.red),
-                                                      ),
-                                              ),
-                                            ],
-                                          ),
-                                        ]),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                onTap: () {
-                                  BusinessManagement().updateBusinessClicks(
-                                      Nearitems[index]['Bid']);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => BusinessPage(
-                                              Bid: Nearitems[index]['Bid'])));
-                                },
-                              );
-                            },
-                            itemCount: Nearitems.length,
-                          );
-                        }
-                      }),
-                ),
+                nearbyBusinesses(sheight, swidth),
                 SizedBox(
                   height: sheight * 0.03,
                 ),
@@ -479,187 +223,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: sheight * 0.03,
                 ),
-                FutureBuilder(
-                  future: getRecommendedBusiness(),
-                  builder: (context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                          child: SpinKitThreeBounce(
-                        color: primaryThemeColor(),
-                        size: 32,
-                      ));
-                    } else {
-                      return ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            child: Card(
-                              margin: EdgeInsets.only(bottom: 16),
-                              color: tertiaryThemeColor(),
-                              elevation: 10,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    height: sheight * 0.15,
-                                    width: swidth * 0.3,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: FittedBox(
-                                      child: FadeInImage(
-                                        image: NetworkImage(
-                                            '${Recommenditems[index]['ImageUrl']} ',
-                                            scale: sheight),
-                                        placeholder: AssetImage(
-                                            "assets/images/placeholder.png"),
-                                        imageErrorBuilder:
-                                            (context, error, stackTrace) {
-                                          return Image.asset(
-                                              'assets/images/error.png',
-                                              fit: BoxFit.cover);
-                                        },
-                                        fit: BoxFit.cover,
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: sheight * 0.02,
-                                        horizontal: swidth * 0.05),
-                                    child: Column(children: [
-                                      Text(
-                                        Recommenditems[index]['BusinessName'],
-                                        style: TextStyle(
-                                            color: primaryTextColor(),
-                                            fontWeight: FontWeight.w800),
-                                      ),
-                                      SizedBox(
-                                        height: sheight * 0.012,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: swidth * 0.2,
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.star,
-                                                  color: primaryThemeColor(),
-                                                  size: swidth * 0.05,
-                                                ),
-                                                SizedBox(
-                                                  width: swidth * 0.03,
-                                                ),
-                                                Text(
-                                                  Recommenditems[index]
-                                                          ['Rating']
-                                                      .toStringAsFixed(1),
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          primaryTextColor()),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: swidth * 0.1,
-                                          ),
-                                          Container(
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.location_on,
-                                                  color: primaryThemeColor(),
-                                                  size: swidth * 0.05,
-                                                ),
-                                                SizedBox(
-                                                  width: swidth * 0.03,
-                                                ),
-                                                Text(
-                                                  '${Recommenditems[index]['Distance'].toString()} KM',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          primaryTextColor()),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: sheight * 0.018,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: swidth * 0.2,
-                                            child: Text(
-                                              "${Recommenditems[index]['AveragePrice']} ETB"
-                                                  .toString(),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  color: primaryTextColor()),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: swidth * 0.18,
-                                          ),
-                                          Container(
-                                            child: Recommenditems[index]
-                                                    ['isOpen']
-                                                ? Text(
-                                                    "Open",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.green),
-                                                  )
-                                                : Text(
-                                                    "Closed",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.red),
-                                                  ),
-                                          ),
-                                        ],
-                                      ),
-                                    ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            onTap: () {
-                              BusinessManagement().updateBusinessClicks(
-                                  Recommenditems[index]['Bid']);
-                              BusinessManagement().updateCategoryClicks(
-                                  Recommenditems[index]['Category']);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => BusinessPage(
-                                          Bid: Recommenditems[index]['Bid'])));
-                            },
-                          );
-                        },
-                        itemCount: Recommenditems.length,
-                      );
-                    }
-                  },
-                ),
+                recommendedBusinesses(sheight, swidth),
               ],
             ),
           ),
@@ -685,6 +249,424 @@ class _HomeState extends State<Home> {
             }
           }),
         ),
+      ),
+    );
+  }
+
+  FutureBuilder<dynamic> recommendedBusinesses(double sheight, double swidth) {
+    return FutureBuilder(
+      future: getRecommendedBusiness(),
+      builder: (context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+              child: SpinKitThreeBounce(
+            color: primaryThemeColor(),
+            size: 32,
+          ));
+        } else {
+          return ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              return GestureDetector(
+                child: Card(
+                  margin: EdgeInsets.only(bottom: 16),
+                  color: tertiaryThemeColor(),
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: sheight * 0.15,
+                        width: swidth * 0.3,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: FittedBox(
+                          child: FadeInImage(
+                            image: NetworkImage(
+                                '${Recommenditems[index]['ImageUrl']} ',
+                                scale: sheight),
+                            placeholder:
+                                AssetImage("assets/images/placeholder.png"),
+                            imageErrorBuilder: (context, error, stackTrace) {
+                              return Image.asset('assets/images/error.png',
+                                  fit: BoxFit.cover);
+                            },
+                            fit: BoxFit.cover,
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: sheight * 0.02,
+                            horizontal: swidth * 0.05),
+                        child: Column(children: [
+                          Text(
+                            Recommenditems[index]['BusinessName'],
+                            style: TextStyle(
+                                color: primaryTextColor(),
+                                fontWeight: FontWeight.w800),
+                          ),
+                          SizedBox(
+                            height: sheight * 0.012,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: swidth * 0.2,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.star,
+                                      color: primaryThemeColor(),
+                                      size: swidth * 0.05,
+                                    ),
+                                    SizedBox(
+                                      width: swidth * 0.03,
+                                    ),
+                                    Text(
+                                      Recommenditems[index]['Rating']
+                                          .toStringAsFixed(1),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: primaryTextColor()),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: swidth * 0.1,
+                              ),
+                              Container(
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      color: primaryThemeColor(),
+                                      size: swidth * 0.05,
+                                    ),
+                                    SizedBox(
+                                      width: swidth * 0.03,
+                                    ),
+                                    Text(
+                                      '${Recommenditems[index]['Distance'].toString()} KM',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: primaryTextColor()),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: sheight * 0.018,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: swidth * 0.2,
+                                child: Text(
+                                  "${Recommenditems[index]['AveragePrice']} ETB"
+                                      .toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: primaryTextColor()),
+                                ),
+                              ),
+                              SizedBox(
+                                width: swidth * 0.18,
+                              ),
+                              Container(
+                                child: Recommenditems[index]['isOpen']
+                                    ? Text(
+                                        "Open",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.green),
+                                      )
+                                    : Text(
+                                        "Closed",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red),
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  BusinessManagement()
+                      .updateBusinessClicks(Recommenditems[index]['Bid']);
+                  BusinessManagement()
+                      .updateCategoryClicks(Recommenditems[index]['Category']);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              BusinessPage(Bid: Recommenditems[index]['Bid'])));
+                },
+              );
+            },
+            itemCount: Recommenditems.length,
+          );
+        }
+      },
+    );
+  }
+
+  SizedBox nearbyBusinesses(double sheight, double swidth) {
+    return SizedBox(
+      height: sheight * 0.15,
+      child: FutureBuilder(
+          future: getNearbyBusiness(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                  child: SpinKitThreeBounce(
+                color: primaryThemeColor(),
+                size: 32,
+              ));
+            } else {
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    child: Card(
+                      // margin: EdgeInsets.symmetric(horizontal: 5),
+                      color: tertiaryThemeColor(),
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: sheight * 0.15,
+                            width: swidth * 0.3,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: FittedBox(
+                              child: FadeInImage(
+                                image: NetworkImage(
+                                    '${Nearitems[index]['ImageUrl']} ',
+                                    scale: sheight),
+                                placeholder:
+                                    AssetImage("assets/images/placeholder.png"),
+                                imageErrorBuilder:
+                                    (context, error, stackTrace) {
+                                  return Image.asset('assets/images/error.png',
+                                      fit: BoxFit.fitWidth);
+                                },
+                                fit: BoxFit.fitWidth,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: sheight * 0.02,
+                                horizontal: swidth * 0.05),
+                            child: Column(children: [
+                              Text(
+                                Nearitems[index]['BusinessName'],
+                                style: TextStyle(
+                                    color: primaryTextColor(),
+                                    fontWeight: FontWeight.w800),
+                              ),
+                              SizedBox(
+                                height: sheight * 0.012,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: swidth * 0.2,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: primaryThemeColor(),
+                                          size: swidth * 0.05,
+                                        ),
+                                        SizedBox(
+                                          width: swidth * 0.03,
+                                        ),
+                                        Text(
+                                          Nearitems[index]['Rating']
+                                              .toStringAsFixed(1),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: primaryTextColor()),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: swidth * 0.1,
+                                  ),
+                                  Container(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on,
+                                          color: primaryThemeColor(),
+                                          size: swidth * 0.05,
+                                        ),
+                                        SizedBox(
+                                          width: swidth * 0.03,
+                                        ),
+                                        Text(
+                                          '${Nearitems[index]['Distance'].toString()} KM',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: primaryTextColor()),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: sheight * 0.018,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: swidth * 0.2,
+                                    child: Text(
+                                      "${Nearitems[index]['AveragePrice']} ETB"
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: primaryTextColor()),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: swidth * 0.18,
+                                  ),
+                                  Container(
+                                    child: Nearitems[index]['isOpen']
+                                        ? Text(
+                                            "Open",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.green),
+                                          )
+                                        : Text(
+                                            "Closed",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.red),
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ]),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                      BusinessManagement()
+                          .updateBusinessClicks(Nearitems[index]['Bid']);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  BusinessPage(Bid: Nearitems[index]['Bid'])));
+                    },
+                  );
+                },
+                itemCount: Nearitems.length,
+              );
+            }
+          }),
+    );
+  }
+
+  Container categories(double sheight) {
+    return Container(
+      height: sheight * 0.1428,
+      decoration: BoxDecoration(
+        color: tertiaryThemeColor(),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: FutureBuilder(
+        future: fetchCategory(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+                child: SpinKitThreeBounce(
+              color: primaryThemeColor(),
+              size: 24,
+            ));
+          } else {
+            return GridView.builder(
+              itemCount: items.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final item = items[index];
+
+                return Container(
+                  child: InkWell(
+                    onTap: () {
+                      if (!selected[index]) {
+                        for (int i = 0; i < items.length; i++) {
+                          selected[i] = false;
+                        }
+                        getSearchResult(item);
+                        getNearbyBusiness();
+                        getRecommendedBusiness();
+                      } else {
+                        getSearchResult('');
+                        getNearbyBusiness();
+                        getRecommendedBusiness();
+                      }
+                      setState(() {
+                        selected[index] = !selected[index];
+                      });
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                      decoration: BoxDecoration(
+                          color: selected[index]
+                              ? primaryThemeColor()
+                              : tertiaryThemeColor(),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: primaryThemeColor())),
+                      child: Center(
+                        child: Text(
+                          item,
+                          style: TextStyle(
+                              color: selected[index]
+                                  ? tertiaryThemeColor()
+                                  : primaryThemeColor()),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: (1 / 1.8),
+              ),
+            );
+          }
+        },
       ),
     );
   }

@@ -51,6 +51,7 @@ dependencies:
   intl: ^0.17.0
   shimmer: ^2.0.0
   searchfield: ^0.5.6
+  profanity_filter: ^2.0.0
 
 dev_dependencies:
   flutter_test:

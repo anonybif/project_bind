@@ -33,6 +33,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
   final Map MostViewedCat = Map();
   final List<String> FollowingBusinessBid = List.empty();
   final List<String> OwnedBusinessBid = List.empty();
+  final List<String> FavoriteBusinessBid = List.empty();
 
   final formKey = GlobalKey<FormState>();
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -243,7 +244,8 @@ class _SignUpInfoState extends State<SignUpInfo> {
       'FollowingBusinessBid': FollowingBusinessBid,
       'OwnedBusinessBid': OwnedBusinessBid,
       'MostViewedCat': MostViewedCat,
-      'ImageUrl': ImageUrl
+      'ImageUrl': ImageUrl,
+      'FavoriteBusinessBid': FavoriteBusinessBid
     };
 
     UserManagement().storeNewUser(json, context);

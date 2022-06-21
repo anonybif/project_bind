@@ -29,6 +29,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
   bool connected = false;
   double rating = 0;
   String unrated = '';
+  List<String> Likes = List.empty(growable: true);
 
   getBusinessInfo() async {
     print('1');
@@ -40,6 +41,18 @@ class _ReviewsPageState extends State<ReviewsPage> {
     setState(() {
       loading = false;
     });
+  }
+
+  Stream getReviewLikes(String Rid) async* {
+    var ds = await FirebaseFirestore.instance
+        .collection('business')
+        .doc(widget.Bid)
+        .collection('review')
+        .doc(Rid)
+        .get();
+
+    print(ds.data()!['Likes']);
+    yield ds.data()!['Likes'];
   }
 
   @override
@@ -99,6 +112,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                 borderRadius: BorderRadius.circular(12)),
                             height: sheight * 0.0625,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
@@ -109,71 +123,75 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                       width: swidth * 0.0336,
                                     ),
                                     Text(
-                                      'username',
-                                      //'${BusinessData.businessApi.businessReview[num]['Username']}',
+                                      '${BusinessData.businessApi.businessReview[num]['Username']}',
                                       style:
                                           TextStyle(color: primaryTextColor()),
                                     )
                                   ],
                                 ),
-                                SizedBox(width: swidth * 0.18),
-                                RatingBarIndicator(
-                                  rating: BusinessData.businessApi
-                                      .businessReview[num]['Rating'],
-                                  itemBuilder: (context, index) => Icon(
-                                    Icons.star,
-                                    color: primaryThemeColor(),
-                                  ),
-                                  itemCount: 5,
-                                  itemSize: swidth * 0.06,
-                                ),
-                                SizedBox(width: swidth * 0.035),
-                                if (FirebaseAuth.instance.currentUser != null &&
-                                    BusinessData.businessApi.businessReview[num]
-                                            ['Uid'] !=
-                                        FirebaseAuth.instance.currentUser!.uid)
-                                  PopupMenuButton<MenuItem>(
-                                    color: tertiaryThemeColor(),
-                                    icon: Icon(
-                                      Icons.more_vert,
+                                Row(children: [
+                                  RatingBarIndicator(
+                                    rating: BusinessData.businessApi
+                                        .businessReview[num]['Rating'],
+                                    itemBuilder: (context, index) => Icon(
+                                      Icons.star,
                                       color: primaryThemeColor(),
                                     ),
-                                    onSelected: (item) => onSelected(
-                                        context,
-                                        item,
-                                        widget.Bid,
-                                        BusinessData.businessApi
-                                            .businessReview[num]['Rid'],
-                                        getBusinessInfo()),
-                                    itemBuilder: (context) => [
-                                      ...MenuItems.reportItems
-                                          .map(buildItem)
-                                          .toList(),
-                                    ],
+                                    itemCount: 5,
+                                    itemSize: swidth * 0.06,
                                   ),
-                                if (FirebaseAuth.instance.currentUser != null &&
-                                    BusinessData.businessApi.businessReview[num]
-                                            ['Uid'] ==
-                                        FirebaseAuth.instance.currentUser!.uid)
-                                  PopupMenuButton<MenuItem>(
-                                    color: tertiaryThemeColor(),
-                                    icon: Icon(
-                                      Icons.more_vert,
-                                      color: primaryThemeColor(),
+                                  SizedBox(width: swidth * 0.035),
+                                  if (FirebaseAuth.instance.currentUser !=
+                                          null &&
+                                      BusinessData.businessApi
+                                              .businessReview[num]['Uid'] !=
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                    PopupMenuButton<MenuItem>(
+                                      color: tertiaryThemeColor(),
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        color: primaryThemeColor(),
+                                      ),
+                                      onSelected: (item) => onSelected(
+                                          context,
+                                          item,
+                                          widget.Bid,
+                                          BusinessData.businessApi
+                                              .businessReview[num]['Rid'],
+                                          getBusinessInfo()),
+                                      itemBuilder: (context) => [
+                                        ...MenuItems.reportItems
+                                            .map(buildItem)
+                                            .toList(),
+                                      ],
                                     ),
-                                    onSelected: (item) => onSelected(
-                                        context,
-                                        item,
-                                        widget.Bid,
-                                        BusinessData.businessApi
-                                            .businessReview[num]['Rid'],
-                                        getBusinessInfo()),
-                                    itemBuilder: (context) => [
-                                      ...MenuItems.deleteItems
-                                          .map(buildItem)
-                                          .toList(),
-                                    ],
-                                  )
+                                  if (FirebaseAuth.instance.currentUser !=
+                                          null &&
+                                      BusinessData.businessApi
+                                              .businessReview[num]['Uid'] ==
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                    PopupMenuButton<MenuItem>(
+                                      color: tertiaryThemeColor(),
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        color: primaryThemeColor(),
+                                      ),
+                                      onSelected: (item) => onSelected(
+                                          context,
+                                          item,
+                                          widget.Bid,
+                                          BusinessData.businessApi
+                                              .businessReview[num]['Rid'],
+                                          getBusinessInfo()),
+                                      itemBuilder: (context) => [
+                                        ...MenuItems.deleteItems
+                                            .map(buildItem)
+                                            .toList(),
+                                      ],
+                                    )
+                                ])
                               ],
                             ),
                           ),
@@ -212,10 +230,19 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                           color: primaryThemeColor()),
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Center(
-                                    child: Image.network(
-                                      BusinessData.businessApi
-                                          .businessReview[num]['ImageUrl'][0],
-                                      fit: BoxFit.contain,
+                                    child: FadeInImage(
+                                      image: NetworkImage(
+                                          '${BusinessData.businessApi.businessReview[num]['ImageUrl'][0]} ',
+                                          scale: sheight),
+                                      placeholder: AssetImage(
+                                          "assets/images/placeholder.png"),
+                                      imageErrorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                            'assets/images/error.png',
+                                            fit: BoxFit.fitWidth);
+                                      },
+                                      fit: BoxFit.fitWidth,
                                     ),
                                   ),
                                 ),
@@ -234,10 +261,19 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                           color: primaryThemeColor()),
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Center(
-                                    child: Image.network(
-                                      BusinessData.businessApi
-                                          .businessReview[num]['ImageUrl'][1],
-                                      fit: BoxFit.contain,
+                                    child: FadeInImage(
+                                      image: NetworkImage(
+                                          '${BusinessData.businessApi.businessReview[num]['ImageUrl'][1]} ',
+                                          scale: sheight),
+                                      placeholder: AssetImage(
+                                          "assets/images/placeholder.png"),
+                                      imageErrorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                            'assets/images/error.png',
+                                            fit: BoxFit.fitWidth);
+                                      },
+                                      fit: BoxFit.fitWidth,
                                     ),
                                   ),
                                 ),
@@ -256,10 +292,19 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                           color: primaryThemeColor()),
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Center(
-                                    child: Image.network(
-                                      BusinessData.businessApi
-                                          .businessReview[num]['ImageUrl'][2],
-                                      fit: BoxFit.contain,
+                                    child: FadeInImage(
+                                      image: NetworkImage(
+                                          '${BusinessData.businessApi.businessReview[num]['ImageUrl'][2]} ',
+                                          scale: sheight),
+                                      placeholder: AssetImage(
+                                          "assets/images/placeholder.png"),
+                                      imageErrorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                            'assets/images/error.png',
+                                            fit: BoxFit.fitWidth);
+                                      },
+                                      fit: BoxFit.fitWidth,
                                     ),
                                   ),
                                 ),
@@ -275,19 +320,43 @@ class _ReviewsPageState extends State<ReviewsPage> {
                               SizedBox(
                                 width: swidth * 0.0833,
                               ),
-                              Row(
-                                children: [
-                                  Text(
-                                      '${BusinessData.businessApi.businessReview[num]['Likes'].toString().split('.')[0]}',
-                                      style: TextStyle(
-                                          color: primaryThemeColor())),
-                                  SizedBox(
-                                    width: swidth * 0.0258,
-                                  ),
-                                  Text('Likes',
-                                      style:
-                                          TextStyle(color: primaryTextColor())),
-                                ],
+                              StreamBuilder(
+                                stream: getReviewLikes(BusinessData
+                                    .businessApi.businessReview[num]['Rid']),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    String Likes =
+                                        snapshot.data.toString().split('.')[0];
+                                    return Row(
+                                      children: [
+                                        Text('${Likes}',
+                                            style: TextStyle(
+                                                color: primaryThemeColor())),
+                                        SizedBox(
+                                          width: swidth * 0.0258,
+                                        ),
+                                        Text('Likes',
+                                            style: TextStyle(
+                                                color: primaryTextColor())),
+                                      ],
+                                    );
+                                  } else {
+                                    return Row(
+                                      children: [
+                                        Text(
+                                            '${BusinessData.businessApi.businessReview[num]['Likes'].toString().split('.')[0]}',
+                                            style: TextStyle(
+                                                color: primaryThemeColor())),
+                                        SizedBox(
+                                          width: swidth * 0.0258,
+                                        ),
+                                        Text('Likes',
+                                            style: TextStyle(
+                                                color: primaryTextColor())),
+                                      ],
+                                    );
+                                  }
+                                },
                               ),
                               SizedBox(
                                 width: swidth * 0.0258,
@@ -316,8 +385,9 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                                   'minus',
                                                   widget.Bid);
                                         }
-                                        await BusinessData.businessApi
-                                            .UpdateReviewLikes(widget.Bid);
+
+                                        // await BusinessData.businessApi
+                                        //     .UpdateReviewLikes(widget.Bid);
                                         setState(() {
                                           BusinessData.businessApi.Liked[num] =
                                               !BusinessData

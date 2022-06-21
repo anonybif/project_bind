@@ -30,6 +30,7 @@ class BusinessApi {
   bool noReviews = true;
   bool notReviewed = true;
   bool following = false;
+  bool favorite = false;
   String isOpen = '';
   String deviceLocation = '';
 
@@ -301,6 +302,21 @@ class BusinessApi {
     }
   }
 
+  getBusinessFavorite(String Bid) {
+    if (FirebaseAuth.instance.currentUser != null) {
+      List<String> FavoriteBusinessBid = <String>[];
+      FavoriteBusinessBid = List.from(myInfo['FavoriteBusinessBid']);
+
+      if (FavoriteBusinessBid.contains(Bid)) {
+        favorite = true;
+      } else {
+        favorite = false;
+      }
+    } else {
+      favorite = false;
+    }
+  }
+
   getFollowingBusinesses() {
     followingBusinesses.clear();
     for (int i = 0; i < businessList.length; i++) {
@@ -367,7 +383,6 @@ class BusinessApi {
         .collection('business')
         .doc(Bid)
         .collection('review')
-        // .where('Uid', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
     if (ds.size != 0) {
       noReviews = false;
@@ -376,35 +391,42 @@ class BusinessApi {
         businessReview.add(ds.docs[i].data());
         businessReview[i] = ds.docs[i].data();
         LikedUserUid[i] = List.from(ds.docs[i].data()['LikedUserUid']);
-
-        {
-          businessReview[i]['Username'] = ds.docs[i].data();
-        }
-      }
-    }
-
-    if (FirebaseAuth.instance.currentUser != null) {
-      var Uid = FirebaseAuth.instance.currentUser!.uid;
-      for (int i = 0; i < ds.size; i++) {
-        if (LikedUserUid[i].contains(Uid)) {
-          Liked[i] = true;
-        } else {
-          Liked[i] = false;
-        }
       }
 
+      if (FirebaseAuth.instance.currentUser != null) {
+        var Uid = FirebaseAuth.instance.currentUser!.uid;
+        for (int i = 0; i < ds.size; i++) {
+          if (LikedUserUid[i].contains(Uid)) {
+            Liked[i] = true;
+          } else {
+            Liked[i] = false;
+          }
+        }
+
+        for (int i = 0; i < businessReview.length; i++) {
+          if (businessReview[i]['Uid'].toString().contains(Uid)) {
+            notReviewed = false;
+          }
+        }
+      }
+
+      // for (int i = 0; i < businessReview.length; i++) {
+      //   for (int j = 0; j < userList.length; j++) {
+      //     if (businessReview[i]['Uid'] == userList[j]['Uid']) {
+      //       businessReview[i]['Username'] = userList[j]['Username'];
+      //     }
+      //   }
+      // }
       for (int i = 0; i < businessReview.length; i++) {
-        if (businessReview[i]['Uid'].toString().contains(Uid)) {
-          notReviewed = false;
-        }
-      }
-    }
-
-    for (int i = 0; i < businessReview.length; i++) {
-      for (int j = 0; j < userList.length; j++) {
-        if (businessReview[i]['Uid'] == userList[j]['Uid']) {
-          businessReview[i]['Username'] = userList[j]['Username'];
-        }
+        final docRef = businessReview[i]['Uid'];
+        docRef.get().then((DocumentSnapshot doc) {
+          businessReview[i]['Username'] = doc.data()!['Username'];
+          if (doc.data()!['ImageUrl'] != '') {
+            businessReview[i]['ImageUrl'] = doc.data()!['ImageUrl'];
+          } else {
+            businessReview[i]['ImageUrl'] = '';
+          }
+        });
       }
     }
   }
