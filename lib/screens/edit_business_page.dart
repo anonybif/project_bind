@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -6,6 +7,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:project_bind/screens/business_page.dart';
+import 'package:project_bind/screens/home/my_profile_page.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_api.dart';
@@ -57,7 +60,7 @@ class _EditusinessState extends State<EditBusiness> {
   TextEditingController tagController = TextEditingController();
   List<bool> selected = [];
 
-  bool loading = true;
+  bool _loading = true;
   bool newUpload = false;
 
   @override
@@ -93,7 +96,7 @@ class _EditusinessState extends State<EditBusiness> {
     await setBusinessInfo();
 
     setState(() {
-      loading = false;
+      _loading = false;
     });
   }
 
@@ -168,7 +171,7 @@ class _EditusinessState extends State<EditBusiness> {
               ),
             ],
           )),
-      body: loading
+      body: _loading
           ? Container()
           : SingleChildScrollView(
               child: Container(
@@ -637,9 +640,11 @@ class _EditusinessState extends State<EditBusiness> {
                               reusableUIButton(
                                   context, "Update", (swidth / 3), 50,
                                   () async {
+                                loading(context);
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (!isValid) {
+                                  Navigator.pop(context);
                                   return;
                                 }
                                 bool catPicked = false;
@@ -654,12 +659,14 @@ class _EditusinessState extends State<EditBusiness> {
                                     catPickWarning = 'Select a category';
                                   });
                                   print('cat not selected');
+                                  Navigator.pop(context);
                                   return;
                                 }
                                 if (location == '') {
                                   setState(() {
                                     locationError = 'Location must be added';
                                   });
+                                  Navigator.pop(context);
                                   return;
                                 }
 
@@ -671,12 +678,11 @@ class _EditusinessState extends State<EditBusiness> {
 
                                 await updateBusiness(context);
                                 await BusinessData.businessApi.getAllBusiness();
-                                Navigator.pop(context);
-                                // Navigator.pushReplacement(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const MyBusiness()));
+
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Home()));
                               }),
                             ],
                           ),
@@ -811,7 +817,6 @@ class _EditusinessState extends State<EditBusiness> {
       'Reviews': BusinessData.businessApi.businessInfo['Reviews'],
       'Rating': BusinessData.businessApi.businessInfo['Rating'],
       'Follows': BusinessData.businessApi.businessInfo['Follows'],
-      'BindScore': BusinessData.businessApi.businessInfo['BindScore'],
       'Clicks': BusinessData.businessApi.businessInfo['Clicks']
     };
 

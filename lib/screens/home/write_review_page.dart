@@ -14,7 +14,7 @@ import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/home/home.dart';
-import 'package:project_bind/screens/home/user_profile_page.dart';
+import 'package:project_bind/screens/home/my_profile_page.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:project_bind/utils/utils.dart';
@@ -539,7 +539,7 @@ class _WriteReviewState extends State<WriteReview> {
                 break;
               case 3:
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => UserProfile()));
+                    MaterialPageRoute(builder: (context) => MyProfile()));
                 break;
             }
           }),

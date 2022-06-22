@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:project_bind/screens/home/user_profile_page.dart';
+import 'package:project_bind/screens/home/my_profile_page.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/shared/user.dart';
 import 'package:project_bind/screens/business_api.dart';

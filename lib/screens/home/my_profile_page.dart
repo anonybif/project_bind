@@ -20,11 +20,11 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
-class UserProfile extends StatefulWidget {
-  const UserProfile({Key? key}) : super(key: key);
+class MyProfile extends StatefulWidget {
+  const MyProfile({Key? key}) : super(key: key);
 
   @override
-  State<UserProfile> createState() => _UserProfileState();
+  State<MyProfile> createState() => _MYProfileState();
 }
 
 const _kPages = <String, IconData>{
@@ -34,8 +34,7 @@ const _kPages = <String, IconData>{
   'profile': Icons.account_circle_outlined,
 };
 
-class _UserProfileState extends State<UserProfile>
-    with TickerProviderStateMixin {
+class _MYProfileState extends State<MyProfile> with TickerProviderStateMixin {
   TabStyle _tabStyle = TabStyle.reactCircle;
   TextEditingController userNameController = TextEditingController();
 
@@ -60,18 +59,22 @@ class _UserProfileState extends State<UserProfile>
     super.dispose();
   }
 
-  Future getBusinessInfo() async {
+  getBusinessInfo() async {
     await BusinessData.businessApi.getAllBusiness();
     await BusinessData.businessApi.getDistance();
     await BusinessData.businessApi.getTime();
+    await BusinessData.businessApi.getuserInfo();
+    await BusinessData.businessApi.getmyInfo();
   }
 
   Future getUserInfo() async {
+    await BusinessData.businessApi.getuserInfo();
     await BusinessData.businessApi.getmyInfo();
     return BusinessData.businessApi.myInfo;
   }
 
   Future getFollowingBusinesses() async {
+    await getBusinessInfo();
     followingBusinesses.clear();
     for (int i = 0; i < BusinessData.businessApi.businessList.length; i++) {
       for (int j = 0;
@@ -87,6 +90,7 @@ class _UserProfileState extends State<UserProfile>
   }
 
   Future getFavoriteBusinesses() async {
+    await getBusinessInfo();
     favoriteBusinesses.clear();
     for (int i = 0; i < BusinessData.businessApi.businessList.length; i++) {
       for (int j = 0;

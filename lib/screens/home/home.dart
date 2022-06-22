@@ -10,7 +10,7 @@ import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/home/search_page.dart';
 import 'package:project_bind/screens/home/write_review_page.dart';
-import 'package:project_bind/screens/home/user_profile_page.dart';
+import 'package:project_bind/screens/home/my_profile_page.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -249,7 +249,7 @@ class _HomeState extends State<Home> {
                 break;
               case 3:
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => UserProfile()));
+                    MaterialPageRoute(builder: (context) => MyProfile()));
                 break;
             }
           }),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:project_bind/screens/home/user_profile_page.dart';
+import 'package:project_bind/screens/home/my_profile_page.dart';
 import 'package:project_bind/screens/home/write_review_page.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
@@ -395,7 +395,7 @@ class _AddBusinessState extends State<AddBusiness> {
               break;
             case 3:
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => UserProfile()));
+                  MaterialPageRoute(builder: (context) => MyProfile()));
               break;
           }
         }),

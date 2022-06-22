@@ -9,6 +9,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:project_bind/screens/edit_business_page.dart';
+import 'package:project_bind/screens/home/my_profile_page.dart';
+import 'package:project_bind/screens/user_profile_page.dart';
 import 'package:project_bind/shared/Review.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
@@ -107,7 +109,9 @@ class _BusinessPageState extends State<BusinessPage> {
     double sheight = MediaQuery.of(context).size.height;
 
     if (loading) {
-      return SpinKitThreeBounce(color: primaryThemeColor(), size: 32);
+      return Scaffold(
+          backgroundColor: tertiaryThemeColor(),
+          body: SpinKitThreeBounce(color: primaryThemeColor(), size: 32));
     } else {
       return Scaffold(
         backgroundColor: tertiaryThemeColor(),
@@ -120,7 +124,7 @@ class _BusinessPageState extends State<BusinessPage> {
                         color: tertiaryThemeColor(),
                         icon: Icon(
                           Icons.more_vert,
-                          color: primaryThemeColor(),
+                          color: primaryTextColor(),
                         ),
                         onSelected: (item) async {
                           onBusinessOption(context, item, widget.Bid);
@@ -1104,59 +1108,70 @@ class _BusinessPageState extends State<BusinessPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    if (BusinessData
-                                        .businessApi.myInfo['ImageUrl']
-                                        .toString()
-                                        .isNotEmpty)
-                                      ClipOval(
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: Container(
-                                            width: swidth * 0.1,
-                                            height: swidth * 0.1,
-                                            child: FadeInImage(
-                                              image: NetworkImage(
-                                                  '${BusinessData.businessApi.businessReview[num]['UserImageUrl']} ',
-                                                  scale: sheight),
-                                              placeholder: AssetImage(
-                                                  "assets/images/placeholder.png"),
-                                              imageErrorBuilder:
-                                                  (context, error, stackTrace) {
-                                                return Image.asset(
-                                                    'assets/images/error.png',
-                                                    fit: BoxFit.cover);
-                                              },
-                                              fit: BoxFit.cover,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (Context) => UserProfile(
+                                                Uid: BusinessData.businessApi
+                                                        .businessReview[num]
+                                                    ['Uid'])));
+                                  },
+                                  child: Row(
+                                    children: [
+                                      if (BusinessData.businessApi
+                                          .businessReview[num]['UserImageUrl']
+                                          .toString()
+                                          .isNotEmpty)
+                                        ClipOval(
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: Container(
+                                              width: swidth * 0.1,
+                                              height: swidth * 0.1,
+                                              child: FadeInImage(
+                                                image: NetworkImage(
+                                                    '${BusinessData.businessApi.businessReview[num]['UserImageUrl']} ',
+                                                    scale: sheight),
+                                                placeholder: AssetImage(
+                                                    "assets/images/placeholder.png"),
+                                                imageErrorBuilder: (context,
+                                                    error, stackTrace) {
+                                                  return Image.asset(
+                                                      'assets/images/error.png',
+                                                      fit: BoxFit.cover);
+                                                },
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    if (BusinessData.businessApi
-                                        .businessReview[num]['ImageUrl']
-                                        .toString()
-                                        .isEmpty)
-                                      ClipOval(
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: Container(
-                                            width: swidth * 0.1,
-                                            height: swidth * 0.1,
-                                            child: Image.asset(
-                                                "assets/images/placeholder.png"),
+                                      if (BusinessData.businessApi
+                                          .businessReview[num]['UserImageUrl']
+                                          .toString()
+                                          .isEmpty)
+                                        ClipOval(
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: Container(
+                                              width: swidth * 0.1,
+                                              height: swidth * 0.1,
+                                              child: Image.asset(
+                                                  "assets/images/placeholder.png"),
+                                            ),
                                           ),
                                         ),
+                                      SizedBox(
+                                        width: swidth * 0.0336,
                                       ),
-                                    SizedBox(
-                                      width: swidth * 0.0336,
-                                    ),
-                                    Text(
-                                      '${BusinessData.businessApi.businessReview[num]['Username']}',
-                                      style:
-                                          TextStyle(color: primaryTextColor()),
-                                    )
-                                  ],
+                                      Text(
+                                        '${BusinessData.businessApi.businessReview[num]['Username']}',
+                                        style: TextStyle(
+                                            color: primaryTextColor()),
+                                      )
+                                    ],
+                                  ),
                                 ),
                                 Row(
                                   children: [
