@@ -431,24 +431,33 @@ class MenuItem {
   const MenuItem({required this.text, required this.icon});
 }
 
-class MenuItems {
+class ReviewMenuItems {
   static const List<MenuItem> reportItems = [itemReport];
   static const List<MenuItem> deleteItems = [itemDelete];
+
+  static const itemReport = MenuItem(text: 'Report', icon: Icons.report);
+  static const itemDelete = MenuItem(text: 'Delete', icon: Icons.delete);
+}
+
+class UserMenuItems {
   static const List<MenuItem> settingItems = [
     itemEditProfile,
     itemSetting,
     itemFaq,
-    itemSupport,
     itemLogout
   ];
-
-  static const itemReport = MenuItem(text: 'Report', icon: Icons.report);
-  static const itemDelete = MenuItem(text: 'Delete', icon: Icons.delete);
   static const itemEditProfile =
       MenuItem(text: 'Edit Profile', icon: Icons.edit);
 
   static const itemFaq = MenuItem(text: 'FAQ', icon: Icons.question_answer);
-  static const itemSupport = MenuItem(text: 'Support', icon: Icons.support);
+
   static const itemLogout = MenuItem(text: 'Logout', icon: Icons.logout);
   static const itemSetting = MenuItem(text: 'Settings', icon: Icons.settings);
+}
+
+class BusinessMenuItems {
+  static const List<MenuItem> settingItems = [itemEdit, itemDelete];
+
+  static const itemEdit = MenuItem(text: 'Edit', icon: Icons.edit);
+  static const itemDelete = MenuItem(text: 'Delete', icon: Icons.delete);
 }

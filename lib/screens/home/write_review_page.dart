@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:profanity_filter/profanity_filter.dart';
+import 'package:project_bind/screens/add_business.dart';
+import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/shared/Review.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
@@ -27,6 +29,7 @@ class WriteReview extends StatefulWidget {
 
 const _kPages = <String, IconData>{
   'home': Icons.home,
+  'Add': Icons.business,
   'write': Icons.add,
   'profile': Icons.account_circle_outlined,
 };
@@ -62,6 +65,8 @@ class _WriteReviewState extends State<WriteReview> {
 
   @override
   void initState() {
+    reviewController.clear;
+    businessNameController.clear;
     getBusiness();
     super.initState();
   }
@@ -413,12 +418,14 @@ class _WriteReviewState extends State<WriteReview> {
                                 ),
                                 reusableIconButton(context, 'Post Review',
                                     Icons.comment, sheight * 0.5, () async {
+                                  loading(context);
                                   if (FirebaseAuth.instance.currentUser !=
                                       null) {
                                     if (businessNameController.text.isEmpty) {
                                       setState(() {
                                         bizSelected = 'select a business';
                                       });
+                                      Navigator.pop(context);
                                       return;
                                     }
                                     setState(() {
@@ -429,6 +436,7 @@ class _WriteReviewState extends State<WriteReview> {
                                       setState(() {
                                         unrated = 'Give us a rating';
                                       });
+                                      Navigator.pop(context);
                                       return;
                                     }
                                     setState(() {
@@ -440,6 +448,7 @@ class _WriteReviewState extends State<WriteReview> {
                                       return;
                                     }
                                     if (hasProfanity()) {
+                                      Navigator.pop(context);
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -476,16 +485,25 @@ class _WriteReviewState extends State<WriteReview> {
                                           );
                                         },
                                       );
-                                      // Utils.showSnackBar(
-                                      //     'The use of ${bannedWords()} word is forbidden',
-                                      //     messengerKey);
+
                                       return;
                                     }
 
                                     await createReview(context);
+                                    Navigator.pop(context);
+                                    Utils.showSnackBar(
+                                        'Review Posted', messengerKey);
+                                    await Future.delayed(
+                                        const Duration(seconds: 2), () {});
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                BusinessPage(Bid: Bid)));
 
                                     setState(() {});
                                   } else {
+                                    Navigator.pop(context);
                                     signUpDialogue(context,
                                         'Login or SignUp to post a review');
                                   }
@@ -501,23 +519,25 @@ class _WriteReviewState extends State<WriteReview> {
               ],
             ),
           ),
-          bottomNavigationBar:
-              ConvexAppBar.badge(const <int, dynamic>{3: '99+'},
-                  style: _tabStyle,
-                  color: primaryTextColor(),
-                  backgroundColor: tertiaryThemeColor(),
-                  items: <TabItem>[
-                    for (final entry in _kPages.entries)
-                      TabItem(icon: entry.value, title: entry.key),
-                  ],
-                  initialActiveIndex: 1, onTap: (int i) {
+          bottomNavigationBar: ConvexAppBar.badge(const <int, dynamic>{},
+              style: _tabStyle,
+              color: primaryTextColor(),
+              backgroundColor: tertiaryThemeColor(),
+              items: <TabItem>[
+                for (final entry in _kPages.entries)
+                  TabItem(icon: entry.value, title: entry.key),
+              ],
+              initialActiveIndex: 2, onTap: (int i) {
             switch (i) {
               case 0:
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (context) => Home()));
                 break;
-
-              case 2:
+              case 1:
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => AddBusiness()));
+                break;
+              case 3:
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => UserProfile()));
                 break;
@@ -618,7 +638,6 @@ class _WriteReviewState extends State<WriteReview> {
   Future createReview(BuildContext context) async {
     print(businessNameController.text);
 
-    String Bid = '';
     for (int i = 0; i < BusinessData.businessApi.businessList.length; i++) {
       if (BusinessData.businessApi.businessList[i]['BusinessName'] ==
           businessNameController.text.trim()) {
@@ -630,6 +649,7 @@ class _WriteReviewState extends State<WriteReview> {
     DocumentReference Uid = FirebaseFirestore.instance
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid);
+    print(Uid);
 
     if (file1 != null) await uploadImage(0);
     if (file2 != null) await uploadImage(1);

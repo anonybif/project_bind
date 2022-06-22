@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:project_bind/screens/add_business.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/screens/business_page.dart';
@@ -30,6 +31,7 @@ class Home extends StatefulWidget {
 
 const _kPages = <String, IconData>{
   'home': Icons.home,
+  'Add': Icons.business,
   'write': Icons.add,
   'profile': Icons.account_circle_outlined,
 };
@@ -227,22 +229,25 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
-          bottomNavigationBar:
-              ConvexAppBar.badge(const <int, dynamic>{3: '99+'},
-                  style: _tabStyle,
-                  color: primaryTextColor(),
-                  backgroundColor: tertiaryThemeColor(),
-                  items: <TabItem>[
-                    for (final entry in _kPages.entries)
-                      TabItem(icon: entry.value, title: entry.key),
-                  ],
-                  initialActiveIndex: 0, onTap: (int i) {
+          bottomNavigationBar: ConvexAppBar.badge(const <int, dynamic>{},
+              style: _tabStyle,
+              color: primaryTextColor(),
+              backgroundColor: tertiaryThemeColor(),
+              items: <TabItem>[
+                for (final entry in _kPages.entries)
+                  TabItem(icon: entry.value, title: entry.key),
+              ],
+              initialActiveIndex: 0, onTap: (int i) {
             switch (i) {
               case 1:
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => WriteReview()));
+                    MaterialPageRoute(builder: (context) => AddBusiness()));
                 break;
               case 2:
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => WriteReview()));
+                break;
+              case 3:
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => UserProfile()));
                 break;
@@ -943,7 +948,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       bottomNavigationBar: ConvexAppBar.badge(
-        const <int, dynamic>{3: '99+'},
+        const <int, dynamic>{},
         style: _tabStyle,
         color: primaryTextColor(),
         backgroundColor: tertiaryThemeColor(),

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:project_bind/screens/business_api.dart';
-import 'package:project_bind/screens/manage_business.dart';
+import 'package:project_bind/screens/edit_business_page.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/utils/color_utils.dart';
 
@@ -210,7 +210,7 @@ class _MyBusinessState extends State<MyBusiness> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ManageBusiness(
+                          builder: (context) => EditBusiness(
                               Bid: BusinessData.businessApi.myBusinesses[index]
                                   ['Bid'])));
                 },

@@ -64,7 +64,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
         backgroundColor: tertiaryThemeColor(),
         appBar: AppBar(
           backgroundColor: tertiaryThemeColor(),
-          elevation: 10,
+          elevation: 1,
           title: Text(
             "Reviews",
             style: TextStyle(
@@ -116,9 +116,48 @@ class _ReviewsPageState extends State<ReviewsPage> {
                               children: [
                                 Row(
                                   children: [
-                                    CircleAvatar(
-                                      backgroundColor: primaryThemeColor(),
-                                    ),
+                                    if (BusinessData
+                                        .businessApi.myInfo['ImageUrl']
+                                        .toString()
+                                        .isNotEmpty)
+                                      ClipOval(
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: Container(
+                                            width: swidth * 0.1,
+                                            height: swidth * 0.1,
+                                            child: FadeInImage(
+                                              image: NetworkImage(
+                                                  '${BusinessData.businessApi.businessReview[num]['UserImageUrl']} ',
+                                                  scale: sheight),
+                                              placeholder: AssetImage(
+                                                  "assets/images/placeholder.png"),
+                                              imageErrorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Image.asset(
+                                                    'assets/images/error.png',
+                                                    fit: BoxFit.cover);
+                                              },
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    if (BusinessData.businessApi
+                                        .businessReview[num]['ImageUrl']
+                                        .toString()
+                                        .isEmpty)
+                                      ClipOval(
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: Container(
+                                            width: swidth * 0.1,
+                                            height: swidth * 0.1,
+                                            child: Image.asset(
+                                                "assets/images/placeholder.png"),
+                                          ),
+                                        ),
+                                      ),
                                     SizedBox(
                                       width: swidth * 0.0336,
                                     ),
@@ -161,7 +200,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                               .businessReview[num]['Rid'],
                                           getBusinessInfo()),
                                       itemBuilder: (context) => [
-                                        ...MenuItems.reportItems
+                                        ...ReviewMenuItems.reportItems
                                             .map(buildItem)
                                             .toList(),
                                       ],
@@ -186,7 +225,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                               .businessReview[num]['Rid'],
                                           getBusinessInfo()),
                                       itemBuilder: (context) => [
-                                        ...MenuItems.deleteItems
+                                        ...ReviewMenuItems.deleteItems
                                             .map(buildItem)
                                             .toList(),
                                       ],
@@ -232,8 +271,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                   child: Center(
                                     child: FadeInImage(
                                       image: NetworkImage(
-                                          '${BusinessData.businessApi.businessReview[num]['ImageUrl'][0]} ',
-                                          scale: sheight),
+                                        '${BusinessData.businessApi.businessReview[num]['ImageUrl'][0]} ',
+                                      ),
                                       placeholder: AssetImage(
                                           "assets/images/placeholder.png"),
                                       imageErrorBuilder:
@@ -263,8 +302,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                   child: Center(
                                     child: FadeInImage(
                                       image: NetworkImage(
-                                          '${BusinessData.businessApi.businessReview[num]['ImageUrl'][1]} ',
-                                          scale: sheight),
+                                        '${BusinessData.businessApi.businessReview[num]['ImageUrl'][1]} ',
+                                      ),
                                       placeholder: AssetImage(
                                           "assets/images/placeholder.png"),
                                       imageErrorBuilder:
@@ -294,8 +333,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                   child: Center(
                                     child: FadeInImage(
                                       image: NetworkImage(
-                                          '${BusinessData.businessApi.businessReview[num]['ImageUrl'][2]} ',
-                                          scale: sheight),
+                                        '${BusinessData.businessApi.businessReview[num]['ImageUrl'][2]} ',
+                                      ),
                                       placeholder: AssetImage(
                                           "assets/images/placeholder.png"),
                                       imageErrorBuilder:
@@ -455,10 +494,10 @@ PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
 void onSelected(BuildContext context, MenuItem item, String Bid, String Rid,
     Function reload) {
   switch (item) {
-    case MenuItems.itemReport:
+    case ReviewMenuItems.itemReport:
       reportReviewDialogue(context, Bid, Rid, reload);
       break;
-    case MenuItems.itemDelete:
+    case ReviewMenuItems.itemDelete:
       deleteReviewDialogue(context, Bid, Rid);
       break;
   }

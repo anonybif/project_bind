@@ -16,15 +16,15 @@ import 'package:project_bind/utils/color_utils.dart';
 import 'package:path/path.dart';
 import 'package:project_bind/utils/utils.dart';
 
-class ManageBusiness extends StatefulWidget {
+class EditBusiness extends StatefulWidget {
   final String Bid;
-  const ManageBusiness({Key? key, required this.Bid}) : super(key: key);
+  const EditBusiness({Key? key, required this.Bid}) : super(key: key);
 
   @override
-  State<ManageBusiness> createState() => _ManageBusinessState();
+  State<EditBusiness> createState() => _EditusinessState();
 }
 
-class _ManageBusinessState extends State<ManageBusiness> {
+class _EditusinessState extends State<EditBusiness> {
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
   final businessNameController = TextEditingController();
   final businessDiscController = TextEditingController();
@@ -146,75 +146,6 @@ class _ManageBusinessState extends State<ManageBusiness> {
     setState(() {});
   }
 
-  Future deleteBusiness(BuildContext context) async {
-    var ds =
-        await FirebaseFirestore.instance.collection('business').doc(widget.Bid);
-
-    ds.delete();
-    // Utils.showSnackBar('Business succesfully deleted', messengerKey);
-    Navigator.pop(context);
-  }
-
-  void settingsDialogue(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor: tertiaryThemeColor(),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Delete Businesses?',
-                    style: TextStyle(fontSize: 18, color: primaryTextColor()),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    'This action can not be undone.',
-                    style: TextStyle(fontSize: 16, color: primaryTextColor()),
-                    textAlign: TextAlign.center,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                          style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all(
-                                  primaryThemeColor())),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Cancel')),
-                      SizedBox(
-                        width: 7,
-                      ),
-                      TextButton(
-                          style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all(
-                                  primaryThemeColor())),
-                          onPressed: () {
-                            deleteBusiness(context);
-                          },
-                          child: Text(
-                            'Delete',
-                            style: TextStyle(color: warningColor()),
-                          ))
-                    ],
-                  )
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
@@ -224,7 +155,7 @@ class _ManageBusinessState extends State<ManageBusiness> {
       backgroundColor: secondaryThemeColor(),
       appBar: AppBar(
           backgroundColor: tertiaryThemeColor(),
-          elevation: 10,
+          elevation: 1,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -234,15 +165,6 @@ class _ManageBusinessState extends State<ManageBusiness> {
                   color: primaryTextColor(),
                   fontSize: 21,
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: primaryTextColor(),
-                ),
-                onPressed: () {
-                  settingsDialogue(context);
-                },
               ),
             ],
           )),
@@ -267,10 +189,18 @@ class _ManageBusinessState extends State<ManageBusiness> {
                             clipBehavior: Clip.hardEdge,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(24)),
-                            child: Image.network(
-                                BusinessData
-                                    .businessApi.businessInfo['ImageUrl'],
-                                fit: BoxFit.cover),
+                            child: FadeInImage(
+                              image: NetworkImage(
+                                  '${BusinessData.businessApi.businessInfo['ImageUrl']} ',
+                                  scale: sheight),
+                              placeholder:
+                                  AssetImage("assets/images/placeholder.png"),
+                              imageErrorBuilder: (context, error, stackTrace) {
+                                return Image.asset('assets/images/error.png',
+                                    fit: BoxFit.cover);
+                              },
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         if (file != null)
                           Container(
@@ -326,12 +256,12 @@ class _ManageBusinessState extends State<ManageBusiness> {
                             height: sheight * 0.0208,
                           ),
                           reusableTextField("Phone Number", Icons.phone, '',
-                              false, PhoneNumberController),
+                              true, PhoneNumberController),
                           SizedBox(
                             height: sheight * 0.0208,
                           ),
                           reusableTextField(
-                              "Email", Icons.mail, '', false, EmailController),
+                              "Email", Icons.mail, '', true, EmailController),
                           SizedBox(
                             height: sheight * 0.0208,
                           ),
@@ -462,7 +392,8 @@ class _ManageBusinessState extends State<ManageBusiness> {
                                     itemBuilder: (context, index) {
                                       final item = tags[index];
                                       return Container(
-                                        margin: EdgeInsets.all(10),
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 4, vertical: 10),
                                         decoration: BoxDecoration(
                                             color: primaryThemeColor(),
                                             borderRadius:
@@ -692,56 +623,19 @@ class _ManageBusinessState extends State<ManageBusiness> {
                             locationError,
                             style: const TextStyle(color: Colors.red),
                           ),
-                          Divider(
-                            thickness: 1,
-                            color: primaryTextColor(),
-                          ),
-                          // const SizedBox(
-                          //   height: 10,
-                          // ),
-                          // Text('Upload image',
-                          //     style: TextStyle(
-                          //       fontSize: 18,
-                          //       color: primaryTextColor(),
-                          //     )),
-                          // const SizedBox(
-                          //   height: 10,
-                          // ),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.center,
-                          //   children: [
-                          //     reusableIconButton(context, "Select",
-                          //         Icons.attach_file, (sheight * 0.33), () {
-                          //       selectFile();
-                          //     }),
-                          //   ],
-                          // ),
-                          // Text(
-                          //   fileName,
-                          //   style: TextStyle(
-                          //     color: primaryTextColor(),
-                          //   ),
-                          // ),
-                          // const SizedBox(
-                          //   height: 20,
-                          // ),
-                          // buildProgress(),
-                          Divider(
-                            thickness: 1,
-                            color: primaryTextColor(),
-                          ),
                           const SizedBox(
                             height: 10,
                           ),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               reusableUIButton(
-                                  context, "Cancel", (swidth * 0.33),50, () async {
+                                  context, "Cancel", (swidth * 0.33), 50,
+                                  () async {
                                 Navigator.pop(context);
                               }),
-                              reusableUIButton(context, "Update", (swidth / 3),50,
+                              reusableUIButton(
+                                  context, "Update", (swidth / 3), 50,
                                   () async {
                                 final isValid =
                                     formKey.currentState!.validate();

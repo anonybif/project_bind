@@ -46,6 +46,7 @@ class _LocationpickerState extends State<Locationpicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: tertiaryThemeColor(),
       extendBodyBehindAppBar: true,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
@@ -56,7 +57,7 @@ class _LocationpickerState extends State<Locationpicker> {
         },
       ),
       appBar: AppBar(
-        backgroundColor: primaryThemeColor(),
+        backgroundColor: tertiaryThemeColor(),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),

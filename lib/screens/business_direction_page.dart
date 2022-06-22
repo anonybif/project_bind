@@ -87,7 +87,7 @@ class _Business_direction_pageState extends State<Business_direction_page> {
       body: FlutterMap(
         options: MapOptions(
           center: LatLng(lat, long),
-          zoom: 11.0,
+          zoom: 15.0,
         ),
         layers: [
           TileLayerOptions(

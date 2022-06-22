@@ -391,6 +391,7 @@ class BusinessApi {
         businessReview.add(ds.docs[i].data());
         businessReview[i] = ds.docs[i].data();
         LikedUserUid[i] = List.from(ds.docs[i].data()['LikedUserUid']);
+        print(businessReview[i]['ImageUrl'][0]);
       }
 
       if (FirebaseAuth.instance.currentUser != null) {
@@ -421,11 +422,8 @@ class BusinessApi {
         final docRef = businessReview[i]['Uid'];
         docRef.get().then((DocumentSnapshot doc) {
           businessReview[i]['Username'] = doc.data()!['Username'];
-          if (doc.data()!['ImageUrl'] != '') {
-            businessReview[i]['ImageUrl'] = doc.data()!['ImageUrl'];
-          } else {
-            businessReview[i]['ImageUrl'] = '';
-          }
+
+          businessReview[i]['UserImageUrl'] = doc.data()!['ImageUrl'];
         });
       }
     }

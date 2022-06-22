@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:project_bind/screens/add_business.dart';
+import 'package:project_bind/screens/edit_business_page.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/navigation_drawer_widget.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
@@ -11,7 +13,6 @@ import 'package:project_bind/screens/business_page.dart';
 import 'package:project_bind/screens/home/home.dart';
 import 'package:project_bind/screens/home/write_review_page.dart';
 import 'package:project_bind/screens/landing_page.dart';
-import 'package:project_bind/screens/support_page.dart';
 import 'package:project_bind/screens/user_edit_account_page.dart';
 import 'package:project_bind/screens/user_settings_page.dart';
 import 'package:project_bind/utils/color_utils.dart';
@@ -28,6 +29,7 @@ class UserProfile extends StatefulWidget {
 
 const _kPages = <String, IconData>{
   'home': Icons.home,
+  'Add': Icons.business,
   'write': Icons.add,
   'profile': Icons.account_circle_outlined,
 };
@@ -36,19 +38,16 @@ class _UserProfileState extends State<UserProfile>
     with TickerProviderStateMixin {
   TabStyle _tabStyle = TabStyle.reactCircle;
   TextEditingController userNameController = TextEditingController();
-  final List<Tab> myTabs = <Tab>[
-    new Tab(text: 'LEFT'),
-    new Tab(text: 'RIGHT'),
-  ];
 
   late TabController tabController;
 
   List<Map<String, dynamic>> followingBusinesses = List.empty(growable: true);
   List<Map<String, dynamic>> favoriteBusinesses = List.empty(growable: true);
+  List<Map<String, dynamic>> myBusinesses = List.empty(growable: true);
 
   @override
   void initState() {
-    tabController = TabController(length: 3, vsync: this, initialIndex: 0);
+    tabController = TabController(length: 4, vsync: this, initialIndex: 0);
     getBusinessInfo();
     // getUserInfo();
     super.initState();
@@ -73,10 +72,6 @@ class _UserProfileState extends State<UserProfile>
   }
 
   Future getFollowingBusinesses() async {
-    // await BusinessData.businessApi.getAllBusiness();
-    // await BusinessData.businessApi.getDistance();
-    // await BusinessData.businessApi.getTime();
-
     followingBusinesses.clear();
     for (int i = 0; i < BusinessData.businessApi.businessList.length; i++) {
       for (int j = 0;
@@ -92,10 +87,6 @@ class _UserProfileState extends State<UserProfile>
   }
 
   Future getFavoriteBusinesses() async {
-    // await BusinessData.businessApi.getAllBusiness();
-    // await BusinessData.businessApi.getDistance();
-    // await BusinessData.businessApi.getTime();
-
     favoriteBusinesses.clear();
     for (int i = 0; i < BusinessData.businessApi.businessList.length; i++) {
       for (int j = 0;
@@ -108,6 +99,22 @@ class _UserProfileState extends State<UserProfile>
       }
     }
     return favoriteBusinesses;
+  }
+
+  Future getMyBusiness() async {
+    myBusinesses.clear();
+
+    for (int i = 0; i < BusinessData.businessApi.businessList.length; i++) {
+      for (int j = 0;
+          j < BusinessData.businessApi.myInfo['OwnedBusinessBid'].length;
+          j++) {
+        if (BusinessData.businessApi.businessList[i]['Bid'] ==
+            BusinessData.businessApi.myInfo['OwnedBusinessBid'][j]) {
+          myBusinesses.add(BusinessData.businessApi.businessList[i]);
+        }
+      }
+    }
+    return myBusinesses;
   }
 
   @override
@@ -127,142 +134,146 @@ class _UserProfileState extends State<UserProfile>
               color: primaryThemeColor(),
             ),
             onSelected: (item) async {
-              onSelected(context, item);
+              onUserOption(context, item);
             },
             itemBuilder: (context) => [
-              ...MenuItems.settingItems.map(buildSettingItem).toList(),
+              ...UserMenuItems.settingItems.map(buildUserSettingItem).toList(),
             ],
           ),
         ],
       ),
       backgroundColor: tertiaryThemeColor(),
-      body: Padding(
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: Container(
-          child: Column(
-            children: [
-              Center(
-                child: FutureBuilder(
-                    future: getUserInfo(),
-                    builder: (context, AsyncSnapshot snapshot) {
-                      return Stack(
-                        children: [
-                          if (BusinessData.businessApi.myInfo['ImageUrl']
-                              .toString()
-                              .isNotEmpty)
-                            ClipOval(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Container(
-                                  width: swidth * 0.3,
-                                  height: swidth * 0.3,
-                                  child: FadeInImage(
-                                    image: NetworkImage(
-                                        '${BusinessData.businessApi.myInfo['ImageUrl']} ',
-                                        scale: sheight),
-                                    placeholder: AssetImage(
-                                        "assets/images/placeholder.png"),
-                                    imageErrorBuilder:
-                                        (context, error, stackTrace) {
-                                      return Image.asset(
-                                          'assets/images/error.png',
-                                          fit: BoxFit.cover);
-                                    },
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          if (BusinessData.businessApi.myInfo['ImageUrl']
-                              .toString()
-                              .isEmpty)
-                            ClipOval(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Container(
-                                  width: swidth * 0.3,
-                                  height: swidth * 0.3,
-                                  child: Image.asset(
+      body: Container(
+        child: Column(
+          children: [
+            Center(
+              child: FutureBuilder(
+                  future: getUserInfo(),
+                  builder: (context, AsyncSnapshot snapshot) {
+                    return Stack(
+                      children: [
+                        if (BusinessData.businessApi.myInfo['ImageUrl']
+                            .toString()
+                            .isNotEmpty)
+                          ClipOval(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Container(
+                                width: swidth * 0.3,
+                                height: swidth * 0.3,
+                                child: FadeInImage(
+                                  image: NetworkImage(
+                                      '${BusinessData.businessApi.myInfo['ImageUrl']} ',
+                                      scale: sheight),
+                                  placeholder: AssetImage(
                                       "assets/images/placeholder.png"),
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) {
+                                    return Image.asset(
+                                        'assets/images/error.png',
+                                        fit: BoxFit.cover);
+                                  },
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
-                        ],
-                      );
-                    }),
-              ),
-              SizedBox(
-                height: sheight * 0.03,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                        if (BusinessData.businessApi.myInfo['ImageUrl']
+                            .toString()
+                            .isEmpty)
+                          ClipOval(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Container(
+                                width: swidth * 0.3,
+                                height: swidth * 0.3,
+                                child: Image.asset(
+                                    "assets/images/placeholder.png"),
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  }),
+            ),
+            SizedBox(
+              height: sheight * 0.03,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: swidth * 0.1,
+                ),
+                Text(
+                  BusinessData.businessApi.myInfo['Username'],
+                  style: TextStyle(color: primaryTextColor(), fontSize: 24),
+                ),
+                SizedBox(
+                  width: swidth * 0.1,
+                ),
+                Icon(Icons.badge)
+              ],
+            ),
+            SizedBox(
+              height: sheight * 0.04,
+            ),
+            Container(
+              color: tertiaryThemeColor(),
+              child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  unselectedLabelColor: primaryThemeColor(),
+                  controller: tabController,
+                  indicator: BoxDecoration(
+                      color: primaryThemeColor(),
+                      borderRadius: BorderRadius.circular(18)),
+                  tabs: [
+                    Tab(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text("About"),
+                      ),
+                    ),
+                    Tab(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text("Following"),
+                      ),
+                    ),
+                    Tab(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text("Favourite"),
+                      ),
+                    ),
+                    Tab(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text("Owned"),
+                      ),
+                    )
+                  ]),
+            ),
+            SizedBox(
+              height: sheight * 0.04,
+            ),
+            Container(
+              width: swidth,
+              height: sheight * 0.472,
+              child: TabBarView(
+                controller: tabController,
                 children: [
-                  SizedBox(
-                    width: swidth * 0.1,
-                  ),
-                  Text(
-                    BusinessData.businessApi.myInfo['Username'],
-                    style: TextStyle(color: primaryTextColor(), fontSize: 24),
-                  ),
-                  SizedBox(
-                    width: swidth * 0.1,
-                  ),
-                  Icon(Icons.badge)
+                  aboutTab(swidth, sheight),
+                  followingTab(sheight, swidth),
+                  favoriteTab(sheight, swidth),
+                  myBusinessesTab(sheight, swidth)
                 ],
               ),
-              SizedBox(
-                height: sheight * 0.04,
-              ),
-              Container(
-                color: tertiaryThemeColor(),
-                child: TabBar(
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    unselectedLabelColor: primaryThemeColor(),
-                    controller: tabController,
-                    indicator: BoxDecoration(
-                        color: primaryThemeColor(),
-                        borderRadius: BorderRadius.circular(18)),
-                    tabs: [
-                      Tab(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("About"),
-                        ),
-                      ),
-                      Tab(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("Following"),
-                        ),
-                      ),
-                      Tab(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("Favourite"),
-                        ),
-                      )
-                    ]),
-              ),
-              SizedBox(
-                height: sheight * 0.04,
-              ),
-              Container(
-                width: swidth,
-                height: sheight * 0.472,
-                child: TabBarView(
-                  controller: tabController,
-                  children: [
-                    aboutTab(swidth, sheight),
-                    followingTab(sheight, swidth),
-                    favoriteTab(sheight, swidth),
-                  ],
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
-      bottomNavigationBar: ConvexAppBar.badge(const <int, dynamic>{3: '99+'},
+      bottomNavigationBar: ConvexAppBar.badge(const <int, dynamic>{},
           style: _tabStyle,
           color: primaryTextColor(),
           backgroundColor: tertiaryThemeColor(),
@@ -270,13 +281,17 @@ class _UserProfileState extends State<UserProfile>
             for (final entry in _kPages.entries)
               TabItem(icon: entry.value, title: entry.key),
           ],
-          initialActiveIndex: 2, onTap: (int i) {
+          initialActiveIndex: 3, onTap: (int i) {
         switch (i) {
           case 0:
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => Home()));
             break;
           case 1:
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => AddBusiness()));
+            break;
+          case 2:
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => WriteReview()));
             break;
@@ -951,26 +966,217 @@ class _UserProfileState extends State<UserProfile>
     );
   }
 
-  void onSelected(
+  Container myBusinessesTab(double sheight, double swidth) {
+    return Container(
+      height: sheight * 0.472,
+      child: FutureBuilder(
+        future: getMyBusiness(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) {
+            // return SpinKitThreeBounce(
+            //   color: primaryThemeColor(),
+            //   size: 32,
+            return Column(
+              children: [
+                BusinessShimmerCard(sheight, swidth),
+                SizedBox(
+                  height: sheight * 0.02,
+                ),
+                BusinessShimmerCard(sheight, swidth),
+                SizedBox(
+                  height: sheight * 0.02,
+                ),
+              ],
+            );
+          } else {
+            return Column(
+              children: [
+                if (myBusinesses.isEmpty)
+                  Center(
+                    child: Text(
+                      'You dont own any businesses',
+                      style: TextStyle(color: primaryTextColor(), fontSize: 18),
+                    ),
+                  ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      child: Card(
+                        margin: EdgeInsets.only(bottom: 16),
+                        color: tertiaryThemeColor(),
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: sheight * 0.15,
+                              width: swidth * 0.3,
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: FittedBox(
+                                child: FadeInImage(
+                                  image: NetworkImage(
+                                      '${myBusinesses[index]['ImageUrl']} ',
+                                      scale: sheight),
+                                  placeholder: AssetImage(
+                                      "assets/images/placeholder.png"),
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) {
+                                    return Image.asset(
+                                        'assets/images/error.png',
+                                        fit: BoxFit.cover);
+                                  },
+                                  fit: BoxFit.cover,
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: sheight * 0.02,
+                                  horizontal: swidth * 0.05),
+                              child: Column(children: [
+                                Text(
+                                  myBusinesses[index]['BusinessName'],
+                                  style: TextStyle(
+                                      color: primaryTextColor(),
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                SizedBox(
+                                  height: sheight * 0.012,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: swidth * 0.2,
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.star,
+                                            color: primaryThemeColor(),
+                                            size: swidth * 0.05,
+                                          ),
+                                          SizedBox(
+                                            width: swidth * 0.03,
+                                          ),
+                                          Text(
+                                            myBusinesses[index]['Rating']
+                                                .toStringAsFixed(1),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: primaryTextColor()),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: swidth * 0.1,
+                                    ),
+                                    Container(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on,
+                                            color: primaryThemeColor(),
+                                            size: swidth * 0.05,
+                                          ),
+                                          SizedBox(
+                                            width: swidth * 0.03,
+                                          ),
+                                          Text(
+                                            '${myBusinesses[index]['Distance'].toString()} KM',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: primaryTextColor()),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: sheight * 0.018,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: swidth * 0.2,
+                                      child: Text(
+                                        "${myBusinesses[index]['AveragePrice']} ETB"
+                                            .toString(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: primaryTextColor()),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: swidth * 0.18,
+                                    ),
+                                    Container(
+                                      child: myBusinesses[index]['isOpen']
+                                          ? Text(
+                                              "Open",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.green),
+                                            )
+                                          : Text(
+                                              "Closed",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.red),
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BusinessPage(
+                                    Bid: myBusinesses[index]['Bid'])));
+                      },
+                    );
+                  },
+                  itemCount: myBusinesses.length,
+                ),
+              ],
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  void onUserOption(
     BuildContext context,
     MenuItem item,
   ) async {
     switch (item) {
-      case MenuItems.itemEditProfile:
+      case UserMenuItems.itemEditProfile:
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => EditAccount()));
         break;
-      case MenuItems.itemFaq:
+      case UserMenuItems.itemFaq:
         Navigator.push(context, MaterialPageRoute(builder: (context) => Faq()));
         break;
-      case MenuItems.itemSupport:
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Support()));
-        break;
-      case MenuItems.itemLogout:
+
+      case UserMenuItems.itemLogout:
         logOutDialogue(context);
         break;
-      case MenuItems.itemSetting:
+      case UserMenuItems.itemSetting:
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Settings()));
         break;
@@ -1058,7 +1264,7 @@ void logOutDialogue(BuildContext context) {
       });
 }
 
-PopupMenuItem<MenuItem> buildSettingItem(MenuItem item) =>
+PopupMenuItem<MenuItem> buildUserSettingItem(MenuItem item) =>
     PopupMenuItem<MenuItem>(
       value: item,
       child: Row(

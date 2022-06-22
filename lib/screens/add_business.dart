@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:project_bind/screens/home/user_profile_page.dart';
+import 'package:project_bind/screens/home/write_review_page.dart';
 import 'package:project_bind/shared/business.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/add_business_info.dart';
@@ -16,7 +19,15 @@ class AddBusiness extends StatefulWidget {
   State<AddBusiness> createState() => _AddBusinessState();
 }
 
+const _kPages = <String, IconData>{
+  'home': Icons.home,
+  'Add': Icons.business,
+  'write': Icons.add,
+  'profile': Icons.account_circle_outlined,
+};
+
 class _AddBusinessState extends State<AddBusiness> {
+  TabStyle _tabStyle = TabStyle.reactCircle;
   final businessNameController = TextEditingController();
   final businessDiscController = TextEditingController();
 
@@ -153,7 +164,8 @@ class _AddBusinessState extends State<AddBusiness> {
                                       });
                                     },
                                     child: Container(
-                                      margin: EdgeInsets.all(12),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 5, vertical: 10),
                                       decoration: BoxDecoration(
                                           color: selected[index]
                                               ? primaryThemeColor()
@@ -178,7 +190,7 @@ class _AddBusinessState extends State<AddBusiness> {
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: (1 / 2),
+                                childAspectRatio: (1 / 1.8),
                               ),
                             ),
                           ),
@@ -319,7 +331,7 @@ class _AddBusinessState extends State<AddBusiness> {
                   thickness: 1,
                   color: primaryTextColor(),
                 ),
-                reusableUIButton(context, "Next", (swidth / 3),50, () async {
+                reusableUIButton(context, "Next", (swidth / 3), 50, () async {
                   final isValid = formKey.currentState!.validate();
                   if (!isValid) {
                     return;
@@ -363,6 +375,30 @@ class _AddBusinessState extends State<AddBusiness> {
             ),
           ),
         )),
+        bottomNavigationBar: ConvexAppBar.badge(const <int, dynamic>{},
+            style: _tabStyle,
+            color: primaryTextColor(),
+            backgroundColor: tertiaryThemeColor(),
+            items: <TabItem>[
+              for (final entry in _kPages.entries)
+                TabItem(icon: entry.value, title: entry.key),
+            ],
+            initialActiveIndex: 1, onTap: (int i) {
+          switch (i) {
+            case 0:
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Home()));
+              break;
+            case 2:
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => WriteReview()));
+              break;
+            case 3:
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => UserProfile()));
+              break;
+          }
+        }),
       ),
     );
   }

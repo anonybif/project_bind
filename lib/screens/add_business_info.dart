@@ -52,15 +52,18 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: primaryThemeColor(),
-          elevation: 0,
+          backgroundColor: tertiaryThemeColor(),
+          elevation: 1,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
             child: iconWidget("assets/images/logo1.png"),
           ),
-          title: const Text(
+          title: Text(
             "Add Business",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: primaryTextColor()),
           ),
           centerTitle: true,
           automaticallyImplyLeading: false,
@@ -254,8 +257,8 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                 }
                 await createbusiness(context);
 
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const Home()));
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => Home()));
               }),
             ],
           ),
