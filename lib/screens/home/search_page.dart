@@ -26,6 +26,8 @@ class _SearchPageState extends State<SearchPage> {
   bool nearBySelected = false;
   bool openSelected = false;
   List<bool> priceSort = [true, false, false];
+  bool highestRatedSelected = false;
+  bool mostReviewedSelected = false;
 
   getBusinessList() async {
     await businessApi.getBusinessId();
@@ -138,6 +140,28 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  getHighestRatedBusiness() async {
+    var temp = items;
+    temp.sort((m1, m2) {
+      return m2['Rating'].compareTo(m1['Rating']);
+    });
+
+    setState(() {
+      items = List.from(temp);
+    });
+  }
+
+  getMostReviewedBusiness() async {
+    var temp = items;
+    temp.sort((m1, m2) {
+      return m2['Reviews'].compareTo(m1['Reviews']);
+    });
+
+    setState(() {
+      items = List.from(temp);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double swidth = MediaQuery.of(context).size.width;
@@ -198,6 +222,10 @@ class _SearchPageState extends State<SearchPage> {
                         getPriceAscend();
                       } else if (priceSort[2]) {
                         getPricedescend();
+                      } else if (highestRatedSelected) {
+                        getHighestRatedBusiness();
+                      } else if (mostReviewedSelected) {
+                        getMostReviewedBusiness();
                       }
                     },
                   ),
@@ -222,164 +250,291 @@ class _SearchPageState extends State<SearchPage> {
             if (filtering)
               Container(
                 width: swidth * 0.9,
-                height: sheight * 0.05,
+                height: sheight * 0.11,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   color: tertiaryThemeColor(),
                 ),
-                child: Row(
+                child: Column(
                   children: [
-                    SizedBox(
-                      width: swidth * 0.06,
-                    ),
-                    InkWell(
-                      splashColor: tertiaryThemeColor(),
-                      highlightColor: tertiaryThemeColor(),
-                      onTap: () {
-                        setState(() {
-                          priceSort[0] = true;
-                          priceSort[1] = false;
-                          priceSort[2] = false;
-                          nearBySelected = !nearBySelected;
-                          if (openSelected && nearBySelected) {
-                            getOpenBusiness();
-                            getNearbyBusiness();
-                          } else if (nearBySelected)
-                            getNearbyBusiness();
-                          else {
-                            if (openSelected) {
-                              getSearchResult(searchFieldController.text);
-                              getOpenBusiness();
-                            } else
-                              getSearchResult(searchFieldController.text);
-                          }
-                        });
-                      },
-                      child: Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: nearBySelected
-                                ? primaryThemeColor()
-                                : tertiaryThemeColor(),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: primaryThemeColor())),
-                        child: Center(
-                          child: Text(
-                            'Nearby',
-                            style: TextStyle(
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: swidth * 0.06,
+                        ),
+                        InkWell(
+                          splashColor: tertiaryThemeColor(),
+                          highlightColor: tertiaryThemeColor(),
+                          onTap: () {
+                            setState(() {
+                              priceSort[0] = true;
+                              priceSort[1] = false;
+                              priceSort[2] = false;
+                              highestRatedSelected = false;
+                              mostReviewedSelected = false;
+                              nearBySelected = !nearBySelected;
+                              if (openSelected && nearBySelected) {
+                                getOpenBusiness();
+                                getNearbyBusiness();
+                              } else if (nearBySelected)
+                                getNearbyBusiness();
+                              else {
+                                if (openSelected) {
+                                  getSearchResult(searchFieldController.text);
+                                  getOpenBusiness();
+                                } else
+                                  getSearchResult(searchFieldController.text);
+                              }
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
                                 color: nearBySelected
-                                    ? tertiaryThemeColor()
-                                    : primaryThemeColor()),
+                                    ? primaryThemeColor()
+                                    : tertiaryThemeColor(),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: primaryThemeColor())),
+                            child: Center(
+                              child: Text(
+                                'Nearby',
+                                style: TextStyle(
+                                    color: nearBySelected
+                                        ? tertiaryThemeColor()
+                                        : primaryThemeColor()),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    InkWell(
-                      splashColor: tertiaryThemeColor(),
-                      highlightColor: tertiaryThemeColor(),
-                      onTap: () {
-                        setState(() {
-                          openSelected = !openSelected;
+                        InkWell(
+                          splashColor: tertiaryThemeColor(),
+                          highlightColor: tertiaryThemeColor(),
+                          onTap: () {
+                            setState(() {
+                              openSelected = !openSelected;
 
-                          if (openSelected && nearBySelected) {
-                            getOpenBusiness();
-                            getNearbyBusiness();
-                          } else if (openSelected)
-                            getOpenBusiness();
-                          else {
-                            if (nearBySelected) {
-                              getSearchResult(searchFieldController.text);
-                              getNearbyBusiness();
-                            } else
-                              getSearchResult(searchFieldController.text);
-                          }
-                        });
-                      },
-                      child: Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: openSelected
-                                ? primaryThemeColor()
-                                : tertiaryThemeColor(),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: primaryThemeColor())),
-                        child: Center(
-                          child: Text(
-                            'Open',
-                            style: TextStyle(
+                              if (openSelected && nearBySelected) {
+                                getOpenBusiness();
+                                getNearbyBusiness();
+                              } else if (openSelected && highestRatedSelected) {
+                                getOpenBusiness();
+                                getHighestRatedBusiness();
+                              } else if (openSelected && mostReviewedSelected) {
+                                getOpenBusiness();
+                                getMostReviewedBusiness();
+                              } else if (openSelected && priceSort[1]) {
+                                getOpenBusiness();
+                                getPriceAscend();
+                              } else if (openSelected && priceSort[2]) {
+                                getOpenBusiness();
+                                getPricedescend();
+                              } else if (openSelected)
+                                getOpenBusiness();
+                              else {
+                                if (nearBySelected) {
+                                  getSearchResult(searchFieldController.text);
+                                  getNearbyBusiness();
+                                } else
+                                  getSearchResult(searchFieldController.text);
+                              }
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
                                 color: openSelected
+                                    ? primaryThemeColor()
+                                    : tertiaryThemeColor(),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: primaryThemeColor())),
+                            child: Center(
+                              child: Text(
+                                'Open',
+                                style: TextStyle(
+                                    color: openSelected
+                                        ? tertiaryThemeColor()
+                                        : primaryThemeColor()),
+                              ),
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          splashColor: tertiaryThemeColor(),
+                          highlightColor: tertiaryThemeColor(),
+                          onTap: () {
+                            setState(() {
+                              if (priceSort[0]) {
+                                nearBySelected = false;
+                                highestRatedSelected = false;
+                                mostReviewedSelected = false;
+                                priceSort[1] = true;
+                                priceSort[0] = false;
+                                getPriceAscend();
+                              } else if (priceSort[1]) {
+                                nearBySelected = false;
+                                highestRatedSelected = false;
+                                mostReviewedSelected = false;
+                                priceSort[2] = true;
+                                priceSort[1] = false;
+                                getPricedescend();
+                              } else {
+                                priceSort[0] = true;
+                                priceSort[2] = false;
+                                if (openSelected) {
+                                  getSearchResult(searchFieldController.text);
+                                  getOpenBusiness();
+                                } else {
+                                  getSearchResult(searchFieldController.text);
+                                }
+                              }
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                                color: priceSort[0]
                                     ? tertiaryThemeColor()
-                                    : primaryThemeColor()),
+                                    : primaryThemeColor(),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: primaryThemeColor())),
+                            child: Center(
+                              child: Row(
+                                children: [
+                                  priceSort[1]
+                                      ? Text('Lowest price',
+                                          style: TextStyle(
+                                            color: priceSort[0]
+                                                ? primaryThemeColor()
+                                                : tertiaryThemeColor(),
+                                          ))
+                                      : priceSort[2]
+                                          ? Text('Highest price',
+                                              style: TextStyle(
+                                                color: priceSort[0]
+                                                    ? primaryThemeColor()
+                                                    : tertiaryThemeColor(),
+                                              ))
+                                          : Text('Sort by price',
+                                              style: TextStyle(
+                                                color: priceSort[0]
+                                                    ? primaryThemeColor()
+                                                    : tertiaryThemeColor(),
+                                              )),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    InkWell(
-                      splashColor: tertiaryThemeColor(),
-                      highlightColor: tertiaryThemeColor(),
-                      onTap: () {
-                        setState(() {
-                          if (priceSort[0]) {
-                            nearBySelected = false;
-                            priceSort[1] = true;
-                            priceSort[0] = false;
-                            getPriceAscend();
-                          } else if (priceSort[1]) {
-                            nearBySelected = false;
-                            priceSort[2] = true;
-                            priceSort[1] = false;
-                            getPricedescend();
-                          } else {
-                            priceSort[0] = true;
-                            priceSort[2] = false;
-                            if (openSelected) {
-                              getSearchResult(searchFieldController.text);
-                              getOpenBusiness();
-                            } else {
-                              getSearchResult(searchFieldController.text);
-                            }
-                          }
-                        });
-                      },
-                      child: Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: priceSort[0]
-                                ? tertiaryThemeColor()
-                                : primaryThemeColor(),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: primaryThemeColor())),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              priceSort[1]
-                                  ? Icon(
-                                      Icons.arrow_drop_up,
-                                      color: tertiaryThemeColor(),
-                                    )
-                                  : priceSort[2]
-                                      ? Icon(
-                                          Icons.arrow_drop_down,
-                                          color: tertiaryThemeColor(),
-                                        )
-                                      : Container(),
-                              Text('Sort by price',
-                                  style: TextStyle(
-                                    color: priceSort[0]
-                                        ? primaryThemeColor()
-                                        : tertiaryThemeColor(),
-                                  )),
-                            ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          splashColor: tertiaryThemeColor(),
+                          highlightColor: tertiaryThemeColor(),
+                          onTap: () {
+                            setState(() {
+                              priceSort[0] = true;
+                              priceSort[1] = false;
+                              priceSort[2] = false;
+                              highestRatedSelected = !highestRatedSelected;
+                              mostReviewedSelected = false;
+                              nearBySelected = false;
+                              if (openSelected && highestRatedSelected) {
+                                getOpenBusiness();
+                                getHighestRatedBusiness();
+                              } else if (highestRatedSelected)
+                                getHighestRatedBusiness();
+                              else {
+                                if (openSelected) {
+                                  getSearchResult(searchFieldController.text);
+                                  getOpenBusiness();
+                                } else
+                                  getSearchResult(searchFieldController.text);
+                              }
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                                color: highestRatedSelected
+                                    ? primaryThemeColor()
+                                    : tertiaryThemeColor(),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: primaryThemeColor())),
+                            child: Center(
+                              child: Text(
+                                'Highest Rated',
+                                style: TextStyle(
+                                    color: highestRatedSelected
+                                        ? tertiaryThemeColor()
+                                        : primaryThemeColor()),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                        InkWell(
+                          splashColor: tertiaryThemeColor(),
+                          highlightColor: tertiaryThemeColor(),
+                          onTap: () {
+                            setState(() {
+                              priceSort[0] = true;
+                              priceSort[1] = false;
+                              priceSort[2] = false;
+                              highestRatedSelected = false;
+                              mostReviewedSelected = !mostReviewedSelected;
+                              nearBySelected = false;
+                              if (openSelected && mostReviewedSelected) {
+                                getOpenBusiness();
+                                getMostReviewedBusiness();
+                              } else if (mostReviewedSelected)
+                                getMostReviewedBusiness();
+                              else {
+                                if (openSelected) {
+                                  getSearchResult(searchFieldController.text);
+                                  getOpenBusiness();
+                                } else
+                                  getSearchResult(searchFieldController.text);
+                              }
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                                color: mostReviewedSelected
+                                    ? primaryThemeColor()
+                                    : tertiaryThemeColor(),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: primaryThemeColor())),
+                            child: Center(
+                              child: Text(
+                                'Most Reviewed',
+                                style: TextStyle(
+                                    color: mostReviewedSelected
+                                        ? tertiaryThemeColor()
+                                        : primaryThemeColor()),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -454,7 +609,8 @@ class _SearchPageState extends State<SearchPage> {
                                               width: swidth * 0.03,
                                             ),
                                             Text(
-                                              items[index]['Rating'].toString(),
+                                              items[index]['Rating']
+                                                  .toStringAsFixed(1),
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   color: primaryTextColor()),

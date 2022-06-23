@@ -75,6 +75,22 @@ class _UserProfileState extends State<UserProfile>
     await docRef.get().then((DocumentSnapshot doc) {
       setState(() {
         myInfo = doc.data()!;
+        int myReviews = myInfo['Reviews'];
+        int myLikes = myInfo['Likes'];
+
+        if (myReviews >= 100 && myLikes >= 200) {
+          myInfo['Badge'] = 'Gold';
+          print(myInfo['Badge']);
+        } else if (myReviews >= 75 && myLikes >= 150) {
+          myInfo['Badge'] = 'Silver';
+          print(myInfo['Badge']);
+        } else if (myReviews >= 50 && myLikes >= 100) {
+          myInfo['Badge'] = 'Bronze';
+          print(myInfo['Badge']);
+        } else {
+          myInfo['Badge'] = '';
+          print(myInfo['Badge']);
+        }
         print('first');
         print(myInfo);
       });
@@ -86,8 +102,6 @@ class _UserProfileState extends State<UserProfile>
   }
 
   getFollowingBusinesses() async {
-    print('next');
-    print(myInfo);
     followingBusinesses.clear();
     for (int i = 0; i < BusinessData.businessApi.businessList.length; i++) {
       for (int j = 0; j < myInfo['FollowingBusinessBid'].length; j++) {
@@ -199,9 +213,32 @@ class _UserProfileState extends State<UserProfile>
                             TextStyle(color: primaryTextColor(), fontSize: 24),
                       ),
                       SizedBox(
-                        width: swidth * 0.1,
+                        width: swidth * 0.06,
                       ),
-                      Icon(Icons.badge)
+                      if (BusinessData.businessApi.myInfo['Badge'] == 'Gold')
+                        Container(
+                          height: 28,
+                          width: 28,
+                          child: Image.asset(
+                            'assets/images/gold_badge.png',
+                          ),
+                        ),
+                      if (BusinessData.businessApi.myInfo['Badge'] == 'Silver')
+                        Container(
+                          height: 28,
+                          width: 28,
+                          child: Image.asset(
+                            'assets/images/silver_badge.png',
+                          ),
+                        ),
+                      if (BusinessData.businessApi.myInfo['Badge'] == 'Bronze')
+                        Container(
+                          height: 28,
+                          width: 28,
+                          child: Image.asset(
+                            'assets/images/bronze_badge.png',
+                          ),
+                        ),
                     ],
                   ),
                   SizedBox(
@@ -531,7 +568,7 @@ Container followingTab(double sheight, double swidth,
         if (followingBusinesses.isEmpty)
           Center(
             child: Text(
-              'You dont follow any businesses',
+              'This user doesn\'t follow any businesses',
               style: TextStyle(color: primaryTextColor(), fontSize: 18),
             ),
           ),
@@ -704,7 +741,7 @@ Container favoriteTab(double sheight, double swidth,
           if (favoriteBusinesses.isEmpty)
             Center(
               child: Text(
-                'You dont have any favorite businesses',
+                'This user doesn\'t have any favorite businesses',
                 style: TextStyle(color: primaryTextColor(), fontSize: 18),
               ),
             ),
@@ -877,7 +914,7 @@ Container myBusinessesTab(
         if (myBusinesses.isEmpty)
           Center(
             child: Text(
-              'You dont own any businesses',
+              'This user doesn\'t own any businesses',
               style: TextStyle(color: primaryTextColor(), fontSize: 18),
             ),
           ),

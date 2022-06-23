@@ -9,6 +9,7 @@ import 'package:project_bind/shared/Review.dart';
 import 'package:project_bind/shared/reusable_widget.dart';
 import 'package:project_bind/screens/business_api.dart';
 import 'package:project_bind/utils/color_utils.dart';
+import 'package:project_bind/utils/utils.dart';
 
 class ReviewsPage extends StatefulWidget {
   final String Bid;
@@ -19,6 +20,7 @@ class ReviewsPage extends StatefulWidget {
 }
 
 class _ReviewsPageState extends State<ReviewsPage> {
+  final messengerKey = GlobalKey<ScaffoldMessengerState>();
   var review;
   @override
   void initState() {
@@ -77,410 +79,469 @@ class _ReviewsPageState extends State<ReviewsPage> {
         ),
       );
     } else {
-      return Scaffold(
-        backgroundColor: tertiaryThemeColor(),
-        appBar: AppBar(
+      return MaterialApp(
+        scaffoldMessengerKey: messengerKey,
+        home: Scaffold(
           backgroundColor: tertiaryThemeColor(),
-          elevation: 10,
-          title: Text(
-            "Reviews",
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: primaryTextColor()),
+          appBar: AppBar(
+            backgroundColor: tertiaryThemeColor(),
+            elevation: 10,
+            title: Text(
+              "Reviews",
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: primaryTextColor()),
+            ),
+            centerTitle: true,
           ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: sheight * 0.9,
-                child: ListView.builder(
-                  itemCount: BusinessData.businessApi.businessReview.length,
-                  itemBuilder: (context, num) {
-                    return Card(
-                      color: tertiaryThemeColor(),
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.fromLTRB(5, 5, 3, 0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12)),
-                            height: sheight * 0.0625,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => UserProfile(
-                                                Uid: BusinessData.businessApi
-                                                        .businessReview[num]
-                                                    ['Uid'])));
-                                  },
-                                  child: Row(
-                                    children: [
-                                      if (BusinessData.businessApi
-                                          .businessReview[num]['UserImageUrl']
-                                          .toString()
-                                          .isNotEmpty)
-                                        ClipOval(
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: Container(
-                                              width: swidth * 0.1,
-                                              height: swidth * 0.1,
-                                              child: FadeInImage(
-                                                image: NetworkImage(
-                                                    '${BusinessData.businessApi.businessReview[num]['UserImageUrl']} ',
-                                                    scale: sheight),
-                                                placeholder: AssetImage(
-                                                    "assets/images/placeholder.png"),
-                                                imageErrorBuilder: (context,
-                                                    error, stackTrace) {
-                                                  return Image.asset(
-                                                      'assets/images/error.png',
-                                                      fit: BoxFit.cover);
-                                                },
-                                                fit: BoxFit.cover,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: sheight * 0.9,
+                  child: ListView.builder(
+                    itemCount: BusinessData.businessApi.businessReview.length,
+                    itemBuilder: (context, num) {
+                      return Card(
+                        color: tertiaryThemeColor(),
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.fromLTRB(5, 5, 3, 0),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12)),
+                              height: sheight * 0.0625,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => UserProfile(
+                                                  Uid: BusinessData.businessApi
+                                                          .businessReview[num]
+                                                      ['Uid'])));
+                                    },
+                                    child: Row(
+                                      children: [
+                                        if (BusinessData.businessApi
+                                            .businessReview[num]['UserImageUrl']
+                                            .toString()
+                                            .isNotEmpty)
+                                          ClipOval(
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: Container(
+                                                width: swidth * 0.1,
+                                                height: swidth * 0.1,
+                                                child: FadeInImage(
+                                                  image: NetworkImage(
+                                                      '${BusinessData.businessApi.businessReview[num]['UserImageUrl']} ',
+                                                      scale: sheight),
+                                                  placeholder: AssetImage(
+                                                      "assets/images/placeholder.png"),
+                                                  imageErrorBuilder: (context,
+                                                      error, stackTrace) {
+                                                    return Image.asset(
+                                                        'assets/images/error.png',
+                                                        fit: BoxFit.cover);
+                                                  },
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      if (BusinessData.businessApi
-                                          .businessReview[num]['UserImageUrl']
-                                          .toString()
-                                          .isEmpty)
-                                        ClipOval(
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: Container(
-                                              width: swidth * 0.1,
-                                              height: swidth * 0.1,
-                                              child: Image.asset(
-                                                  "assets/images/placeholder.png"),
+                                        if (BusinessData.businessApi
+                                            .businessReview[num]['UserImageUrl']
+                                            .toString()
+                                            .isEmpty)
+                                          ClipOval(
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: Container(
+                                                width: swidth * 0.1,
+                                                height: swidth * 0.1,
+                                                child: Image.asset(
+                                                    "assets/images/placeholder.png"),
+                                              ),
                                             ),
                                           ),
+                                        SizedBox(
+                                          width: swidth * 0.0336,
                                         ),
-                                      SizedBox(
-                                        width: swidth * 0.0336,
+                                        Text(
+                                          '${BusinessData.businessApi.businessReview[num]['Username']}',
+                                          style: TextStyle(
+                                              color: primaryTextColor()),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Row(children: [
+                                    RatingBarIndicator(
+                                      rating: BusinessData.businessApi
+                                          .businessReview[num]['Rating'],
+                                      itemBuilder: (context, index) => Icon(
+                                        Icons.star,
+                                        color: primaryThemeColor(),
                                       ),
-                                      Text(
-                                        '${BusinessData.businessApi.businessReview[num]['Username']}',
-                                        style: TextStyle(
-                                            color: primaryTextColor()),
+                                      itemCount: 5,
+                                      itemSize: swidth * 0.06,
+                                    ),
+                                    SizedBox(width: swidth * 0.035),
+                                    if (FirebaseAuth.instance.currentUser !=
+                                            null &&
+                                        BusinessData.businessApi
+                                                    .businessReview[num]
+                                                ['UserUid'] !=
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                      PopupMenuButton<MenuItem>(
+                                        color: tertiaryThemeColor(),
+                                        icon: Icon(
+                                          Icons.more_vert,
+                                          color: primaryThemeColor(),
+                                        ),
+                                        onSelected: (item) async {
+                                          onSelected(
+                                              context,
+                                              item,
+                                              widget.Bid,
+                                              BusinessData.businessApi
+                                                  .businessReview[num]['Rid']);
+                                          await getBusinessInfo();
+                                          setState(() {});
+                                          Utils.showSnackBar(
+                                              'Business succesfully reported',
+                                              messengerKey);
+                                        },
+                                        itemBuilder: (context) => [
+                                          ...ReviewMenuItems.reportItems
+                                              .map(buildItem)
+                                              .toList(),
+                                        ],
+                                      ),
+                                    if (FirebaseAuth.instance.currentUser !=
+                                            null &&
+                                        BusinessData.businessApi
+                                                    .businessReview[num]
+                                                ['UserUid'] ==
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                      PopupMenuButton<MenuItem>(
+                                        color: tertiaryThemeColor(),
+                                        icon: Icon(
+                                          Icons.more_vert,
+                                          color: primaryThemeColor(),
+                                        ),
+                                        onSelected: (item) async {
+                                          onSelected(
+                                              context,
+                                              item,
+                                              widget.Bid,
+                                              BusinessData.businessApi
+                                                  .businessReview[num]['Rid']);
+                                          await getBusinessInfo();
+                                          setState(() {});
+                                          Utils.showSnackBar(
+                                              'Business succesfully reported',
+                                              messengerKey);
+                                        },
+                                        itemBuilder: (context) => [
+                                          ...ReviewMenuItems.deleteItems
+                                              .map(buildItem)
+                                              .toList(),
+                                        ],
                                       )
-                                    ],
-                                  ),
-                                ),
-                                Row(children: [
-                                  RatingBarIndicator(
-                                    rating: BusinessData.businessApi
-                                        .businessReview[num]['Rating'],
-                                    itemBuilder: (context, index) => Icon(
-                                      Icons.star,
-                                      color: primaryThemeColor(),
-                                    ),
-                                    itemCount: 5,
-                                    itemSize: swidth * 0.06,
-                                  ),
-                                  SizedBox(width: swidth * 0.035),
-                                  if (FirebaseAuth.instance.currentUser !=
-                                          null &&
-                                      BusinessData.businessApi
-                                              .businessReview[num]['Uid'] !=
-                                          FirebaseAuth
-                                              .instance.currentUser!.uid)
-                                    PopupMenuButton<MenuItem>(
-                                      color: tertiaryThemeColor(),
-                                      icon: Icon(
-                                        Icons.more_vert,
-                                        color: primaryThemeColor(),
-                                      ),
-                                      onSelected: (item) => onSelected(
-                                          context,
-                                          item,
-                                          widget.Bid,
-                                          BusinessData.businessApi
-                                              .businessReview[num]['Rid'],
-                                          getBusinessInfo()),
-                                      itemBuilder: (context) => [
-                                        ...ReviewMenuItems.reportItems
-                                            .map(buildItem)
-                                            .toList(),
-                                      ],
-                                    ),
-                                  if (FirebaseAuth.instance.currentUser !=
-                                          null &&
-                                      BusinessData.businessApi
-                                              .businessReview[num]['Uid'] ==
-                                          FirebaseAuth
-                                              .instance.currentUser!.uid)
-                                    PopupMenuButton<MenuItem>(
-                                      color: tertiaryThemeColor(),
-                                      icon: Icon(
-                                        Icons.more_vert,
-                                        color: primaryThemeColor(),
-                                      ),
-                                      onSelected: (item) => onSelected(
-                                          context,
-                                          item,
-                                          widget.Bid,
-                                          BusinessData.businessApi
-                                              .businessReview[num]['Rid'],
-                                          getBusinessInfo()),
-                                      itemBuilder: (context) => [
-                                        ...ReviewMenuItems.deleteItems
-                                            .map(buildItem)
-                                            .toList(),
-                                      ],
-                                    )
-                                ])
-                              ],
+                                  ])
+                                ],
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            height: sheight * 0.0208,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: primaryThemeColor()),
-                                borderRadius: BorderRadius.circular(12)),
-                            width: swidth,
-                            child: Text(
-                              '${BusinessData.businessApi.businessReview[num]['Content']}',
-                              style: TextStyle(color: primaryTextColor()),
+                            SizedBox(
+                              height: sheight * 0.0208,
                             ),
-                          ),
-                          SizedBox(
-                            height: sheight * 0.015625,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              if (BusinessData.businessApi.businessReview[num]
-                                          ['ImageUrl'][0] !=
-                                      null &&
-                                  BusinessData.businessApi.businessReview[num]
-                                          ['ImageUrl'][0] !=
-                                      '')
-                                Container(
-                                  height: sheight * 0.125,
-                                  width: sheight * 0.125,
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: primaryThemeColor()),
-                                      borderRadius: BorderRadius.circular(12)),
-                                  child: Center(
-                                    child: FadeInImage(
-                                      image: NetworkImage(
-                                        '${BusinessData.businessApi.businessReview[num]['ImageUrl'][0]} ',
-                                      ),
-                                      placeholder: AssetImage(
-                                          "assets/images/placeholder.png"),
-                                      imageErrorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Image.asset(
-                                            'assets/images/error.png',
-                                            fit: BoxFit.fitWidth);
-                                      },
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                              if (BusinessData.businessApi.businessReview[num]
-                                          ['ImageUrl'][1] !=
-                                      null &&
-                                  BusinessData.businessApi.businessReview[num]
-                                          ['ImageUrl'][1] !=
-                                      '')
-                                Container(
-                                  height: sheight * 0.125,
-                                  width: sheight * 0.125,
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: primaryThemeColor()),
-                                      borderRadius: BorderRadius.circular(12)),
-                                  child: Center(
-                                    child: FadeInImage(
-                                      image: NetworkImage(
-                                        '${BusinessData.businessApi.businessReview[num]['ImageUrl'][1]} ',
-                                      ),
-                                      placeholder: AssetImage(
-                                          "assets/images/placeholder.png"),
-                                      imageErrorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Image.asset(
-                                            'assets/images/error.png',
-                                            fit: BoxFit.fitWidth);
-                                      },
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                              if (BusinessData.businessApi.businessReview[num]
-                                          ['ImageUrl'][2] !=
-                                      null &&
-                                  BusinessData.businessApi.businessReview[num]
-                                          ['ImageUrl'][2] !=
-                                      '')
-                                Container(
-                                  height: sheight * 0.125,
-                                  width: sheight * 0.125,
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: primaryThemeColor()),
-                                      borderRadius: BorderRadius.circular(12)),
-                                  child: Center(
-                                    child: FadeInImage(
-                                      image: NetworkImage(
-                                        '${BusinessData.businessApi.businessReview[num]['ImageUrl'][2]} ',
-                                      ),
-                                      placeholder: AssetImage(
-                                          "assets/images/placeholder.png"),
-                                      imageErrorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Image.asset(
-                                            'assets/images/error.png',
-                                            fit: BoxFit.fitWidth);
-                                      },
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(
-                                '${BusinessData.businessApi.businessReview[num]['Date']}',
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: primaryThemeColor()),
+                                  borderRadius: BorderRadius.circular(12)),
+                              width: swidth,
+                              child: Text(
+                                '${BusinessData.businessApi.businessReview[num]['Content']}',
                                 style: TextStyle(color: primaryTextColor()),
                               ),
-                              SizedBox(
-                                width: swidth * 0.0833,
-                              ),
-                              StreamBuilder(
-                                stream: getReviewLikes(BusinessData
-                                    .businessApi.businessReview[num]['Rid']),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    String Likes =
-                                        snapshot.data.toString().split('.')[0];
-                                    return Row(
-                                      children: [
-                                        Text('${Likes}',
-                                            style: TextStyle(
-                                                color: primaryThemeColor())),
-                                        SizedBox(
-                                          width: swidth * 0.0258,
-                                        ),
-                                        Text('Likes',
-                                            style: TextStyle(
-                                                color: primaryTextColor())),
-                                      ],
-                                    );
-                                  } else {
-                                    return Row(
-                                      children: [
-                                        Text(
-                                            '${BusinessData.businessApi.businessReview[num]['Likes'].toString().split('.')[0]}',
-                                            style: TextStyle(
-                                                color: primaryThemeColor())),
-                                        SizedBox(
-                                          width: swidth * 0.0258,
-                                        ),
-                                        Text('Likes',
-                                            style: TextStyle(
-                                                color: primaryTextColor())),
-                                      ],
-                                    );
-                                  }
-                                },
-                              ),
-                              SizedBox(
-                                width: swidth * 0.0258,
-                              ),
-                              Center(
-                                child: IconButton(
-                                    onPressed: () async {
-                                      if (FirebaseAuth.instance.currentUser !=
-                                          null) {
-                                        if (!BusinessData
-                                            .businessApi.Liked[num]) {
-                                          await ReviewManagement()
-                                              .updateReviewLikes(
-                                                  (BusinessData.businessApi
-                                                          .businessReview[num]
-                                                      ['Rid']),
-                                                  'plus',
-                                                  widget.Bid);
-                                        } else if (BusinessData
-                                            .businessApi.Liked[num]) {
-                                          await ReviewManagement()
-                                              .updateReviewLikes(
-                                                  (BusinessData.businessApi
-                                                          .businessReview[num]
-                                                      ['Rid']),
-                                                  'minus',
-                                                  widget.Bid);
-                                        }
-
-                                        // await BusinessData.businessApi
-                                        //     .UpdateReviewLikes(widget.Bid);
-                                        setState(() {
-                                          BusinessData.businessApi.Liked[num] =
-                                              !BusinessData
-                                                  .businessApi.Liked[num];
-                                        });
-                                      } else {
-                                        signUpDialogue(context,
-                                            'Login or SignUp to like a review');
-                                      }
+                            ),
+                            SizedBox(
+                              height: sheight * 0.015625,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                if (BusinessData.businessApi
+                                    .businessReview[num]['ImageUrl'][0]
+                                    .toString()
+                                    .isNotEmpty)
+                                  GestureDetector(
+                                    onTap: () {
+                                      maximizeReviewImage(
+                                          context,
+                                          BusinessData.businessApi
+                                                  .businessReview[num]
+                                              ['ImageUrl'][0]);
                                     },
+                                    child: Container(
+                                      height: sheight * 0.125,
+                                      width: sheight * 0.125,
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: primaryThemeColor()),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Center(
+                                        child: FadeInImage(
+                                          image: NetworkImage(
+                                            '${BusinessData.businessApi.businessReview[num]['ImageUrl'][0]} ',
+                                          ),
+                                          placeholder: AssetImage(
+                                              "assets/images/placeholder.png"),
+                                          imageErrorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Image.asset(
+                                                'assets/images/error.png',
+                                                fit: BoxFit.fitWidth);
+                                          },
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (BusinessData.businessApi
+                                    .businessReview[num]['ImageUrl'][1]
+                                    .toString()
+                                    .isNotEmpty)
+                                  GestureDetector(
+                                    onTap: () {
+                                      maximizeReviewImage(
+                                          context,
+                                          BusinessData.businessApi
+                                                  .businessReview[num]
+                                              ['ImageUrl'][1]);
+                                    },
+                                    child: Container(
+                                      height: sheight * 0.125,
+                                      width: sheight * 0.125,
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: primaryThemeColor()),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Center(
+                                        child: FadeInImage(
+                                          image: NetworkImage(
+                                            '${BusinessData.businessApi.businessReview[num]['ImageUrl'][1]} ',
+                                          ),
+                                          placeholder: AssetImage(
+                                              "assets/images/placeholder.png"),
+                                          imageErrorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Image.asset(
+                                                'assets/images/error.png',
+                                                fit: BoxFit.fitWidth);
+                                          },
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (BusinessData.businessApi
+                                    .businessReview[num]['ImageUrl'][2]
+                                    .toString()
+                                    .isNotEmpty)
+                                  GestureDetector(
+                                    onTap: () {
+                                      maximizeReviewImage(
+                                          context,
+                                          BusinessData.businessApi
+                                                  .businessReview[num]
+                                              ['ImageUrl'][2]);
+                                    },
+                                    child: Container(
+                                      height: sheight * 0.125,
+                                      width: sheight * 0.125,
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: primaryThemeColor()),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Center(
+                                        child: FadeInImage(
+                                          image: NetworkImage(
+                                            '${BusinessData.businessApi.businessReview[num]['ImageUrl'][2]} ',
+                                          ),
+                                          placeholder: AssetImage(
+                                              "assets/images/placeholder.png"),
+                                          imageErrorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Image.asset(
+                                                'assets/images/error.png',
+                                                fit: BoxFit.fitWidth);
+                                          },
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  '${BusinessData.businessApi.businessReview[num]['Date']}',
+                                  style: TextStyle(color: primaryTextColor()),
+                                ),
+                                SizedBox(
+                                  width: swidth * 0.0833,
+                                ),
+                                StreamBuilder(
+                                  stream: getReviewLikes(BusinessData
+                                      .businessApi.businessReview[num]['Rid']),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      String Likes = snapshot.data
+                                          .toString()
+                                          .split('.')[0];
+                                      return Row(
+                                        children: [
+                                          Text('${Likes}',
+                                              style: TextStyle(
+                                                  color: primaryThemeColor())),
+                                          SizedBox(
+                                            width: swidth * 0.0258,
+                                          ),
+                                          Text('Likes',
+                                              style: TextStyle(
+                                                  color: primaryTextColor())),
+                                        ],
+                                      );
+                                    } else {
+                                      return Row(
+                                        children: [
+                                          Text(
+                                              '${BusinessData.businessApi.businessReview[num]['Likes'].toString().split('.')[0]}',
+                                              style: TextStyle(
+                                                  color: primaryThemeColor())),
+                                          SizedBox(
+                                            width: swidth * 0.0258,
+                                          ),
+                                          Text('Likes',
+                                              style: TextStyle(
+                                                  color: primaryTextColor())),
+                                        ],
+                                      );
+                                    }
+                                  },
+                                ),
+                                SizedBox(
+                                  width: swidth * 0.0258,
+                                ),
+                                Center(
+                                  child: IconButton(
+                                      onPressed: () async {
+                                        if (FirebaseAuth.instance.currentUser !=
+                                            null) {
+                                          if (!BusinessData
+                                              .businessApi.Liked[num]) {
+                                            await ReviewManagement()
+                                                .updateReviewLikes(
+                                                    (BusinessData.businessApi
+                                                            .businessReview[num]
+                                                        ['Rid']),
+                                                    'plus',
+                                                    widget.Bid);
+                                          } else if (BusinessData
+                                              .businessApi.Liked[num]) {
+                                            await ReviewManagement()
+                                                .updateReviewLikes(
+                                                    (BusinessData.businessApi
+                                                            .businessReview[num]
+                                                        ['Rid']),
+                                                    'minus',
+                                                    widget.Bid);
+                                          }
+
+                                          // await BusinessData.businessApi
+                                          //     .UpdateReviewLikes(widget.Bid);
+                                          setState(() {
+                                            BusinessData
+                                                    .businessApi.Liked[num] =
+                                                !BusinessData
+                                                    .businessApi.Liked[num];
+                                          });
+                                        } else {
+                                          signUpDialogue(context,
+                                              'Login or SignUp to like a review');
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.favorite,
+                                        color:
+                                            BusinessData.businessApi.Liked[num]
+                                                ? primaryThemeColor()
+                                                : primaryTextColor(),
+                                        size: swidth * 0.067,
+                                      )),
+                                ),
+                                IconButton(
+                                    onPressed: () {},
                                     icon: Icon(
-                                      Icons.favorite,
-                                      color: BusinessData.businessApi.Liked[num]
-                                          ? primaryThemeColor()
-                                          : primaryTextColor(),
-                                      size: swidth * 0.067,
-                                    )),
-                              ),
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.share,
-                                    color: primaryThemeColor(),
-                                    size: swidth * 0.05,
-                                  ))
-                            ],
-                          ),
-                          SizedBox(
-                            height: sheight * 0.0208,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                                      Icons.share,
+                                      color: primaryThemeColor(),
+                                      size: swidth * 0.05,
+                                    ))
+                              ],
+                            ),
+                            SizedBox(
+                              height: sheight * 0.0208,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
     }
   }
+}
+
+maximizeReviewImage(BuildContext context, String Url) {
+  Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => Scaffold(
+            backgroundColor: tertiaryThemeColor(),
+            body: Center(
+              child: Hero(
+                tag: 'review Image',
+                child: Image.network(Url),
+              ),
+            ),
+          )));
 }
 
 PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
@@ -503,19 +564,21 @@ PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
       ),
     );
 
-void onSelected(BuildContext context, MenuItem item, String Bid, String Rid,
-    Function reload) {
+void onSelected(
+  BuildContext context,
+  MenuItem item,
+  String Bid,
+  String Rid,
+) {
   switch (item) {
     case ReviewMenuItems.itemReport:
-      reportReviewDialogue(context, Bid, Rid, reload);
+      reportReviewDialogue(context, Bid, Rid);
       break;
     case ReviewMenuItems.itemDelete:
       deleteReviewDialogue(context, Bid, Rid);
       break;
   }
 }
-
-Future reportReview() async {}
 
 void deleteReviewDialogue(BuildContext context, String Bid, String Rid) {
   double sheight = MediaQuery.of(context).size.height;
@@ -566,7 +629,8 @@ void deleteReviewDialogue(BuildContext context, String Bid, String Rid) {
                           onPressed: () {
                             deleteReview(context, Bid, Rid);
                           },
-                          child: Text('Delete'))
+                          child: Text('Delete',
+                              style: TextStyle(color: warningColor())))
                     ],
                   ),
                 ),
@@ -577,8 +641,7 @@ void deleteReviewDialogue(BuildContext context, String Bid, String Rid) {
       });
 }
 
-void reportReviewDialogue(
-    BuildContext context, String Bid, String Rid, Function reload) {
+void reportReviewDialogue(BuildContext context, String Bid, String Rid) {
   double sheight = MediaQuery.of(context).size.height;
   double swidth = MediaQuery.of(context).size.width;
   showDialog(
@@ -592,14 +655,14 @@ void reportReviewDialogue(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Delete?',
+                  'Report?',
                   style: TextStyle(fontSize: 24, color: primaryTextColor()),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
                 Text(
-                  'Do you really want to delete your review?',
+                  'Do you really want to report this review?',
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 16,
@@ -625,10 +688,11 @@ void reportReviewDialogue(
                               foregroundColor:
                                   MaterialStateProperty.all(warningColor())),
                           onPressed: () async {
-                            deleteReview(context, Bid, Rid);
-                            await reload();
+                            ReviewManagement().reportReview(Bid, Rid);
+                            Navigator.pop(context);
                           },
-                          child: Text('Delete'))
+                          child: Text('Report',
+                              style: TextStyle(color: warningColor())))
                     ],
                   ),
                 ),
@@ -647,6 +711,4 @@ Future deleteReview(BuildContext context, String Bid, String Rid) async {
       .doc(Rid);
 
   ds.delete();
-  // Utils.showSnackBar('Business succesfully deleted', messengerKey);
-  Navigator.pop(context);
 }

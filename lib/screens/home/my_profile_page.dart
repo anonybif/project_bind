@@ -29,8 +29,8 @@ class MyProfile extends StatefulWidget {
 
 const _kPages = <String, IconData>{
   'home': Icons.home,
-  'Add': Icons.business,
-  'write': Icons.add,
+  'Add': Icons.add,
+  'write': Icons.edit,
   'profile': Icons.account_circle_outlined,
 };
 
@@ -214,9 +214,32 @@ class _MYProfileState extends State<MyProfile> with TickerProviderStateMixin {
                   style: TextStyle(color: primaryTextColor(), fontSize: 24),
                 ),
                 SizedBox(
-                  width: swidth * 0.1,
+                  width: swidth * 0.06,
                 ),
-                Icon(Icons.badge)
+                if (BusinessData.businessApi.myInfo['Badge'] == 'Gold')
+                  Container(
+                    height: 28,
+                    width: 28,
+                    child: Image.asset(
+                      'assets/images/gold_badge.png',
+                    ),
+                  ),
+                if (BusinessData.businessApi.myInfo['Badge'] == 'Silver')
+                  Container(
+                    height: 28,
+                    width: 28,
+                    child: Image.asset(
+                      'assets/images/silver_badge.png',
+                    ),
+                  ),
+                if (BusinessData.businessApi.myInfo['Badge'] == 'Bronze')
+                  Container(
+                    height: 28,
+                    width: 28,
+                    child: Image.asset(
+                      'assets/images/bronze_badge.png',
+                    ),
+                  ),
               ],
             ),
             SizedBox(
@@ -580,21 +603,19 @@ class _MYProfileState extends State<MyProfile> with TickerProviderStateMixin {
         future: getFollowingBusinesses(),
         builder: (context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
-            // return SpinKitThreeBounce(
-            //   color: primaryThemeColor(),
-            //   size: 32,
-            return Column(
-              children: [
-                BusinessShimmerCard(sheight, swidth),
-                SizedBox(
-                  height: sheight * 0.02,
-                ),
-                BusinessShimmerCard(sheight, swidth),
-                SizedBox(
-                  height: sheight * 0.02,
-                ),
-              ],
-            );
+            return SpinKitThreeBounce(color: primaryThemeColor(), size: 32);
+            // return Column(
+            //   children: [
+            //     BusinessShimmerCard(sheight, swidth),
+            //     SizedBox(
+            //       height: sheight * 0.02,
+            //     ),
+            //     BusinessShimmerCard(sheight, swidth),
+            //     SizedBox(
+            //       height: sheight * 0.02,
+            //     ),
+            //   ],
+            // );
           } else {
             return Column(
               children: [

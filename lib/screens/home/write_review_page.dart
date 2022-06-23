@@ -29,8 +29,8 @@ class WriteReview extends StatefulWidget {
 
 const _kPages = <String, IconData>{
   'home': Icons.home,
-  'Add': Icons.business,
-  'write': Icons.add,
+  'Add': Icons.add,
+  'write': Icons.edit,
   'profile': Icons.account_circle_outlined,
 };
 
@@ -669,7 +669,8 @@ class _WriteReviewState extends State<WriteReview> {
       'Bid': Bid
     };
 
-    ReviewManagement().storeNewReview(json, context, Bid);
+    ReviewManagement().storeNewReview(
+        json, context, Bid, FirebaseAuth.instance.currentUser!.uid);
     BusinessManagement().updateBusinessRating(Bid, rating, 'add');
     BusinessManagement().updateBusinessReviews(Bid, 'add');
   }

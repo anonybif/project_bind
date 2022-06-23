@@ -245,7 +245,9 @@ class _SignUpInfoState extends State<SignUpInfo> {
       'OwnedBusinessBid': OwnedBusinessBid,
       'MostViewedCat': MostViewedCat,
       'ImageUrl': ImageUrl,
-      'FavoriteBusinessBid': FavoriteBusinessBid
+      'FavoriteBusinessBid': FavoriteBusinessBid,
+      'Reviews': 0,
+      'Likes': 0
     };
 
     UserManagement().storeNewUser(json, context);

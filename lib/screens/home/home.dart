@@ -31,8 +31,8 @@ class Home extends StatefulWidget {
 
 const _kPages = <String, IconData>{
   'home': Icons.home,
-  'Add': Icons.business,
-  'write': Icons.add,
+  'Add': Icons.add,
+  'write': Icons.edit,
   'profile': Icons.account_circle_outlined,
 };
 
@@ -87,7 +87,6 @@ class _HomeState extends State<Home> {
     await BusinessData.businessApi.getAllBusiness();
     await BusinessData.businessApi.getDistance();
     await BusinessData.businessApi.getTime();
-
     await BusinessData.businessApi.getmyInfo();
     await BusinessData.businessApi.getRecommendation();
     duplicateItems.addAll(BusinessData.businessApi.businessList);

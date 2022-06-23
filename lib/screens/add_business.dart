@@ -21,8 +21,8 @@ class AddBusiness extends StatefulWidget {
 
 const _kPages = <String, IconData>{
   'home': Icons.home,
-  'Add': Icons.business,
-  'write': Icons.add,
+  'Add': Icons.add,
+  'write': Icons.edit,
   'profile': Icons.account_circle_outlined,
 };
 

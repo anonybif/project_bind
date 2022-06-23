@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:day_picker/day_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -29,18 +30,40 @@ class AddBusinessInfo extends StatefulWidget {
 class _AddBusinessInfoState extends State<AddBusinessInfo> {
   TimeOfDay timeOpens = const TimeOfDay(hour: 12, minute: 0);
   TimeOfDay timeClosed = const TimeOfDay(hour: 24, minute: 0);
+  List<DayInWeek> _days = [
+    DayInWeek(
+      "Sun",
+    ),
+    DayInWeek("Mon", isSelected: true),
+    DayInWeek("Tue", isSelected: true),
+    DayInWeek("Wed", isSelected: true),
+    DayInWeek("Thu", isSelected: true),
+    DayInWeek("Fri", isSelected: true),
+    DayInWeek(
+      "Sat",
+    ),
+  ];
 
   final avgPriceController = TextEditingController();
 
   String location = '';
   String address = '';
   String locationError = '';
+  String workingDaysError = '';
 
   File? file;
   String path = '';
   String imageName = '';
   UploadTask? uploadTask;
   String ImageUrl = '';
+
+  List<String> workingDays = List.empty(growable: true);
+
+  @override
+  void initState() {
+    workingDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +112,45 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                   'number', false, avgPriceController),
               SizedBox(
                 height: sheight * 0.0208,
+              ),
+              Divider(
+                thickness: 1,
+                color: primaryTextColor(),
+              ),
+              Text(
+                "Working days",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: primaryTextColor(),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: EdgeInsets.all(3.0),
+                child: SelectWeekDays(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  days: _days,
+                  border: false,
+                  backgroundColor: primaryThemeColor(),
+                  boxDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: tertiaryThemeColor(),
+                  ),
+                  onSelect: (values) {
+                    workingDays.clear();
+                    workingDays.addAll(values);
+                    setState(() {
+                      workingDaysError = '';
+                    });
+                  },
+                ),
+              ),
+              Text(
+                workingDaysError,
+                style: const TextStyle(color: Colors.red),
               ),
               Divider(
                 thickness: 1,
@@ -249,10 +311,17 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
                 height: 10,
               ),
               reusableUIButton(context, "Add", (sheight * 0.33), 50, () async {
+                loading(context);
+                if (workingDays.isEmpty) {
+                  workingDaysError = 'please select working days';
+                  Navigator.pop(context);
+                  return;
+                }
                 if (location == '') {
                   setState(() {
-                    locationError = 'Location must be added';
+                    locationError = 'please select a Location';
                   });
+                  Navigator.pop(context);
                   return;
                 }
                 await createbusiness(context);
@@ -373,6 +442,7 @@ class _AddBusinessInfoState extends State<AddBusinessInfo> {
       'PhoneNumber': '',
       'OpeningTime': timeOpens.format(context),
       'ClosingTime': timeClosed.format(context),
+      'WorkingDays': workingDays,
       'Uid': '',
       'Reviews': 0,
       'Rating': 1,

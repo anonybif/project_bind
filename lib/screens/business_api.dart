@@ -85,6 +85,13 @@ class BusinessApi {
     double now = 0;
 
     for (int num = 0; num < businessList.length; num++) {
+      //Days
+      List<dynamic> businessDays = businessList[num]['WorkingDays'];
+      String Today = DateFormat('EEEE').format(DateTime.now())[0] +
+          DateFormat('EEEE').format(DateTime.now())[1] +
+          DateFormat('EEEE').format(DateTime.now())[2];
+
+      //Time
       String businessOtime = businessList[num]['OpeningTime'];
       String businessCtime = businessList[num]['ClosingTime'];
 
@@ -114,8 +121,14 @@ class BusinessApi {
 
       now = double.parse(timeHour) + (double.parse(timeMin) / 60);
 
-      if (now > oTime && now < cTime) {
-        businessList[num]['isOpen'] = true;
+      //compare
+
+      if (businessDays.contains(Today)) {
+        if (now > oTime && now < cTime) {
+          businessList[num]['isOpen'] = true;
+        } else {
+          businessList[num]['isOpen'] = false;
+        }
       } else {
         businessList[num]['isOpen'] = false;
       }
@@ -355,14 +368,25 @@ class BusinessApi {
   Future getmyInfo() async {
     if (FirebaseAuth.instance.currentUser != null) {
       var Uid = FirebaseAuth.instance.currentUser!.uid;
-      var ds = await FirebaseFirestore.instance
-          .collection('user')
-          .where('Uid', isEqualTo: Uid)
-          .get();
-      if (ds.size != 0) {
-        for (var doc in ds.docs) {
-          myInfo = doc.data();
-        }
+      var ds =
+          await FirebaseFirestore.instance.collection('user').doc(Uid).get();
+
+      myInfo = ds.data()!;
+      int myReviews = myInfo['Reviews'];
+      int myLikes = myInfo['Likes'];
+
+      if (myReviews >= 100 && myLikes >= 200) {
+        myInfo['Badge'] = 'Gold';
+        print(myInfo['Badge']);
+      } else if (myReviews >= 75 && myLikes >= 150) {
+        myInfo['Badge'] = 'Silver';
+        print(myInfo['Badge']);
+      } else if (myReviews >= 50 && myLikes >= 100) {
+        myInfo['Badge'] = 'Bronze';
+        print(myInfo['Badge']);
+      } else {
+        myInfo['Badge'] = '';
+        print(myInfo['Badge']);
       }
     }
   }
@@ -422,7 +446,7 @@ class BusinessApi {
         final docRef = businessReview[i]['Uid'];
         docRef.get().then((DocumentSnapshot doc) {
           businessReview[i]['Username'] = doc.data()!['Username'];
-
+          businessReview[i]['UserId'] = doc.data()!['Uid'];
           businessReview[i]['UserImageUrl'] = doc.data()!['ImageUrl'];
         });
       }

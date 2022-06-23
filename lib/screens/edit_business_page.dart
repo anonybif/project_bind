@@ -18,6 +18,7 @@ import 'package:project_bind/screens/my_business_page.dart';
 import 'package:project_bind/utils/color_utils.dart';
 import 'package:path/path.dart';
 import 'package:project_bind/utils/utils.dart';
+import 'package:day_picker/day_picker.dart';
 
 class EditBusiness extends StatefulWidget {
   final String Bid;
@@ -41,9 +42,34 @@ class _EditusinessState extends State<EditBusiness> {
   TimeOfDay timeOpens = const TimeOfDay(hour: 12, minute: 0);
   TimeOfDay timeClosed = const TimeOfDay(hour: 24, minute: 0);
 
+  List<DayInWeek> _days = [
+    DayInWeek(
+      "Sun",
+    ),
+    DayInWeek(
+      "Mon",
+    ),
+    DayInWeek(
+      "Tue",
+    ),
+    DayInWeek(
+      "Wed",
+    ),
+    DayInWeek(
+      "Thu",
+    ),
+    DayInWeek(
+      "Fri",
+    ),
+    DayInWeek(
+      "Sat",
+    ),
+  ];
+
   String location = '';
   String address = '';
   String locationError = '';
+  String workingDaysError = '';
 
   File? file;
   String path = '';
@@ -62,6 +88,8 @@ class _EditusinessState extends State<EditBusiness> {
 
   bool _loading = true;
   bool newUpload = false;
+
+  List<dynamic> workingDays = List.empty(growable: true);
 
   @override
   void initState() {
@@ -92,6 +120,12 @@ class _EditusinessState extends State<EditBusiness> {
 
   Future getBusinessInfo() async {
     await BusinessData.businessApi.fetchBusiness(widget.Bid);
+    await BusinessData.businessApi.getmyInfo();
+    await BusinessData.businessApi.getuserInfo();
+    await BusinessData.businessApi.getBusinessFollow(widget.Bid);
+    await BusinessData.businessApi.getBusinessFavorite(widget.Bid);
+    await BusinessData.businessApi.getDistance();
+    await BusinessData.businessApi.getTime();
     await fetchCategory();
     await setBusinessInfo();
 
@@ -122,6 +156,32 @@ class _EditusinessState extends State<EditBusiness> {
       }
     }
     print(tags);
+
+    workingDays = BusinessData.businessApi.businessInfo['WorkingDays'];
+
+    for (int i = 0; i < workingDays.length; i++) {
+      if (workingDays.contains('Sun')) {
+        _days[0] = DayInWeek("Sun", isSelected: true);
+      }
+      if (workingDays.contains('Mon')) {
+        _days[1] = DayInWeek("Mon", isSelected: true);
+      }
+      if (workingDays.contains('Tue')) {
+        _days[2] = DayInWeek("Tue", isSelected: true);
+      }
+      if (workingDays.contains('Wed')) {
+        _days[3] = DayInWeek("Wed", isSelected: true);
+      }
+      if (workingDays.contains('Thu')) {
+        _days[4] = DayInWeek("Thu", isSelected: true);
+      }
+      if (workingDays.contains('Fri')) {
+        _days[5] = DayInWeek("Fri", isSelected: true);
+      }
+      if (workingDays.contains('Sat')) {
+        _days[5] = DayInWeek("Sat", isSelected: true);
+      }
+    }
 
     String OtimeH = BusinessData.businessApi.businessInfo['OpeningTime']
         .toString()
@@ -154,545 +214,601 @@ class _EditusinessState extends State<EditBusiness> {
     double swidth = MediaQuery.of(context).size.width;
     double sheight = MediaQuery.of(context).size.height;
     final fileName = file != null ? basename(file!.path) : "No file selected";
-    return Scaffold(
-      backgroundColor: secondaryThemeColor(),
-      appBar: AppBar(
+    return MaterialApp(
+      scaffoldMessengerKey: messengerKey,
+      home: Scaffold(
+        backgroundColor: secondaryThemeColor(),
+        appBar: AppBar(
           backgroundColor: tertiaryThemeColor(),
           elevation: 1,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Edit Business Profile',
-                style: TextStyle(
-                  color: primaryTextColor(),
-                  fontSize: 21,
-                ),
-              ),
-            ],
-          )),
-      body: _loading
-          ? Container()
-          : SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: swidth * 0.05, vertical: sheight * 0.02),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: sheight * 0.02,
-                    ),
-                    Stack(
-                      children: [
-                        if (file == null)
-                          Container(
-                            margin: EdgeInsets.all(8),
-                            height: sheight * 0.23,
-                            width: swidth,
-                            clipBehavior: Clip.hardEdge,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24)),
-                            child: FadeInImage(
-                              image: NetworkImage(
-                                  '${BusinessData.businessApi.businessInfo['ImageUrl']} ',
-                                  scale: sheight),
-                              placeholder:
-                                  AssetImage("assets/images/placeholder.png"),
-                              imageErrorBuilder: (context, error, stackTrace) {
-                                return Image.asset('assets/images/error.png',
-                                    fit: BoxFit.cover);
-                              },
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        if (file != null)
-                          Container(
+          title: Text(
+            'Edit Business Profile',
+            style: TextStyle(
+              color: primaryTextColor(),
+              fontSize: 21,
+            ),
+          ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back)),
+        ),
+        body: _loading
+            ? Container()
+            : SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: swidth * 0.05, vertical: sheight * 0.02),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: sheight * 0.02,
+                      ),
+                      Stack(
+                        children: [
+                          if (file == null)
+                            Container(
                               margin: EdgeInsets.all(8),
                               height: sheight * 0.23,
                               width: swidth,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(24)),
-                              child: Image.file(
-                                File(file!.path),
-                              )),
-                        Positioned(
-                          height: sheight * 0.06,
-                          width: swidth * 0.12,
-                          bottom: 0,
-                          right: 0,
-                          child: CircleAvatar(
-                            backgroundColor: primaryThemeColor(),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                color: primaryTextColor(),
+                              child: FadeInImage(
+                                image: NetworkImage(
+                                    '${BusinessData.businessApi.businessInfo['ImageUrl']} ',
+                                    scale: sheight),
+                                placeholder:
+                                    AssetImage("assets/images/placeholder.png"),
+                                imageErrorBuilder:
+                                    (context, error, stackTrace) {
+                                  return Image.asset('assets/images/error.png',
+                                      fit: BoxFit.cover);
+                                },
+                                fit: BoxFit.cover,
                               ),
-                              onPressed: () {
-                                selectFile();
-                              },
+                            ),
+                          if (file != null)
+                            Container(
+                                margin: EdgeInsets.all(8),
+                                height: sheight * 0.23,
+                                width: swidth,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(24)),
+                                child: Image.file(
+                                  File(file!.path),
+                                )),
+                          Positioned(
+                            height: sheight * 0.06,
+                            width: swidth * 0.12,
+                            bottom: 0,
+                            right: 0,
+                            child: CircleAvatar(
+                              backgroundColor: primaryThemeColor(),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: primaryTextColor(),
+                                ),
+                                onPressed: () {
+                                  selectFile();
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: sheight * 0.02,
-                    ),
-                    Form(
-                      key: formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          reusableTextField(
-                              "Business Name",
-                              Icons.business_center,
-                              '',
-                              false,
-                              businessNameController),
-                          SizedBox(
-                            height: sheight * 0.0208,
-                          ),
-                          reusableTextArea("Description", Icons.message, false,
-                              businessDiscController),
-                          SizedBox(
-                            height: sheight * 0.0208,
-                          ),
-                          reusableTextField("Phone Number", Icons.phone, '',
-                              true, PhoneNumberController),
-                          SizedBox(
-                            height: sheight * 0.0208,
-                          ),
-                          reusableTextField(
-                              "Email", Icons.mail, '', true, EmailController),
-                          SizedBox(
-                            height: sheight * 0.0208,
-                          ),
-                          reusableTextField(
-                              "Average Price",
-                              FontAwesomeIcons.dollarSign,
-                              'number',
-                              false,
-                              avgPriceController),
-                          SizedBox(
-                            height: sheight * 0.0208,
-                          ),
-                          Divider(
-                            thickness: 1,
-                            color: primaryTextColor(),
-                          ),
-                          Container(
-                              height: sheight * 0.2,
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: sheight * 0.04167,
-                                      child: Text(
-                                        'Categories',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: primaryTextColor(),
+                        ],
+                      ),
+                      SizedBox(
+                        height: sheight * 0.02,
+                      ),
+                      Form(
+                        key: formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            reusableTextField(
+                                "Business Name",
+                                Icons.business_center,
+                                '',
+                                false,
+                                businessNameController),
+                            SizedBox(
+                              height: sheight * 0.0208,
+                            ),
+                            reusableTextArea("Description", Icons.message,
+                                false, businessDiscController),
+                            SizedBox(
+                              height: sheight * 0.0208,
+                            ),
+                            reusableTextField("Phone Number", Icons.phone, '',
+                                true, PhoneNumberController),
+                            SizedBox(
+                              height: sheight * 0.0208,
+                            ),
+                            reusableTextField(
+                                "Email", Icons.mail, '', true, EmailController),
+                            SizedBox(
+                              height: sheight * 0.0208,
+                            ),
+                            reusableTextField(
+                                "Average Price",
+                                FontAwesomeIcons.dollarSign,
+                                'number',
+                                false,
+                                avgPriceController),
+                            SizedBox(
+                              height: sheight * 0.0208,
+                            ),
+                            Divider(
+                              thickness: 1,
+                              color: primaryTextColor(),
+                            ),
+                            Container(
+                                height: sheight * 0.2,
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: sheight * 0.04167,
+                                        child: Text(
+                                          'Categories',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: primaryTextColor(),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Container(
-                                      height: sheight * 0.1428,
-                                      decoration: BoxDecoration(
-                                          color: tertiaryThemeColor(),
-                                          borderRadius:
-                                              BorderRadius.circular(16)),
-                                      child: GridView.builder(
-                                        itemCount: items.length,
-                                        scrollDirection: Axis.horizontal,
-                                        itemBuilder: (context, index) {
-                                          final item = items[index];
+                                      Container(
+                                        height: sheight * 0.1428,
+                                        decoration: BoxDecoration(
+                                            color: tertiaryThemeColor(),
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
+                                        child: GridView.builder(
+                                          itemCount: items.length,
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (context, index) {
+                                            final item = items[index];
 
-                                          return Container(
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  for (int i = 0;
-                                                      i < items.length;
-                                                      i++) {
-                                                    selected[i] = false;
-                                                  }
-                                                  selected[index] =
-                                                      !selected[index];
+                                            return Container(
+                                              child: InkWell(
+                                                onTap: () {
                                                   setState(() {
-                                                    catPick = true;
-                                                    catPickWarning = '';
+                                                    for (int i = 0;
+                                                        i < items.length;
+                                                        i++) {
+                                                      selected[i] = false;
+                                                    }
+                                                    selected[index] =
+                                                        !selected[index];
+                                                    setState(() {
+                                                      catPick = true;
+                                                      catPickWarning = '';
+                                                    });
+                                                    print('${item} selected');
                                                   });
-                                                  print('${item} selected');
-                                                });
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(12),
-                                                decoration: BoxDecoration(
-                                                    color: selected[index]
-                                                        ? primaryThemeColor()
-                                                        : tertiaryThemeColor(),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    border: Border.all(
-                                                        color:
-                                                            primaryThemeColor())),
-                                                child: Center(
-                                                  child: Text(
-                                                    item,
-                                                    style: TextStyle(
-                                                        color: selected[index]
-                                                            ? tertiaryThemeColor()
-                                                            : primaryThemeColor()),
+                                                },
+                                                child: Container(
+                                                  margin: EdgeInsets.all(12),
+                                                  decoration: BoxDecoration(
+                                                      color: selected[index]
+                                                          ? primaryThemeColor()
+                                                          : tertiaryThemeColor(),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      border: Border.all(
+                                                          color:
+                                                              primaryThemeColor())),
+                                                  child: Center(
+                                                    child: Text(
+                                                      item,
+                                                      style: TextStyle(
+                                                          color: selected[index]
+                                                              ? tertiaryThemeColor()
+                                                              : primaryThemeColor()),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          childAspectRatio: (1 / 2),
+                                            );
+                                          },
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                            childAspectRatio: (1 / 2),
+                                          ),
                                         ),
                                       ),
+                                    ])),
+                            catPick
+                                ? Container()
+                                : Text(
+                                    catPickWarning,
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                            Divider(
+                              thickness: 1,
+                              color: primaryTextColor(),
+                            ),
+                            Container(
+                              height: sheight * 0.278,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: sheight * 0.04166,
+                                    child: Text(
+                                      'Tags',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: primaryTextColor(),
+                                      ),
                                     ),
-                                  ])),
-                          catPick
-                              ? Container()
-                              : Text(
-                                  catPickWarning,
-                                  style: TextStyle(color: Colors.red),
+                                  ),
+                                  Container(
+                                    height: sheight * 0.1428,
+                                    decoration: BoxDecoration(
+                                        color: tertiaryThemeColor(),
+                                        borderRadius:
+                                            BorderRadius.circular(16)),
+                                    child: GridView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: tags.length,
+                                      itemBuilder: (context, index) {
+                                        final item = tags[index];
+                                        return Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 4, vertical: 10),
+                                          decoration: BoxDecoration(
+                                              color: primaryThemeColor(),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                  color: primaryThemeColor())),
+                                          child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 12),
+                                                  child: Text(
+                                                    item,
+                                                    style: TextStyle(
+                                                        color:
+                                                            secondaryTextColor()),
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                    color: secondaryTextColor(),
+                                                    onPressed: () {
+                                                      tags.removeAt(index);
+                                                      setState(() {
+                                                        disabletag = false;
+                                                      });
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.cancel,
+                                                      size: 15,
+                                                    ))
+                                              ]),
+                                        );
+                                      },
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: (3 / 1),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: swidth / 2,
+                                        height: swidth / 9,
+                                        child: TextField(
+                                          enabled: !disabletag,
+                                          controller: tagController,
+                                          style: TextStyle(
+                                              color: primaryTextColor()),
+                                          cursorColor: primaryTextColor(),
+                                          decoration: InputDecoration(
+                                            labelText: 'Add a Tag',
+                                            labelStyle:
+                                                TextStyle(color: Colors.grey),
+                                            filled: true,
+                                            floatingLabelBehavior:
+                                                FloatingLabelBehavior.never,
+                                            fillColor: tertiaryThemeColor(),
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(18.0),
+                                                borderSide: const BorderSide(
+                                                    width: 0,
+                                                    style: BorderStyle.none)),
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                          color: primaryThemeColor(),
+                                          onPressed: () {
+                                            setState(() {
+                                              if (tags.length < 4 &&
+                                                  tagController.text.trim() !=
+                                                      '') {
+                                                tags.add(
+                                                    tagController.text.trim());
+                                              } else if (tags.length >= 4 &&
+                                                  tagController.text.trim() !=
+                                                      '') {
+                                                disabletag = true;
+                                              }
+                                            });
+                                          },
+                                          icon: Icon(Icons.add))
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                            disabletag
+                                ? Text(
+                                    'Maximum of 4 tags allowed',
+                                    style: TextStyle(color: Colors.red),
+                                  )
+                                : Text(''),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Divider(
+                              thickness: 1,
+                              color: primaryTextColor(),
+                            ),
+                            Text(
+                              "Working days",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: primaryTextColor(),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3.0),
+                              child: SelectWeekDays(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                days: _days,
+                                border: false,
+                                backgroundColor: primaryThemeColor(),
+                                boxDecoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: tertiaryThemeColor(),
                                 ),
-                          Divider(
-                            thickness: 1,
-                            color: primaryTextColor(),
-                          ),
-                          Container(
-                            height: sheight * 0.278,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                                onSelect: (values) {
+                                  workingDays.clear();
+                                  workingDays.addAll(values);
+                                  setState(() {
+                                    workingDaysError = '';
+                                  });
+                                },
+                              ),
+                            ),
+                            Text(
+                              workingDaysError,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            Divider(
+                              thickness: 1,
+                              color: primaryTextColor(),
+                            ),
+                            Text(
+                              "Working hours",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: primaryTextColor(),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(
-                                  height: sheight * 0.04166,
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.resolveWith(
+                                              (states) {
+                                        if (states
+                                            .contains(MaterialState.pressed)) {
+                                          return primaryThemeColor();
+                                        }
+                                        return primaryThemeColor();
+                                      }),
+                                      shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16)))),
+                                  onPressed: () async {
+                                    TimeOfDay? newTime = await showTimePicker(
+                                        context: context,
+                                        initialTime: timeOpens);
+                                    if (newTime == null) return;
+                                    setState(() {
+                                      timeOpens = newTime;
+                                    });
+                                  },
                                   child: Text(
-                                    'Tags',
+                                    'Opens',
                                     style: TextStyle(
-                                      fontSize: 18,
                                       color: primaryTextColor(),
                                     ),
                                   ),
                                 ),
-                                Container(
-                                  height: sheight * 0.1428,
-                                  decoration: BoxDecoration(
-                                      color: tertiaryThemeColor(),
-                                      borderRadius: BorderRadius.circular(16)),
-                                  child: GridView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: tags.length,
-                                    itemBuilder: (context, index) {
-                                      final item = tags[index];
-                                      return Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 4, vertical: 10),
-                                        decoration: BoxDecoration(
-                                            color: primaryThemeColor(),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            border: Border.all(
-                                                color: primaryThemeColor())),
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 12),
-                                                child: Text(
-                                                  item,
-                                                  style: TextStyle(
-                                                      color:
-                                                          secondaryTextColor()),
-                                                ),
-                                              ),
-                                              IconButton(
-                                                  color: secondaryTextColor(),
-                                                  onPressed: () {
-                                                    tags.removeAt(index);
-                                                    setState(() {
-                                                      disabletag = false;
-                                                    });
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.cancel,
-                                                    size: 15,
-                                                  ))
-                                            ]),
-                                      );
-                                    },
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      childAspectRatio: (3 / 1),
+                                const SizedBox(width: 5),
+                                Text(
+                                  timeOpens.format(context),
+                                  style: TextStyle(
+                                      fontSize: 16, color: primaryTextColor()),
+                                ),
+                                const SizedBox(width: 15),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.resolveWith(
+                                              (states) {
+                                        if (states
+                                            .contains(MaterialState.pressed)) {
+                                          return primaryThemeColor();
+                                        }
+                                        return primaryThemeColor();
+                                      }),
+                                      shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16)))),
+                                  onPressed: () async {
+                                    TimeOfDay? newTime = await showTimePicker(
+                                        context: context,
+                                        initialTime: timeClosed);
+                                    if (newTime == null) return;
+                                    setState(() {
+                                      timeClosed = newTime;
+                                    });
+                                  },
+                                  child: Text(
+                                    'Closes',
+                                    style: TextStyle(
+                                      color: primaryTextColor(),
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 10,
+                                const SizedBox(width: 5),
+                                Text(
+                                  timeClosed.format(context),
+                                  style: TextStyle(
+                                      fontSize: 16, color: primaryTextColor()),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: swidth / 2,
-                                      height: swidth / 9,
-                                      child: TextField(
-                                        enabled: !disabletag,
-                                        controller: tagController,
-                                        style: TextStyle(
-                                            color: primaryTextColor()),
-                                        cursorColor: primaryTextColor(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Add a Tag',
-                                          labelStyle:
-                                              TextStyle(color: Colors.grey),
-                                          filled: true,
-                                          floatingLabelBehavior:
-                                              FloatingLabelBehavior.never,
-                                          fillColor: tertiaryThemeColor(),
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(18.0),
-                                              borderSide: const BorderSide(
-                                                  width: 0,
-                                                  style: BorderStyle.none)),
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                        color: primaryThemeColor(),
-                                        onPressed: () {
-                                          setState(() {
-                                            if (tags.length < 4 &&
-                                                tagController.text.trim() !=
-                                                    '') {
-                                              tags.add(
-                                                  tagController.text.trim());
-                                            } else if (tags.length >= 4 &&
-                                                tagController.text.trim() !=
-                                                    '') {
-                                              disabletag = true;
-                                            }
-                                          });
-                                        },
-                                        icon: Icon(Icons.add))
-                                  ],
-                                )
                               ],
                             ),
-                          ),
-                          disabletag
-                              ? Text(
-                                  'Maximum of 4 tags allowed',
-                                  style: TextStyle(color: Colors.red),
-                                )
-                              : Text(''),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Divider(
-                            thickness: 1,
-                            color: primaryTextColor(),
-                          ),
-                          Text(
-                            "Working hours",
-                            style: TextStyle(
-                              fontSize: 18,
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Divider(
+                              thickness: 1,
                               color: primaryTextColor(),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.resolveWith(
-                                            (states) {
-                                      if (states
-                                          .contains(MaterialState.pressed)) {
-                                        return primaryThemeColor();
-                                      }
-                                      return primaryThemeColor();
-                                    }),
-                                    shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16)))),
-                                onPressed: () async {
-                                  TimeOfDay? newTime = await showTimePicker(
-                                      context: context, initialTime: timeOpens);
-                                  if (newTime == null) return;
-                                  setState(() {
-                                    timeOpens = newTime;
-                                  });
-                                },
-                                child: Text(
-                                  'Opens',
-                                  style: TextStyle(
-                                    color: primaryTextColor(),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                timeOpens.format(context),
-                                style: TextStyle(
-                                    fontSize: 16, color: primaryTextColor()),
-                              ),
-                              const SizedBox(width: 15),
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.resolveWith(
-                                            (states) {
-                                      if (states
-                                          .contains(MaterialState.pressed)) {
-                                        return primaryThemeColor();
-                                      }
-                                      return primaryThemeColor();
-                                    }),
-                                    shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16)))),
-                                onPressed: () async {
-                                  TimeOfDay? newTime = await showTimePicker(
-                                      context: context,
-                                      initialTime: timeClosed);
-                                  if (newTime == null) return;
-                                  setState(() {
-                                    timeClosed = newTime;
-                                  });
-                                },
-                                child: Text(
-                                  'Closes',
-                                  style: TextStyle(
-                                    color: primaryTextColor(),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                timeClosed.format(context),
-                                style: TextStyle(
-                                    fontSize: 16, color: primaryTextColor()),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Divider(
-                            thickness: 1,
-                            color: primaryTextColor(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            "Location",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: primaryTextColor(),
+                            const SizedBox(
+                              height: 10,
                             ),
-                          ),
-                          reusableIconButton(context, "pick location",
-                              Icons.location_on, (sheight * 0.5), () {
-                            getLocation(context);
-                          }),
-                          Text(
-                            location,
-                            style: TextStyle(color: primaryTextColor()),
-                          ),
-                          Text(
-                            locationError,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              reusableUIButton(
-                                  context, "Cancel", (swidth * 0.33), 50,
-                                  () async {
-                                Navigator.pop(context);
-                              }),
-                              reusableUIButton(
-                                  context, "Update", (swidth / 3), 50,
-                                  () async {
-                                loading(context);
-                                final isValid =
-                                    formKey.currentState!.validate();
-                                if (!isValid) {
+                            Text(
+                              "Location",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: primaryTextColor(),
+                              ),
+                            ),
+                            reusableIconButton(context, "pick location",
+                                Icons.location_on, (sheight * 0.5), () {
+                              getLocation(context);
+                            }),
+                            Text(
+                              location,
+                              style: TextStyle(color: primaryTextColor()),
+                            ),
+                            Text(
+                              locationError,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                reusableUIButton(
+                                    context, "Cancel", (swidth * 0.33), 50,
+                                    () async {
+                                  print(workingDays);
                                   Navigator.pop(context);
-                                  return;
-                                }
-                                bool catPicked = false;
-                                for (int i = 0; i < items.length; i++) {
-                                  if (selected[i]) {
-                                    catPicked = true;
+                                }),
+                                reusableUIButton(
+                                    context, "Update", (swidth / 3), 50,
+                                    () async {
+                                  loading(context);
+                                  final isValid =
+                                      formKey.currentState!.validate();
+                                  if (!isValid) {
+                                    Navigator.pop(context);
+                                    return;
                                   }
-                                }
-                                if (!catPicked) {
-                                  setState(() {
-                                    catPick = false;
-                                    catPickWarning = 'Select a category';
-                                  });
-                                  print('cat not selected');
-                                  Navigator.pop(context);
-                                  return;
-                                }
-                                if (location == '') {
-                                  setState(() {
-                                    locationError = 'Location must be added';
-                                  });
-                                  Navigator.pop(context);
-                                  return;
-                                }
-
-                                for (int i = 0; i < items.length; i++) {
-                                  if (catSelected()[i]) {
-                                    catUpdates = items[i];
+                                  bool catPicked = false;
+                                  for (int i = 0; i < items.length; i++) {
+                                    if (selected[i]) {
+                                      catPicked = true;
+                                    }
                                   }
-                                }
+                                  if (!catPicked) {
+                                    setState(() {
+                                      catPick = false;
+                                      catPickWarning = 'Select a category';
+                                    });
+                                    print('cat not selected');
+                                    Navigator.pop(context);
+                                    return;
+                                  }
+                                  if (location == '') {
+                                    setState(() {
+                                      locationError = 'Location must be added';
+                                    });
+                                    Navigator.pop(context);
+                                    return;
+                                  }
 
-                                await updateBusiness(context);
-                                await BusinessData.businessApi.getAllBusiness();
+                                  for (int i = 0; i < items.length; i++) {
+                                    if (catSelected()[i]) {
+                                      catUpdates = items[i];
+                                    }
+                                  }
 
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Home()));
-                              }),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                                  await updateBusiness(context);
+                                  await BusinessData.businessApi
+                                      .getAllBusiness();
+
+                                  Utils.showSnackBar(
+                                      'Business Updated Successfully',
+                                      messengerKey);
+                                  await Future.delayed(
+                                      const Duration(seconds: 3));
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => BusinessPage(
+                                                Bid: widget.Bid,
+                                              )));
+                                }),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 
@@ -817,7 +933,8 @@ class _EditusinessState extends State<EditBusiness> {
       'Reviews': BusinessData.businessApi.businessInfo['Reviews'],
       'Rating': BusinessData.businessApi.businessInfo['Rating'],
       'Follows': BusinessData.businessApi.businessInfo['Follows'],
-      'Clicks': BusinessData.businessApi.businessInfo['Clicks']
+      'Clicks': BusinessData.businessApi.businessInfo['Clicks'],
+      'WorkingDays': BusinessData.businessApi.businessInfo['WorkingDays']
     };
 
     BusinessManagement().updateBusinessInfo(widget.Bid, json);

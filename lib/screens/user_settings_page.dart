@@ -183,7 +183,6 @@ class _SettingsState extends State<Settings> {
                   SizedBox(
                     height: sheight * 0.16,
                   ),
-                  reusableUIButton(context, 'Signout', swidth * 0.3, 36, () {})
                 ],
               )),
         ),
